@@ -21,7 +21,7 @@ public class HomeController {
 
     private final FollowerService followerService;
 
-    @GetMapping("")
+    @GetMapping("/")
     public Map<Integer, Map<Boolean, Long>> getFollowersByActiveEvent() {
 
         //get all registered for event
