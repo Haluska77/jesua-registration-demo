@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: default-user
+      author: SH
+      changes:
+        - insert:
+            tableName: jesua_user
+            columns:
+              - column:
+                  name: id
+                  valueComputed: gen_random_uuid()
+              - column:
+                  name: user_name
+                  value: "admin"
+              - column:
+                  name: password
+                  value: "$2y$10$LRrT/LNJ5ldpOGDVZoLlQ.2rBI.LCDwhEX/iyFeOS7k05OPDuFDsu"
+              - column:
+                  name: email
+                  value: "stanislav.haluska@gmail.com"
+              - column:
+                  name: role
+                  value: "ROLE_ADMIN"
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: default-course-item
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: course
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: description
+                  value: "Kastiel Krasna"
+              - column:
+                  name: open
+                  valueBoolean: true
+              - column:
+                  name: start_date
+                  value: now()
