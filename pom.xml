@@ -17,6 +17,7 @@
 		<java.version>11</java.version>
 		<jwt.version>0.8.0</jwt.version>
 		<mapstruct.version>1.4.1.Final</mapstruct.version>
+		<jasypt.version>3.0.3</jasypt.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -66,6 +67,11 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${mapstruct.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ulisesbocchio</groupId>
+			<artifactId>jasypt-spring-boot-starter</artifactId>
+			<version>${jasypt.version}</version>
 		</dependency>
 
 	</dependencies>
