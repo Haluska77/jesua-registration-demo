@@ -1,6 +1,5 @@
 package com.jesua.registration.service;
 
-import com.jesua.registration.config.AppConfig;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.entity.Course;
@@ -31,7 +30,6 @@ import static java.util.stream.Collectors.groupingBy;
 public class FollowerService {
 
     private final FollowerRepository followerRepository;
-    private final AppConfig appConfig;
     private final MessageBuilder messageBuilder;
     private final CourseService courseService;
     private final ApplicationEventPublisher eventPublisher;
@@ -118,7 +116,7 @@ public class FollowerService {
         Message emailMessage;
         String responseMessage = "Vaša registrácia na kurz Ješua (" + currentCourse.getDescription() + ", " + instantToString(currentCourse.getStartDate()) + ") prebehla úspešne! ";
         //build emailMessage
-        if (acceptedFollowers < appConfig.getMax()) {
+        if (acceptedFollowers < currentCourse.getCapacity()) {
             follower.setAccepted(true);
             emailMessage = messageBuilder.buildSuccessMessage(follower, currentCourse);
             responseMessage += "Tešíme sa na vašu účasť. Vidíme sa na stretnutí.";

@@ -32,6 +32,7 @@ public class HomeService {
             followerCount.put("id", e.getId());
             followerCount.put("description", e.getDescription());
             followerCount.put("startDate", e.getStartDate());
+            followerCount.put("capacity", e.getCapacity());
 
             return followerCount;
         }).collect(toList());

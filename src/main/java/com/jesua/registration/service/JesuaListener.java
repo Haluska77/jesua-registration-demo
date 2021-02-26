@@ -1,6 +1,5 @@
 package com.jesua.registration.service;
 
-import com.jesua.registration.config.AppConfig;
 import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.MessageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +16,16 @@ public class JesuaListener implements ApplicationListener<ApplicationReadyEvent>
     private CourseService courseService;
     private EmailServiceImpl emailService;
     private MessageBuilder messageBuilder;
-    private AppConfig appConfig;
 
     @Value("${jesua.course.days.notification}")
     int notificationDays;
 
     @Autowired
-    public JesuaListener(FollowerService followerService, CourseService courseService, EmailServiceImpl emailService, MessageBuilder messageBuilder, AppConfig appConfig) {
+    public JesuaListener(FollowerService followerService, CourseService courseService, EmailServiceImpl emailService, MessageBuilder messageBuilder) {
         this.followerService = followerService;
         this.courseService = courseService;
         this.emailService = emailService;
         this.messageBuilder = messageBuilder;
-        this.appConfig = appConfig;
     }
 
     @Override
@@ -37,8 +34,6 @@ public class JesuaListener implements ApplicationListener<ApplicationReadyEvent>
 
     @Scheduled(cron = "0 0 18 * * *") // run every day at 18:00
     public void runCron() {
-
-//        Course event = courseService.getCourse(appConfig.getActive());
 //
 //        LocalDate eventStartDate = event.getStartDate()
 //                .atZone(ZoneId.systemDefault())

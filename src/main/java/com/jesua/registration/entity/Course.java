@@ -29,4 +29,6 @@ public class Course {
     @NotNull
     private Boolean open;
 
+    @NotNull
+    private int capacity;
 }

@@ -44,3 +44,6 @@ databaseChangeLog:
               - column:
                   name: start_date
                   value: now()
+              - column:
+                  name: capacity
+                  value: 3

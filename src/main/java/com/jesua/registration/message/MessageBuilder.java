@@ -1,6 +1,5 @@
 package com.jesua.registration.message;
 
-import com.jesua.registration.config.AppConfig;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.User;
@@ -12,14 +11,8 @@ import static com.jesua.registration.util.AppUtil.instantToString;
 @Component
 public class MessageBuilder {
 
-    public static final String CHANGE_PASSWORD_URL = "/users/changePassword?token=";
-    private final AppConfig appConfig;
-
-    public MessageBuilder(AppConfig appConfig) {
-        this.appConfig = appConfig;
-    }
-
-    private final String EMAIL_SUBJECT = "Registrácia na kurz JEŠUA";
+    private static final String CHANGE_PASSWORD_URL = "/users/changePassword?token=";
+    private static final String EMAIL_SUBJECT = "Registrácia na kurz JEŠUA";
 
     @Value("${origin.url}")
     private String originUrl;
@@ -37,7 +30,7 @@ public class MessageBuilder {
     public Message buildUnsuccessMessage(Follower follower, Course course) {
 
         String body = String.format("Ahoj %s, úspešne si sa prihlásil na kurz Ješua '%s - %s'. <br><br>" +
-                "Momentálne je kapacita kurzu (" + appConfig.getMax() + " ľudí) už naplnená.<br>" +
+                "Momentálne je kapacita kurzu (" + course.getCapacity() + " ľudí) už naplnená.<br>" +
                 "V prípade, že sa niektorý z účastníkov kurzu odhlási, dáme ti okamžite vedieť na tento email.", follower.getName(), course.getDescription(), instantToString(course.getStartDate()));
         body += getMessageFooter(follower);
 

@@ -10,4 +10,5 @@ public class CourseDto {
     private String description;
     private String startDate;
     private boolean open;
+    private int capacity;
 }
