@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 @Entity
 public class Follower {
-//TODO investigate Serializable
+
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
@@ -40,7 +40,7 @@ public class Follower {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
-    private com.jesua.registration.entity.Course course;
+    private Course course;
 
     @NotNull
     @Column(updatable = false)

@@ -3,27 +3,30 @@ package com.jesua.registration.service;
 import com.jesua.registration.config.AppConfig;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerResponseDto;
-import com.jesua.registration.dto.Stats;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.event.FollowerCreatedEvent;
 import com.jesua.registration.message.Message;
 import com.jesua.registration.message.MessageBuilder;
 import com.jesua.registration.repository.FollowerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.jesua.registration.util.AppUtil.generateToken;
 import static com.jesua.registration.util.AppUtil.instantToString;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
+@RequiredArgsConstructor
 @Service
 public class FollowerService {
 
@@ -32,14 +35,6 @@ public class FollowerService {
     private final MessageBuilder messageBuilder;
     private final CourseService courseService;
     private final ApplicationEventPublisher eventPublisher;
-
-    public FollowerService(FollowerRepository followerRepository, AppConfig appConfig, MessageBuilder messageBuilder, CourseService courseService, ApplicationEventPublisher eventPublisher) {
-        this.followerRepository = followerRepository;
-        this.appConfig = appConfig;
-        this.messageBuilder = messageBuilder;
-        this.courseService = courseService;
-        this.eventPublisher = eventPublisher;
-    }
 
     public List<Follower> getAllFollowersByEventId(int courseId) {
 
@@ -174,34 +169,5 @@ public class FollowerService {
                         )
                 );
 
-    }
-
-    public Map<Integer, Stats> getStatistics() {
-        List<Follower> followerByOpenEvent = followerRepository.findFollowerByOpenEvent();
-
-        Map<Integer, Map<Boolean, Long>> collect1 = followerByOpenEvent.stream().filter(m -> m.getUnregistered() == null)
-                .collect(groupingBy(f -> f.getCourse().getId(),
-                        groupingBy(Follower::isAccepted,
-                                counting()
-                        )
-                        )
-                );
-
-        return collect1.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> toStats(e.getValue())));
-
-    }
-
-    private Stats toStats(Map<Boolean, Long> result) {
-        Stats stats = new Stats();
-        result.forEach((key, value) -> {
-            if (key.equals(true)) {
-                stats.setActive(value);
-            }
-            if (key.equals(false)) {
-                stats.setWaiting(value);
-            }
-        });
-        return stats;
     }
 }
