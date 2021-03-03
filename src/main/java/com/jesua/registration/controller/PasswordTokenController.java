@@ -20,24 +20,22 @@ public class PasswordTokenController {
     public static final String USER_NOT_FOUND_OR_NOT_ACTIVE = "User not Found or not active";
 
     //Get user by email and save token for reset password
-    @GetMapping("/userAccount")
-    public UserResponseDto userAccount(
-            @RequestParam("email") String userEmail) {
+    @GetMapping("/userAccount/{email}")
+    public SuccessResponse<UserResponseDto> userAccount(@PathVariable String email) {
 
-        UserResponseDto userResponseDto = passwordTokenService.createAndSendTokenByUserEmail(userEmail);
+        UserResponseDto userResponseDto = passwordTokenService.createAndSendTokenByUserEmail(email);
 
         if (userResponseDto == null) {
             throw new NoSuchElementException(USER_NOT_FOUND_OR_NOT_ACTIVE);
         }
 
-        return userResponseDto;
+        return new SuccessResponse<>(userResponseDto, "Na uvedený email bol poslaný link na zmenu hesla!");
     }
 
     // submit token from email and send back to UI
     // if result = success, open change password form in UI, otherwise display blank page and error message
-    @GetMapping("resetPassword")
-    public UserTokenDto validateToken(
-            @RequestParam("token") String token) {
+    @GetMapping("validateToken/{token}")
+    public UserTokenDto validateToken(@PathVariable String token) {
 
         return passwordTokenService.validatePasswordResetToken(token);
     }

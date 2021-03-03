@@ -11,7 +11,7 @@ import static com.jesua.registration.util.AppUtil.instantToString;
 @Component
 public class MessageBuilder {
 
-    private static final String CHANGE_PASSWORD_URL = "/users/changePassword?token=";
+    private static final String CHANGE_PASSWORD_URL = "/password/register/";
     private static final String EMAIL_SUBJECT = "Registrácia na kurz JEŠUA";
 
     @Value("${origin.url}")
