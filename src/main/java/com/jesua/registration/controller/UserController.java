@@ -4,6 +4,7 @@ import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.SuccessResponse;
+import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
 import com.jesua.registration.security.jwt.JwtProvider;
@@ -33,16 +34,18 @@ public class UserController {
     private final UserService userService;
     private final JwtProvider jwtProvider;
 
-    @GetMapping("userForm")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String userForm() {
-        return "Hello User Form";
-    }
-
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> users() {
+    public List<UserResponseDto> users() {
         return userService.getAllUsers();
+    }
+
+    @PostMapping("update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public SuccessResponse<UserResponseDto> update(@RequestBody UserDto userDto, @PathVariable UUID id) {
+        UserResponseDto userResponseDto = userService.updateUser(id, userDto);
+
+        return new SuccessResponse<>(userResponseDto, "User has been successfully changed!");
     }
 
     @GetMapping("makeActive")
@@ -80,10 +83,10 @@ public class UserController {
     }
 
     @PostMapping("signup")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public SuccessResponse<UserResponseDto> signUpUser(@RequestBody UserDto userDto) {
 
-        UserResponseDto user = userService.createUser(userDto);
-        return new SuccessResponse<>(user, "New user registered successfully!");
+        UserResponseDto userResponseDto = userService.createUser(userDto);
+        return new SuccessResponse<>(userResponseDto, "New user registered successfully!");
     }
 }

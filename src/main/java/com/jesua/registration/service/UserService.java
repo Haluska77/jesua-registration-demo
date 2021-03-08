@@ -13,7 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +33,9 @@ public class UserService implements UserDetailsService {
         return new UserAuthPrincipal(user);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
     public User switchActiveUserAccount(UUID userId) {
@@ -56,4 +60,14 @@ public class UserService implements UserDetailsService {
         return userMapper.mapEntityToDto(user);
     }
 
+    public UserResponseDto updateUser(UUID id, UserDto userDto) {
+
+        User origUser = userRepository.getOne(id);
+        User user = userMapper.mapDtoToEntity(userDto, origUser);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.mapEntityToDto(savedUser);
+
+    }
 }

@@ -3,6 +3,7 @@ package com.jesua.registration.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -13,5 +14,6 @@ public class UserResponseDto {
     private String name;
     private String email;
     private String role;
-    private boolean active;
+    private Boolean active;
+    private Instant created;
 }
