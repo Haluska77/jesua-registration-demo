@@ -23,6 +23,9 @@ public class User {
     @Column(name = "id", length = 36, updatable = false)
     private UUID id;
 
+    @Size(max = 50)
+    private String avatar;
+
     @NotNull
     @Size(max = 50)
     @Column(name = "user_name")

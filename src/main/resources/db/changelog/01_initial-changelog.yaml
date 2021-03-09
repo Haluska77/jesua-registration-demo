@@ -146,3 +146,6 @@ databaseChangeLog:
                         nullable: false
                       name: created
                       type: DATETIME
+                - column:
+                    name: avatar
+                    type: VARCHAR(50)
