@@ -38,13 +38,14 @@ public class UserService implements UserDetailsService {
                 .map(userMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
-    public User switchActiveUserAccount(UUID userId) {
+    public UserResponseDto switchActiveUserAccount(UUID userId) {
 
         return userRepository.findById(userId)
                 .map(
                         u -> {
                             u.setActive(u.getActive() == Boolean.TRUE ? Boolean.FALSE : Boolean.TRUE);
-                            return userRepository.save(u);
+                            userRepository.save(u);
+                            return userMapper.mapEntityToDto(u);
                         }).orElse(null);
 
     }

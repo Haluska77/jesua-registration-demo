@@ -50,12 +50,12 @@ public class UserController {
 
     @GetMapping("makeActive")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> switchActiveUserAccount(
+    public SuccessResponse<UserResponseDto> switchActiveUserAccount(
             @RequestParam("userId") UUID userId) {
-        User user = userService.switchActiveUserAccount(userId);
+        UserResponseDto user = userService.switchActiveUserAccount(userId);
 
         if (user != null) {
-            return ResponseEntity.ok("User has been changed");
+            return new SuccessResponse<>(user, "User has been changed");
         } else {
             throw new NoSuchElementException("User not Found");
         }
