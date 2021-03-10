@@ -5,9 +5,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class UserAuthPrincipal implements UserDetails {
 
@@ -56,5 +58,23 @@ public class UserAuthPrincipal implements UserDetails {
         return user.getActive();
     }
 
+    public String getAvatar() {
+        return user.getAvatar();
+    }
 
+    public String getName() {
+        return user.getUserName();
+    }
+
+    public String getRole() {
+        return user.getRole();
+    }
+
+    public UUID getId() {
+        return user.getId();
+    }
+
+    public Instant getCreated() {
+        return user.getCreated();
+    }
 }

@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @PostMapping("update/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     public SuccessResponse<UserResponseDto> update(@RequestBody UserDto userDto, @PathVariable UUID id) {
         UserResponseDto userResponseDto = userService.updateUser(id, userDto);
 
@@ -76,10 +76,12 @@ public class UserController {
 
         UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        return ResponseEntity.ok(new LoginResponseDto(jwtToken, userDetails.getUsername(),
-                userDetails.getPassword(), roles));
+//        List<String> roles = userDetails.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        return ResponseEntity.ok(new LoginResponseDto(userDetails.getId(), userDetails.getAvatar(), userDetails.getName(),
+                userDetails.getUsername(), userDetails.getRole(),
+                userDetails.isEnabled(), userDetails.getCreated(), jwtToken));
+
     }
 
     @PostMapping("signup")
