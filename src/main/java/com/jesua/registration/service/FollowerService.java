@@ -1,10 +1,12 @@
 package com.jesua.registration.service;
 
 import com.jesua.registration.dto.FollowerDto;
+import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.event.FollowerCreatedEvent;
+import com.jesua.registration.mapper.FollowerMapper;
 import com.jesua.registration.message.Message;
 import com.jesua.registration.message.MessageBuilder;
 import com.jesua.registration.repository.FollowerRepository;
@@ -24,6 +26,7 @@ import static com.jesua.registration.util.AppUtil.generateToken;
 import static com.jesua.registration.util.AppUtil.instantToString;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Service
@@ -33,6 +36,7 @@ public class FollowerService {
     private final MessageBuilder messageBuilder;
     private final CourseService courseService;
     private final ApplicationEventPublisher eventPublisher;
+    private final FollowerMapper followerMapper;
 
     public List<Follower> getAllFollowersByEventId(int courseId) {
 
@@ -105,7 +109,7 @@ public class FollowerService {
     @Transactional
     public FollowerResponseDto addFollower(FollowerDto followerDto) {
 
-        Follower follower = mapFollowerFromDto(followerDto);
+        Follower follower = followerMapper.mapDtoToEntity(followerDto);
 
         //Get number of active followers before new subscriber
         List<Follower> allFollowersByEventId = getAllFollowersByEventId(followerDto.getEventId());
@@ -135,17 +139,6 @@ public class FollowerService {
         return followerResponseDto(savedFollower, responseMessage);
     }
 
-    private Follower mapFollowerFromDto(FollowerDto followerDto) {
-        Follower follower = new Follower();
-        follower.setName(followerDto.getName());
-        follower.setEmail(followerDto.getEmail());
-        follower.setToken(generateToken());
-        follower.setRegistered(Instant.now());
-        follower.setCourse(courseService.getCourse(followerDto.getEventId()));
-
-        return follower;
-    }
-
     private FollowerResponseDto followerResponseDto(Follower follower, String message) {
         FollowerResponseDto followerResponseDto = new FollowerResponseDto();
         followerResponseDto.setFollower(new FollowerResponseDto.FollowerResponse(follower.getId(), follower.isAccepted()));
@@ -153,8 +146,9 @@ public class FollowerService {
         return followerResponseDto;
     }
 
-    public List<Follower> getAllFollowers() {
-        return followerRepository.findAll();
+    public List<FollowerEntityResponseDto> getAllFollowers() {
+        return followerRepository.findAll().stream()
+                .map(followerMapper::mapEntityToDto).collect(toList());
     }
 
     public Map<Integer, Map<Boolean, Long>> getAllFollowersByActiveEvents() {

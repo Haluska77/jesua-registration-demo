@@ -1,6 +1,7 @@
 package com.jesua.registration.controller;
 
 import com.jesua.registration.dto.FollowerDto;
+import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.exception.SuccessResponse;
@@ -37,7 +38,7 @@ public class RegistrationController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("")
-    public List<Follower> getAllFollowers() {
+    public List<FollowerEntityResponseDto> getAllFollowers() {
 
         return followerService.getAllFollowers();
 
