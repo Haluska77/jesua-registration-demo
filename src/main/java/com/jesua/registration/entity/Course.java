@@ -31,4 +31,12 @@ public class Course {
 
     @NotNull
     private int capacity;
+
+    @Column(updatable = false)
+    private Instant created;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User user;
 }

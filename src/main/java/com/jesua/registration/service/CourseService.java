@@ -48,8 +48,8 @@ public class CourseService {
 
     public CourseResponseDto updateCourse(CourseDto courseDto, int id) {
 
-        Course course = courseMapper.mapDtoToEntity(courseDto);
-        course.setId(id);
+        Course savedCourse = courseRepository.getOne(id);
+        Course course = courseMapper.mapDtoToEntity(courseDto, savedCourse);
 
         Course save = courseRepository.save(course);
         return courseMapper.mapEntityToDto(save);

@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  valueComputed: uuid()
+                  value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
               - column:
                   name: user_name
                   value: "admin"
@@ -47,3 +47,10 @@ databaseChangeLog:
               - column:
                   name: capacity
                   value: 3
+              - column:
+                  name: created
+                  value: now()
+              - column:
+                  name: created_by
+                  value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
+

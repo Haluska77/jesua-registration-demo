@@ -2,6 +2,7 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +33,10 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmailAndActiveTrue(userName).orElseThrow(() -> new UsernameNotFoundException("User " + userName + " not found"));
 
         return new UserAuthPrincipal(user);
+    }
+
+    public User getUser(UUID id){
+        return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public List<UserResponseDto> getAllUsers() {

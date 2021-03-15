@@ -41,6 +41,16 @@ databaseChangeLog:
                   defaultValueBoolean: true
                   name: capacity
                   type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created
+                  type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created_by
+                  type: VARCHAR(36)
   - changeSet:
       id: create-table-follower
       author: SH
@@ -155,3 +165,19 @@ databaseChangeLog:
                 - column:
                     name: avatar
                     type: VARCHAR(50)
+
+  - changeSet:
+      id: fk_course__user_id
+      author: SH
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: created_by
+            baseTableName: course
+            constraintName: fk_course__user_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: jesua_user
+            validate: true
