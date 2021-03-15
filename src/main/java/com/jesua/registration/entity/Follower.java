@@ -51,4 +51,6 @@ public class Follower {
     @NotNull
     private boolean accepted;
 
+    @NotNull
+    private boolean gdpr;
 }

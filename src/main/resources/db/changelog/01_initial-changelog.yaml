@@ -96,6 +96,12 @@ databaseChangeLog:
                         nullable: true
                       name: unregistered
                       type: DATETIME
+                - column:
+                    constraints:
+                      nullable: false
+                    defaultValueBoolean: true
+                    name: gdpr
+                    type: BOOLEAN
   - changeSet:
       id: create-table-jesua-user
       author: SH
