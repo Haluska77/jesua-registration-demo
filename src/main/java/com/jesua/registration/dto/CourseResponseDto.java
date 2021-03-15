@@ -16,5 +16,5 @@ public class CourseResponseDto {
     private boolean open;
     private int capacity;
     private String created;
-    private User user;
+    private UserResponseDto user;
 }

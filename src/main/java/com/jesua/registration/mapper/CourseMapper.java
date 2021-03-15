@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static com.jesua.registration.util.AppUtil.stringToInstant;
 
-@Mapper(componentModel = "spring", imports = {Instant.class})
+@Mapper(componentModel = "spring", imports = {Instant.class}, uses = UserMapper.class)
 public abstract class CourseMapper {
 
     @Autowired
