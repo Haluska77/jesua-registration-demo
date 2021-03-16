@@ -2,6 +2,9 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.MessageBuilder;
+import com.jesua.registration.repository.CourseRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -9,41 +12,31 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-@Component
-public class JesuaListener implements ApplicationListener<ApplicationReadyEvent> {
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
-    private FollowerService followerService;
-    private CourseService courseService;
-    private EmailServiceImpl emailService;
-    private MessageBuilder messageBuilder;
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class JesuaListener {
+
+    private final FollowerService followerService;
+    private final CourseRepository courseRepository;
 
     @Value("${jesua.course.days.notification}")
     int notificationDays;
 
-    @Autowired
-    public JesuaListener(FollowerService followerService, CourseService courseService, EmailServiceImpl emailService, MessageBuilder messageBuilder) {
-        this.followerService = followerService;
-        this.courseService = courseService;
-        this.emailService = emailService;
-        this.messageBuilder = messageBuilder;
-    }
-
-    @Override
-    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-    }
-
-    @Scheduled(cron = "0 0 18 * * *") // run every day at 18:00
+    @Scheduled(cron = "${jesua.course.cron.expression}") // run every day at 8:00
+//    @Scheduled(cron = "*/10 * * * * *") // run every day at 18:00
     public void runCron() {
-//
-//        LocalDate eventStartDate = event.getStartDate()
-//                .atZone(ZoneId.systemDefault())
-//                .toLocalDate();
 
-//        if (eventStartDate.compareTo(LocalDate.now()) == notificationDays) { // 1 day before event send notification
-//            System.out.println("Send notification email");
-//            jesuaUserService.getActiveUsersByEventId(event)
-//                    .stream().limit(appConfig.getMax())
-//                    .forEach(cs -> emailService.sendMessage(jesuaMessageBuilder.buildNotificationMessage(cs)));
-//        }
+        Instant fromDate = Instant.now();
+        Instant toDate = LocalDate.ofInstant(fromDate, ZoneId.of("UTC"))
+                .plusDays(notificationDays).atStartOfDay().toInstant(ZoneOffset.UTC);
+
+        courseRepository.findByStartDateBetween(fromDate, toDate).forEach(followerService::sendNotificationEmail);
     }
 }

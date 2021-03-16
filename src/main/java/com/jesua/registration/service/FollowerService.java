@@ -7,13 +7,16 @@ import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.event.FollowerCreatedEvent;
 import com.jesua.registration.mapper.FollowerMapper;
+import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.Message;
 import com.jesua.registration.message.MessageBuilder;
 import com.jesua.registration.repository.FollowerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Comparator;
@@ -22,7 +25,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.jesua.registration.util.AppUtil.generateToken;
 import static com.jesua.registration.util.AppUtil.instantToString;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
@@ -30,6 +32,7 @@ import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class FollowerService {
 
     private final FollowerRepository followerRepository;
@@ -37,6 +40,7 @@ public class FollowerService {
     private final CourseService courseService;
     private final ApplicationEventPublisher eventPublisher;
     private final FollowerMapper followerMapper;
+    private final EmailServiceImpl emailService;
 
     public List<Follower> getAllFollowersByEventId(int courseId) {
 
@@ -160,6 +164,29 @@ public class FollowerService {
                                 counting())
                         )
                 );
+
+    }
+
+    void sendNotificationEmail(Course course) {
+
+        followerRepository.findByCourse(course).forEach(f-> {
+            try {
+                sendEmail(f, course);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void sendEmail(Follower follower, Course course) throws MessagingException {
+
+        Message emailMessage = messageBuilder.buildNotificationMessage(follower, course);
+
+        try{
+            emailService.sendMessage(emailMessage);
+        } catch (MessagingException e) {
+            throw new MessagingException(e.getMessage());
+        }
 
     }
 }

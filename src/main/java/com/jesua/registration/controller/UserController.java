@@ -2,9 +2,7 @@ package com.jesua.registration.controller;
 
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
-import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.SuccessResponse;
-import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
 import com.jesua.registration.security.jwt.JwtProvider;
@@ -16,14 +14,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -76,8 +78,6 @@ public class UserController {
 
         UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
 
-//        List<String> roles = userDetails.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
         return ResponseEntity.ok(new LoginResponseDto(userDetails.getId(), userDetails.getAvatar(), userDetails.getName(),
                 userDetails.getUsername(), userDetails.getRole(),
                 userDetails.isEnabled(), userDetails.getCreated(), jwtToken));

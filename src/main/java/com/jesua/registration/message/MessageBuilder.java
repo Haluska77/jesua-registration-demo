@@ -12,6 +12,7 @@ import static com.jesua.registration.util.AppUtil.instantToString;
 public class MessageBuilder {
 
     private static final String CHANGE_PASSWORD_URL = "/password/register/";
+    private static final String REGISTRATION_UNSUBSCRIBE_URL = "/registration/unsubscribe";
     private static final String EMAIL_SUBJECT = "Registrácia na kurz JEŠUA";
 
     @Value("${origin.url}")
@@ -68,8 +69,9 @@ public class MessageBuilder {
     }
 
     private String getMessageFooter(Follower follower) {
-        String url = originUrl +"/registration/unsubscribe";
-        String MESSAGE_FOOTER = "<br><br>V prípade, že sa nebude môcť zúčastniť, prosím odhláste sa na tomto <b><a href=\"%s?token=%s&event=%s\">linku</a></b>";
+        String url = originUrl + REGISTRATION_UNSUBSCRIBE_URL;
+        String MESSAGE_FOOTER = "<br><br>V prípade, že sa nebudeš môcť zúčastniť, prosím odhlás sa kliknutím na tento <b><a href=\"%s?token=%s&event=%s\">link</a></b><Br>" +
+                "Uvoľníš tým miesto inému záujemcovi.<Br><br>Ďakujeme<br>Tím JEŠUA";
         return String.format(MESSAGE_FOOTER, url, follower.getToken(), follower.getCourse().getId());
 
     }
