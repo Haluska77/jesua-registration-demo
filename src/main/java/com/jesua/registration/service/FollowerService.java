@@ -169,7 +169,9 @@ public class FollowerService {
 
     void sendNotificationEmail(Course course) {
 
-        followerRepository.findByCourse(course).forEach(f-> {
+        followerRepository.findByCourse(course).stream()
+                .filter(Follower::isAccepted)
+                .forEach(f-> {
             try {
                 sendEmail(f, course);
             } catch (MessagingException e) {
