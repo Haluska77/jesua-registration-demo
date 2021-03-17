@@ -17,7 +17,7 @@ import java.time.Instant;
 
 import static com.jesua.registration.util.AppUtil.generateToken;
 
-@Mapper(componentModel = "spring", imports = {Instant.class})
+@Mapper(componentModel = "spring", imports = {Instant.class}, uses = CourseMapper.class)
 @Component
 public abstract class FollowerMapper {
 

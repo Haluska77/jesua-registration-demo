@@ -44,5 +44,6 @@ public abstract class CourseMapper {
         return userService.getUser(userId);
     }
 
+    @Mapping(source = "user", target = "createdBy")
     public abstract CourseResponseDto mapEntityToDto(Course course);
 }

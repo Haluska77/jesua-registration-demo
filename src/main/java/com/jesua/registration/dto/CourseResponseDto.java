@@ -1,10 +1,7 @@
 package com.jesua.registration.dto;
 
-import com.jesua.registration.entity.User;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.Instant;
 
 @Getter
 @Setter
@@ -16,5 +13,5 @@ public class CourseResponseDto {
     private boolean open;
     private int capacity;
     private String created;
-    private UserResponseDto user;
+    private UserResponseDto createdBy;
 }
