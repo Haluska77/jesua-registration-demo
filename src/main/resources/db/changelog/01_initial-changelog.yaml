@@ -176,8 +176,23 @@ databaseChangeLog:
             constraintName: fk_course__user_id
             deferrable: false
             initiallyDeferred: false
-            onDelete: CASCADE
+            onDelete: RESTRICT
             onUpdate: RESTRICT
             referencedColumnNames: id
             referencedTableName: jesua_user
+            validate: true
+  - changeSet:
+      id: fk_follower__course_id
+      author: SH
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: course_id
+            baseTableName: follower
+            constraintName: fk_follower__course_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: course
             validate: true

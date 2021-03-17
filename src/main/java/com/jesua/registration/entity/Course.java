@@ -36,7 +36,7 @@ public class Course {
     private Instant created;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User user;
 }
