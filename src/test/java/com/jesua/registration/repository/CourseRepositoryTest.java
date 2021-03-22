@@ -24,9 +24,6 @@ import static org.assertj.core.api.Assertions.within;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CourseRepositoryTest {
 
-//    @Autowired
-//    protected TestEntityManager entityManager;
-
     @Autowired
     private CourseRepository courseRepository;
 

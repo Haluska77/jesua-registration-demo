@@ -10,16 +10,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourse;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDto;
+import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,23 +34,43 @@ public class CourseServiceTest {
     @InjectMocks
     CourseService courseService;
 
-    private Course course;
-
     @Test
-    void getCourse() {
-//        when(courseRepository.findById()).thenReturn();
-    }
+    void getCoursesTest() {
+        Course course1 = buildCourse();
+        List<Course> courses = List.of(course1);
+        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+        when(courseRepository.findAll()).thenReturn(courses);
+        when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
-    @Test
-    void getCourses() {
+        List<CourseResponseDto> actualResponseDto = courseService.getCourses();
+
+        verify(courseRepository).findAll();
+        verify(courseMapper).mapEntityToDto(course1);
+
+        assertThat(actualResponseDto.get(0)).isNotNull();
+        assertThat(actualResponseDto.get(0)).usingRecursiveComparison().isEqualTo(courseResponseDto);
     }
 
     @Test
     void getActiveCourses() {
+        Course course1 = buildCourse();
+        List<Course> courses = List.of(course1);
+        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+        when(courseRepository.findByOpenTrue()).thenReturn(courses);
+        when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
+
+        List<CourseResponseDto> actualResponseDto = courseService.getActiveCourses();
+
+        verify(courseRepository).findByOpenTrue();
+        verify(courseMapper).mapEntityToDto(course1);
+
+        assertThat(actualResponseDto.get(0)).isNotNull();
+        assertThat(actualResponseDto.get(0)).usingRecursiveComparison().isEqualTo(courseResponseDto);
+
     }
 
     @Test
-    void addCourse() {
+    void addCourseTest() {
 
         CourseDto courseDto = buildCourseDto();
         Course courseEntity = buildCourse();
@@ -75,5 +94,25 @@ public class CourseServiceTest {
 
     @Test
     void updateCourse() {
+        CourseDto courseDto = buildCourseDto();
+        Course courseEntity = buildCourse();
+        Course savedCourseEntity = buildSavedCourse();
+        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+
+        when(courseRepository.getOne(1)).thenReturn(savedCourseEntity);
+        when(courseMapper.mapDtoToEntity(courseDto, savedCourseEntity)).thenReturn(courseEntity);
+        when(courseRepository.save(any())).thenReturn(courseEntity);
+        when(courseMapper.mapEntityToDto(courseEntity)).thenReturn(courseResponseDto);
+
+        CourseResponseDto actualResponseDto = courseService.updateCourse(courseDto, 1);
+
+        verify(courseRepository).getOne(1);
+        verify(courseMapper).mapDtoToEntity(courseDto, savedCourseEntity);
+        verify(courseRepository).save(courseEntity);
+        verify(courseMapper).mapEntityToDto(courseEntity);
+
+        assertThat(actualResponseDto).isNotNull();
+        assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(courseResponseDto);
+
     }
 }
