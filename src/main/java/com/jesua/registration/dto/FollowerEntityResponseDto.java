@@ -16,5 +16,5 @@ public class FollowerEntityResponseDto {
     private Instant unregistered;
     private boolean accepted;
     private boolean gdpr;
-
+    private String deviceDetail;
 }

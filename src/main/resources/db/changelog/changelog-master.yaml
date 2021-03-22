@@ -1,7 +1,7 @@
 databaseChangeLog:
   - include:
       file: db/changelog/01_initial-changelog.yaml
-  - include:
-      file: db/changelog/02_initial-entry-data.yaml
+#  - include:
+#      file: db/changelog/02_initial-entry-data.yaml
   - include:
       file: db/changelog/03_password-token-changelog.yaml

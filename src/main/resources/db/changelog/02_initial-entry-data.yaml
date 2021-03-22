@@ -24,6 +24,9 @@ databaseChangeLog:
               - column:
                   name: created
                   value: now()
+              - column:
+                  name: avatar
+                  value: "038-concierge.svg"
   - changeSet:
       id: default-course-item
       author: SH

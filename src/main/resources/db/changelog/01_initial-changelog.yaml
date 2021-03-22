@@ -112,6 +112,9 @@ databaseChangeLog:
                     defaultValueBoolean: true
                     name: gdpr
                     type: BOOLEAN
+                - column:
+                    name: device_detail
+                    type: VARCHAR(250)
   - changeSet:
       id: create-table-jesua-user
       author: SH

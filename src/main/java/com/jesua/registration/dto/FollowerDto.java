@@ -10,5 +10,5 @@ public class FollowerDto {
     private String email;
     private int eventId;
     private boolean gdpr;
-
+    private String deviceDetail;
 }
