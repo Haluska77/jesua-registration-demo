@@ -21,13 +21,10 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.jesua.registration.util.AppUtil.instantToString;
-import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
@@ -153,18 +150,6 @@ public class FollowerService {
     public List<FollowerEntityResponseDto> getAllFollowers() {
         return followerRepository.findAll().stream()
                 .map(followerMapper::mapEntityToDto).collect(toList());
-    }
-
-    public Map<Integer, Map<Boolean, Long>> getAllFollowersByActiveEvents() {
-        List<Follower> followerByOpenEvent = followerRepository.findFollowerByOpenEvent();
-
-        return followerByOpenEvent.stream().filter(m->m.getUnregistered()==null)
-                .collect(groupingBy(f-> f.getCourse().getId(),
-                        groupingBy(Follower::isAccepted,
-                                counting())
-                        )
-                );
-
     }
 
     void sendNotificationEmail(Course course) {

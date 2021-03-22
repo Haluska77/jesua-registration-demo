@@ -3,15 +3,18 @@ package com.jesua.registration.controller;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
-import com.jesua.registration.entity.Follower;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.FollowerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -41,14 +44,6 @@ public class RegistrationController {
     public List<FollowerEntityResponseDto> getAllFollowers() {
 
         return followerService.getAllFollowers();
-
-    }
-
-    @GetMapping("allFollowersByActiveEvents")
-    public Map<Integer, Map<Boolean, Long>> getFollowersByActiveEvent() {
-
-        //get all registered for event
-        return followerService.getAllFollowersByActiveEvents();
 
     }
 
