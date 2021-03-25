@@ -51,7 +51,7 @@ public class FollowerService {
         return followerRepository.save(follower);
     }
 
-    public Follower acceptFollower(Follower follower, Course course) {
+    public Follower acceptFollower(Follower follower) {
 
         follower.setAccepted(true);
         return followerRepository.save(follower);
@@ -74,17 +74,15 @@ public class FollowerService {
                 .findFirst()
                 .map(currentFollower -> {
                             if (currentFollower.getUnregistered() == null) {
-
                                 if (currentFollower.isAccepted()) {
                                     //accept waiting follower and send email to confirm acceptance
                                     getFirstWaitingFollower(allFollowersByEventId)
                                             .ifPresent(waitingFollower -> {
-                                                        acceptFollower(waitingFollower, event);
+                                                        acceptFollower(waitingFollower);
                                                         eventPublisher.publishEvent(new FollowerCreatedEvent(waitingFollower,
                                                                 messageBuilder.buildSubstituteMessage(waitingFollower, event)));
                                                     }
                                             );
-
                                 }
 
                                 //unsubscribe current user
@@ -100,7 +98,7 @@ public class FollowerService {
 
     }
 
-    private Optional<Follower> getFirstWaitingFollower(List<Follower> allUsersByEventId) {
+    public Optional<Follower> getFirstWaitingFollower(List<Follower> allUsersByEventId) {
         return allUsersByEventId.stream()
                 .sorted(Comparator.comparing(Follower::getRegistered))
                 .filter(d -> !d.isAccepted() && d.getUnregistered() == null)
@@ -156,20 +154,20 @@ public class FollowerService {
 
         followerRepository.findByCourse(course).stream()
                 .filter(Follower::isAccepted)
-                .forEach(f-> {
-            try {
-                sendEmail(f, course);
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-        });
+                .forEach(f -> {
+                    try {
+                        sendEmail(f, course);
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public void sendEmail(Follower follower, Course course) throws MessagingException {
 
         Message emailMessage = messageBuilder.buildNotificationMessage(follower, course);
 
-        try{
+        try {
             emailService.sendMessage(emailMessage);
         } catch (MessagingException e) {
             throw new MessagingException(e.getMessage());

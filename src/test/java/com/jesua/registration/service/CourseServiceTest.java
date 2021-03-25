@@ -12,10 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.UUID;
 
-import static com.jesua.registration.builder.CourseBuilder.buildCourse;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDto;
+import static com.jesua.registration.builder.CourseBuilder.buildMappedCourse;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
 
+    private static final UUID USER_ID = UUID.randomUUID();
     @Mock
     CourseRepository courseRepository;
 
@@ -36,9 +38,10 @@ public class CourseServiceTest {
 
     @Test
     void getCoursesTest() {
-        Course course1 = buildCourse();
+        Course course1 = buildSavedCourse(1, USER_ID,  20);
         List<Course> courses = List.of(course1);
-        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+        CourseResponseDto courseResponseDto = buildCourseResponseDto(course1);
+
         when(courseRepository.findAll()).thenReturn(courses);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
@@ -52,10 +55,11 @@ public class CourseServiceTest {
     }
 
     @Test
-    void getActiveCourses() {
-        Course course1 = buildCourse();
+    void getActiveCoursesTest() {
+        Course course1 = buildSavedCourse(1, USER_ID, 80);
         List<Course> courses = List.of(course1);
-        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+        CourseResponseDto courseResponseDto = buildCourseResponseDto(course1);
+
         when(courseRepository.findByOpenTrue()).thenReturn(courses);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
@@ -73,43 +77,43 @@ public class CourseServiceTest {
     void addCourseTest() {
 
         CourseDto courseDto = buildCourseDto();
-        Course courseEntity = buildCourse();
-        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+        Course courseEntity = buildMappedCourse(courseDto);
+        CourseResponseDto courseResponseDto = buildCourseResponseDto(courseEntity);
 
         when(courseMapper.mapDtoToEntity(courseDto)).thenReturn(courseEntity);
         when(courseRepository.save(any())).thenReturn(courseEntity);
         when(courseMapper.mapEntityToDto(courseEntity)).thenReturn(courseResponseDto);
 
         //run code
-        CourseResponseDto actualResponseDto = courseService.addCourse(courseDto);
+        CourseResponseDto courseResponseDto1 = courseService.addCourse(courseDto);
 
         //test
         verify(courseMapper).mapDtoToEntity(courseDto);
         verify(courseRepository).save(courseEntity);
         verify(courseMapper).mapEntityToDto(courseEntity);
 
-        assertThat(actualResponseDto).isNotNull();
-        assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(courseResponseDto);
+        assertThat(courseResponseDto1).isNotNull();
+        assertThat(courseResponseDto1).usingRecursiveComparison().isEqualTo(courseResponseDto);
     }
 
     @Test
-    void updateCourse() {
+    void updateCourseTest() {
         CourseDto courseDto = buildCourseDto();
-        Course courseEntity = buildCourse();
-        Course savedCourseEntity = buildSavedCourse();
-        CourseResponseDto courseResponseDto = buildCourseResponseDto();
+        Course savedCourse = buildSavedCourse(1, USER_ID, 50);
+        Course updatedCourse = buildMappedCourse(courseDto, savedCourse);
+        CourseResponseDto courseResponseDto = buildCourseResponseDto(updatedCourse);
 
-        when(courseRepository.getOne(1)).thenReturn(savedCourseEntity);
-        when(courseMapper.mapDtoToEntity(courseDto, savedCourseEntity)).thenReturn(courseEntity);
-        when(courseRepository.save(any())).thenReturn(courseEntity);
-        when(courseMapper.mapEntityToDto(courseEntity)).thenReturn(courseResponseDto);
+        when(courseRepository.getOne(any())).thenReturn(savedCourse);
+        when(courseMapper.mapDtoToEntity(courseDto, savedCourse)).thenReturn(updatedCourse);
+        when(courseRepository.save(any())).thenReturn(updatedCourse);
+        when(courseMapper.mapEntityToDto(updatedCourse)).thenReturn(courseResponseDto);
 
         CourseResponseDto actualResponseDto = courseService.updateCourse(courseDto, 1);
 
         verify(courseRepository).getOne(1);
-        verify(courseMapper).mapDtoToEntity(courseDto, savedCourseEntity);
-        verify(courseRepository).save(courseEntity);
-        verify(courseMapper).mapEntityToDto(courseEntity);
+        verify(courseMapper).mapDtoToEntity(courseDto, savedCourse);
+        verify(courseRepository).save(updatedCourse);
+        verify(courseMapper).mapEntityToDto(updatedCourse);
 
         assertThat(actualResponseDto).isNotNull();
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(courseResponseDto);

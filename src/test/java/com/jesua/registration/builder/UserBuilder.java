@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public class UserBuilder {
 
-    public static User buildUser(){
+    public static User buildUser(UUID id){
         User user = new User();
-//        user.setId(UUID.randomUUID());
+        user.setId(id);
         user.setEmail("test@test.com");
         user.setUserName("name");
         user.setAvatar("avatar.svg");
@@ -22,14 +22,16 @@ public class UserBuilder {
         return user;
     }
 
-    public static UserResponseDto buildUserResponseDto(){
+    // output user submitted to UI
+    public static UserResponseDto buildUserResponseDto(User user){
         UserResponseDto userResponseDto = new UserResponseDto();
-        userResponseDto.setEmail("test@test.com");
-        userResponseDto.setName("name");
-        userResponseDto.setAvatar("avatar.svg");
-        userResponseDto.setRole("ROLE_ADMIN");
-        userResponseDto.setActive(true);
-        userResponseDto.setCreated(Instant.now());
+        userResponseDto.setId(user.getId());
+        userResponseDto.setEmail(user.getEmail());
+        userResponseDto.setName(user.getUserName());
+        userResponseDto.setAvatar(user.getAvatar());
+        userResponseDto.setRole(user.getRole());
+        userResponseDto.setActive(user.getActive());
+        userResponseDto.setCreated(user.getCreated());
 
         return userResponseDto;
     }

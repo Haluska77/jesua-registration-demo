@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
-import static com.jesua.registration.builder.CourseBuilder.buildCourse;
+import static com.jesua.registration.builder.CourseBuilder.buildCustomCourse;
 import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.within;
 @DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CourseRepositoryTest {
+
+    private static final UUID ID = UUID.randomUUID();
 
     @Autowired
     private CourseRepository courseRepository;
@@ -36,17 +38,16 @@ public class CourseRepositoryTest {
 
     @BeforeAll
     public void setUp(){
-        savedUser = userRepository.save(buildUser());
-        openCourse = buildCourse(true, 5, savedUser);
+        savedUser = userRepository.save(buildUser(ID));
+        openCourse = buildCustomCourse(true, 5, savedUser);
         courseRepository.save(openCourse);
 
-        closeCourse = buildCourse(false, 1, savedUser);
+        closeCourse = buildCustomCourse(false, 1, savedUser);
         courseRepository.save(closeCourse);
 
     }
 
     @Test
-    @Transactional
     void findById() {
         Course actualCourse = courseRepository.findById(openCourse.getId());
 

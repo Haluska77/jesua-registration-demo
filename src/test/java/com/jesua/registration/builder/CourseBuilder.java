@@ -11,41 +11,54 @@ import java.util.UUID;
 
 import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDto;
+import static com.jesua.registration.util.AppUtil.stringToInstant;
 
 public class CourseBuilder {
 
-    public static Course buildCourse(){
+    public static Course buildMappedCourse(CourseDto courseDto){
 
         Course course = new Course();
-        course.setDescription("desc");
-        course.setStartDate(Instant.now());
-        course.setCapacity(100);
-        course.setOpen(true);
-        course.setUser(buildUser());
+        course.setDescription(courseDto.getDescription());
+        course.setStartDate(stringToInstant(courseDto.getStartDate()));
+        course.setCapacity(courseDto.getCapacity());
+        course.setOpen(courseDto.isOpen());
+        course.setUser(buildUser(courseDto.getUserId()));
         course.setCreated(Instant.now());
 
         return course;
     }
 
-    public static Course buildSavedCourse(){
+    public static Course buildMappedCourse(CourseDto courseDto, Course course){
 
-        Course course = new Course();
-        course.setId(1);
-        course.setDescription("desc");
-        course.setStartDate(Instant.now());
-        course.setCapacity(100);
-        course.setOpen(true);
-        course.setUser(buildUser());
+        course.setDescription(courseDto.getDescription());
+        course.setStartDate(stringToInstant(courseDto.getStartDate()));
+        course.setCapacity(courseDto.getCapacity());
+        course.setOpen(courseDto.isOpen());
+        course.setUser(buildUser(courseDto.getUserId()));
         course.setCreated(Instant.now());
 
         return course;
     }
 
-    public static Course buildCourse(boolean open, long delay, User user){
+    public static Course buildSavedCourse(int id, UUID userId, int capacity){
+
+        Course course = new Course();
+        course.setId(id);
+        course.setDescription("saved description");
+        course.setStartDate(Instant.now());
+        course.setCapacity(capacity);
+        course.setOpen(true);
+        course.setUser(buildUser(userId));
+        course.setCreated(Instant.now());
+
+        return course;
+    }
+
+    public static Course buildCustomCourse(boolean open, long startDateDelay, User user){
 
         Course course = new Course();
         course.setDescription("Test description");
-        course.setStartDate(Instant.now().plus(Duration.ofDays(delay)));
+        course.setStartDate(Instant.now().plus(Duration.ofDays(startDateDelay)));
         course.setCapacity(1000);
         course.setOpen(open);
         course.setUser(user);
@@ -54,11 +67,12 @@ public class CourseBuilder {
         return course;
     }
 
+    // input course dto from UI
     public static CourseDto buildCourseDto(){
 
         CourseDto courseDto = new CourseDto();
         courseDto.setDescription("desc");
-        courseDto.setStartDate(Instant.now().toString());
+        courseDto.setStartDate("2021-05-01T15:00");
         courseDto.setCapacity(100);
         courseDto.setOpen(true);
         courseDto.setUserId(UUID.fromString("df46e040-a233-4333-8310-3bc83feb1cb3"));
@@ -66,15 +80,17 @@ public class CourseBuilder {
         return courseDto;
     }
 
-    public static CourseResponseDto buildCourseResponseDto(){
+    // output course submitted to UI
+    public static CourseResponseDto buildCourseResponseDto(Course course){
 
         CourseResponseDto courseResponseDto = new CourseResponseDto();
-        courseResponseDto.setDescription("desc");
-        courseResponseDto.setStartDate(Instant.now().toString());
-        courseResponseDto.setCapacity(100);
-        courseResponseDto.setOpen(true);
-        courseResponseDto.setCreatedBy(buildUserResponseDto());
-        courseResponseDto.setCreated(Instant.now().toString());
+        courseResponseDto.setId(course.getId());
+        courseResponseDto.setDescription(course.getDescription());
+        courseResponseDto.setStartDate(course.getStartDate().toString());
+        courseResponseDto.setCapacity(course.getCapacity());
+        courseResponseDto.setOpen(course.getOpen());
+        courseResponseDto.setCreatedBy(buildUserResponseDto(course.getUser()));
+        courseResponseDto.setCreated(course.getCreated().toString());
 
         return courseResponseDto;
     }
