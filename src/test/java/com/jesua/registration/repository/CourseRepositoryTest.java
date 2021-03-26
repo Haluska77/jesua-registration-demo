@@ -3,6 +3,7 @@ package com.jesua.registration.repository;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.User;
 import org.hibernate.Hibernate;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -38,13 +39,21 @@ public class CourseRepositoryTest {
 
     @BeforeAll
     public void setUp(){
-        savedUser = userRepository.save(buildUser(ID));
+        User initialUser = buildUser(ID);
+        savedUser = userRepository.save(initialUser);
         openCourse = buildCustomCourse(true, 5, savedUser);
         courseRepository.save(openCourse);
 
         closeCourse = buildCustomCourse(false, 1, savedUser);
         courseRepository.save(closeCourse);
 
+    }
+
+    @AfterAll
+    public void tearDown(){
+        courseRepository.delete(openCourse);
+        courseRepository.delete(closeCourse);
+        userRepository.delete(savedUser);
     }
 
     @Test

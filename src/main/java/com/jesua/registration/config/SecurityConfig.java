@@ -82,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/password/userAccount/**", "/password/validateToken/**", "/password/changePassword", "/users/signin", "/events/activeEventList", "/registration/allFollowersByActiveEvents", "/registration/add", "/registration/unsubscribe/**").permitAll()
+                .antMatchers("/", "/h2-console", "/password/userAccount/**", "/password/validateToken/**", "/password/changePassword", "/users/signin", "/events/activeEventList", "/registration/allFollowersByActiveEvents", "/registration/add", "/registration/unsubscribe/**").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

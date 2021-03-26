@@ -3,6 +3,7 @@ package com.jesua.registration.repository;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.PasswordToken;
 import com.jesua.registration.entity.User;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -52,6 +53,13 @@ class UserRepositoryTest {
         userDto2.setActive(false);
         user2 = buildUserFromDto(userDto2);
         userRepository.save(user2);
+    }
+
+    @AfterAll
+    public void tearDown(){
+        passwordTokenRepository.delete(passwordToken);
+        userRepository.delete(user1);
+        userRepository.delete(user2);
     }
 
     @Test
