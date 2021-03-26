@@ -19,7 +19,8 @@ public class CourseService {
     private final CourseMapper courseMapper;
 
     public Course getCourse(int id){
-        return courseRepository.findById(id);
+        return courseRepository.findById(id)
+                .orElse(null);
     }
 
     public List<CourseResponseDto> getCourses(){

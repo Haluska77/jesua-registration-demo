@@ -1,5 +1,6 @@
 package com.jesua.registration.service;
 
+import com.jesua.registration.builder.CourseBuilder;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.CourseResponseDto;
 import com.jesua.registration.entity.Course;
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
+import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDto;
-import static com.jesua.registration.builder.CourseBuilder.buildMappedCourse;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,7 +78,7 @@ public class CourseServiceTest {
     void addCourseTest() {
 
         CourseDto courseDto = buildCourseDto();
-        Course courseEntity = buildMappedCourse(courseDto);
+        Course courseEntity = CourseBuilder.buildCourseFromDto(courseDto);
         CourseResponseDto courseResponseDto = buildCourseResponseDto(courseEntity);
 
         when(courseMapper.mapDtoToEntity(courseDto)).thenReturn(courseEntity);
@@ -100,7 +101,7 @@ public class CourseServiceTest {
     void updateCourseTest() {
         CourseDto courseDto = buildCourseDto();
         Course savedCourse = buildSavedCourse(1, USER_ID, 50);
-        Course updatedCourse = buildMappedCourse(courseDto, savedCourse);
+        Course updatedCourse = buildCourseFromDto(courseDto, savedCourse);
         CourseResponseDto courseResponseDto = buildCourseResponseDto(updatedCourse);
 
         when(courseRepository.getOne(any())).thenReturn(savedCourse);

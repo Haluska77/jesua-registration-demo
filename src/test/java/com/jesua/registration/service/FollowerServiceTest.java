@@ -45,10 +45,13 @@ class FollowerServiceTest {
     private static final UUID USER_ID = UUID.randomUUID();
     public static final String TOKEN = "sdfsd521d3ASDF54d32df156DF3";
     public static final String NOT_FOUND_TOKEN = "sF5t61dG63ASDF54d32df156DF3";
+
     @Mock
     MessageBuilder messageBuilder;
+
     @Mock
     ApplicationEventPublisher eventPublisher;
+
     @InjectMocks
     EmailServiceImpl emailService;
 

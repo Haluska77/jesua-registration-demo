@@ -2,7 +2,6 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
-import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.repository.UserRepository;
@@ -15,10 +14,9 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +28,13 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmailAndActiveTrue(userName).orElseThrow(() -> new UsernameNotFoundException("User " + userName + " not found"));
+        User user = userRepository.findByEmailAndActiveTrue(userName)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + userName + " not found"));
 
         return new UserAuthPrincipal(user);
     }
 
-    public User getUser(UUID id){
+    public User getUser(UUID id) {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
@@ -47,13 +46,15 @@ public class UserService implements UserDetailsService {
     public UserResponseDto switchActiveUserAccount(UUID userId) {
 
         return userRepository.findById(userId)
-                .map(
-                        u -> {
-                            u.setActive(u.getActive() == Boolean.TRUE ? Boolean.FALSE : Boolean.TRUE);
-                            userRepository.save(u);
-                            return userMapper.mapEntityToDto(u);
-                        }).orElse(null);
+                .map(this::getUserResponseDto)
+                .orElseThrow(() -> new NoSuchElementException("User not Found!"));
 
+    }
+
+    private UserResponseDto getUserResponseDto(User u) {
+        u.setActive(!u.getActive());
+        userRepository.save(u);
+        return userMapper.mapEntityToDto(u);
     }
 
     public UserResponseDto createUser(UserDto userDto) {

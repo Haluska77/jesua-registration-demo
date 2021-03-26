@@ -15,7 +15,7 @@ import static com.jesua.registration.util.AppUtil.stringToInstant;
 
 public class CourseBuilder {
 
-    public static Course buildMappedCourse(CourseDto courseDto){
+    public static Course buildCourseFromDto(CourseDto courseDto){
 
         Course course = new Course();
         course.setDescription(courseDto.getDescription());
@@ -28,7 +28,7 @@ public class CourseBuilder {
         return course;
     }
 
-    public static Course buildMappedCourse(CourseDto courseDto, Course course){
+    public static Course buildCourseFromDto(CourseDto courseDto, Course course){
 
         course.setDescription(courseDto.getDescription());
         course.setStartDate(stringToInstant(courseDto.getStartDate()));

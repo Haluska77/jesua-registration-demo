@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -56,12 +55,7 @@ public class UserController {
             @RequestParam("userId") UUID userId) {
         UserResponseDto user = userService.switchActiveUserAccount(userId);
 
-        if (user != null) {
-            return new SuccessResponse<>(user, "User has been changed");
-        } else {
-            throw new NoSuchElementException("User not Found");
-        }
-
+        return new SuccessResponse<>(user, "User has been changed");
     }
 
     @PostMapping("signin")

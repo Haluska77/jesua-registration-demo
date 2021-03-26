@@ -48,8 +48,8 @@ public class CourseRepositoryTest {
     }
 
     @Test
-    void findById() {
-        Course actualCourse = courseRepository.findById(openCourse.getId());
+    void findByIdTest() {
+        Course actualCourse = courseRepository.findById(openCourse.getId()).orElse(null);
 
         assertThat(actualCourse).usingRecursiveComparison().ignoringFields("created", "startDate", "user").isEqualTo(openCourse);
         assertThat(actualCourse.getCreated()).isCloseTo(openCourse.getCreated(), within(1, ChronoUnit.SECONDS));
@@ -61,7 +61,7 @@ public class CourseRepositoryTest {
     }
 
     @Test
-    void findByOpenTrue() {
+    void findByOpenTrueTest() {
         List<Course> actualCourseList = courseRepository.findByOpenTrue();
 
         assertThat(actualCourseList.size()).isEqualTo(1);
@@ -71,7 +71,7 @@ public class CourseRepositoryTest {
     }
 
     @Test
-    void findByStartDateBetween() {
+    void findByStartDateBetweenTest() {
         List<Course> byStartDateBetween = courseRepository.findByStartDateBetween(Instant.now(), Instant.now().plus(Duration.ofDays(3)));
         assertThat(byStartDateBetween.size()).isEqualTo(1);
         assertThat(byStartDateBetween.get(0)).usingRecursiveComparison().ignoringFields("created", "startDate", "user").isEqualTo(closeCourse);
