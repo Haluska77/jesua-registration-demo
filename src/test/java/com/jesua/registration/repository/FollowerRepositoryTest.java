@@ -1,5 +1,6 @@
 package com.jesua.registration.repository;
 
+import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.User;
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCustomCourse;
-import static com.jesua.registration.builder.FollowerBuilder.buildFollowerByCourse;
+import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
+import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -47,13 +49,17 @@ class FollowerRepositoryTest {
         course1 = buildCustomCourse(true, 5, savedUser);
         course2 = buildCustomCourse(false, 10, savedUser);
 
-        Course savedCourse1 = courseRepository.save(course1);
-        Course savedCourse2 = courseRepository.save(course2);
+        courseRepository.save(course1);
+        courseRepository.save(course2);
 
-        savedFollower1 = buildFollowerByCourse(savedCourse1);
+        FollowerDto followerDto = buildFollowerDto(1);
+
+        savedFollower1 = buildFollowerFromDto(followerDto, course1);
+        savedFollower1.setAccepted(true);
         followerRepository.save(savedFollower1);
 
-        savedFollower2 = buildFollowerByCourse(savedCourse2);
+        savedFollower2 = buildFollowerFromDto(followerDto, course2);
+        savedFollower2.setAccepted(true);
         followerRepository.save(savedFollower2);
     }
 

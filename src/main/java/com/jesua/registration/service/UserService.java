@@ -73,9 +73,9 @@ public class UserService implements UserDetailsService {
         User origUser = userRepository.getOne(id);
         User user = userMapper.mapDtoToEntity(userDto, origUser);
 
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
-        return userMapper.mapEntityToDto(savedUser);
+        return userMapper.mapEntityToDto(user);
 
     }
 }

@@ -51,6 +51,8 @@ class UserServiceTest {
 
         UserDetails userDetails = userService.loadUserByUsername(user.getEmail());
 
+        verify(userRepository).findByEmailAndActiveTrue(user.getEmail());
+
         assertThat(userDetails).usingRecursiveComparison().isEqualTo(expectedUserDetails);
     }
 
@@ -144,5 +146,28 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.createUser(userDto))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Email is already registered!");
+    }
+
+
+    @Test
+    void updateUserTest() {
+        User user1 = buildUser(MY_ID);
+        UserDto userDto = buildUserDto();
+        userDto.setRole("ROLE_MODERATOR");
+        userDto.setActive(false);
+        User expectedUser = buildUserFromDto(userDto);
+        UserResponseDto userResponseDto = buildUserResponseDto(expectedUser);
+
+        doReturn(user1).when(userRepository).getOne(MY_ID);
+        doReturn(expectedUser).when(userMapper).mapDtoToEntity(userDto, user1);
+        doReturn(userResponseDto).when(userMapper).mapEntityToDto(expectedUser);
+
+        UserResponseDto actualUserResponse = userService.updateUser(MY_ID, userDto);
+
+        verify(userRepository).getOne(MY_ID);
+        verify(userMapper).mapDtoToEntity(userDto, user1);
+        verify(userMapper).mapEntityToDto(expectedUser);
+
+        assertThat(actualUserResponse).usingRecursiveComparison().isEqualTo(userResponseDto);
     }
 }

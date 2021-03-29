@@ -68,20 +68,20 @@ public class CourseBuilder {
     }
 
     // input course dto from UI
-    public static CourseDto buildCourseDto(){
+    public static CourseDto buildCourseDto(UUID userId){
 
         CourseDto courseDto = new CourseDto();
         courseDto.setDescription("desc");
         courseDto.setStartDate("2021-05-01T15:00");
         courseDto.setCapacity(100);
         courseDto.setOpen(true);
-        courseDto.setUserId(UUID.fromString("df46e040-a233-4333-8310-3bc83feb1cb3"));
+        courseDto.setUserId(userId);
 
         return courseDto;
     }
 
     // output course submitted to UI
-    public static CourseResponseDto buildCourseResponseDto(Course course){
+    public static CourseResponseDto buildCourseResponseDtoFromEntity(Course course){
 
         CourseResponseDto courseResponseDto = new CourseResponseDto();
         courseResponseDto.setId(course.getId());

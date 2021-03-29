@@ -3,22 +3,28 @@ package com.jesua.registration.builder;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.entity.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public class UserBuilder {
 
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String AVATAR = "avatar.svg";
+    public static final String EMAIL = "admin@admin.com";
+    public static final String NAME = "admin";
+
     public static User buildUser(UUID id) {
         User user = new User();
         user.setId(id);
-        user.setEmail("test@test.com");
-        user.setUserName("name");
-        user.setAvatar("avatar.svg");
-        user.setRole("ROLE_ADMIN");
+        user.setUserName(NAME);
+        user.setEmail(EMAIL);
+        user.setPassword("$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm");
+        user.setRole(ROLE_ADMIN);
         user.setActive(true);
         user.setCreated(Instant.now());
-        user.setPassword("$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm");
+        user.setAvatar(AVATAR);
 
         return user;
     }
@@ -32,7 +38,7 @@ public class UserBuilder {
         user.setRole(userDto.getRole());
         user.setActive(userDto.getActive());
         user.setCreated(Instant.now());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(new BCryptPasswordEncoder(10).encode(userDto.getPassword()));
 
         return user;
     }
@@ -41,12 +47,12 @@ public class UserBuilder {
     public static UserDto buildUserDto() {
 
         UserDto userDto = new UserDto();
-        userDto.setName("admin");
-        userDto.setEmail("admin@admin.com");
-        userDto.setPassword("$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm");
-        userDto.setRole("ROLE_ADMIN");
+        userDto.setName(NAME);
+        userDto.setEmail(EMAIL);
+        userDto.setPassword("admin");
+        userDto.setRole(ROLE_ADMIN);
         userDto.setActive(true);
-        userDto.setAvatar("avatar.svg");
+        userDto.setAvatar(AVATAR);
 
         return userDto;
     }

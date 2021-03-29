@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
-import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDto;
+import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,7 +41,7 @@ public class CourseServiceTest {
     void getCoursesTest() {
         Course course1 = buildSavedCourse(1, USER_ID,  20);
         List<Course> courses = List.of(course1);
-        CourseResponseDto courseResponseDto = buildCourseResponseDto(course1);
+        CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
         when(courseRepository.findAll()).thenReturn(courses);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
@@ -59,7 +59,7 @@ public class CourseServiceTest {
     void getActiveCoursesTest() {
         Course course1 = buildSavedCourse(1, USER_ID, 80);
         List<Course> courses = List.of(course1);
-        CourseResponseDto courseResponseDto = buildCourseResponseDto(course1);
+        CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
         when(courseRepository.findByOpenTrue()).thenReturn(courses);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
@@ -77,9 +77,9 @@ public class CourseServiceTest {
     @Test
     void addCourseTest() {
 
-        CourseDto courseDto = buildCourseDto();
+        CourseDto courseDto = buildCourseDto(USER_ID);
         Course courseEntity = CourseBuilder.buildCourseFromDto(courseDto);
-        CourseResponseDto courseResponseDto = buildCourseResponseDto(courseEntity);
+        CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(courseEntity);
 
         when(courseMapper.mapDtoToEntity(courseDto)).thenReturn(courseEntity);
         when(courseRepository.save(any())).thenReturn(courseEntity);
@@ -99,10 +99,10 @@ public class CourseServiceTest {
 
     @Test
     void updateCourseTest() {
-        CourseDto courseDto = buildCourseDto();
+        CourseDto courseDto = buildCourseDto(USER_ID);
         Course savedCourse = buildSavedCourse(1, USER_ID, 50);
         Course updatedCourse = buildCourseFromDto(courseDto, savedCourse);
-        CourseResponseDto courseResponseDto = buildCourseResponseDto(updatedCourse);
+        CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(updatedCourse);
 
         when(courseRepository.getOne(any())).thenReturn(savedCourse);
         when(courseMapper.mapDtoToEntity(courseDto, savedCourse)).thenReturn(updatedCourse);
