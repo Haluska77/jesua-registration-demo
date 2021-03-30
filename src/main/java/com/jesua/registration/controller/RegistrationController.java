@@ -5,6 +5,7 @@ import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.FollowerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +21,10 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestController
 @RequestMapping("registration/")
+@RequiredArgsConstructor
 public class RegistrationController {
 
     private final FollowerService followerService;
-
-    public RegistrationController(FollowerService followerService) {
-        this.followerService = followerService;
-    }
 
     @PostMapping("add")
     public SuccessResponse<FollowerResponseDto.FollowerResponse> addFollower(@RequestBody FollowerDto followerDto) {

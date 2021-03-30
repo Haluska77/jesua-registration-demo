@@ -22,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static com.jesua.registration.dto.TokenState.*;
+import static com.jesua.registration.dto.TokenState.APPLIED;
+import static com.jesua.registration.dto.TokenState.EXPIRED;
+import static com.jesua.registration.dto.TokenState.INVALID;
+import static com.jesua.registration.dto.TokenState.SUCCESS;
 import static com.jesua.registration.util.AppUtil.generateToken;
 
 @Service
@@ -42,16 +45,17 @@ public class PasswordTokenService {
     public UserResponseDto createAndSendTokenByUserEmail(String email) {
 
         User user = userRepository.findByEmailAndActiveTrue(email)
-                .map(
-                        u -> {
-                            String token = generateToken();
-                            PasswordToken savedToken = savePasswordResetToken(u, token);
-                            eventPublisher.publishEvent(new PasswordTokenCreatedEvent(savedToken, messageBuilder.buildResetPasswordMessage(u, token)));
-                            return u;
-                        })
+                .map(this::savePasswordTokenToActiveUser)
                 .orElse(null);
 
         return userMapper.mapEntityToDto(user);
+    }
+
+    private User savePasswordTokenToActiveUser(User user) {
+        String token = generateToken();
+        PasswordToken savedToken = savePasswordResetToken(user, token);
+        eventPublisher.publishEvent(new PasswordTokenCreatedEvent(savedToken, messageBuilder.buildResetPasswordMessage(user, token)));
+        return user;
     }
 
     public PasswordToken savePasswordResetToken(User user, String token) {

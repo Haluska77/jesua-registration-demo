@@ -10,8 +10,6 @@ import com.jesua.registration.entity.Follower;
 import java.time.Instant;
 import java.util.UUID;
 
-import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
-
 public class FollowerBuilder {
 
     private static final UUID USER_ID = UUID.randomUUID();
@@ -62,14 +60,14 @@ public class FollowerBuilder {
         return follower;
     }
 
-    public static Follower buildFullFollower(UUID id, String token, Instant unregistered, boolean accepted){
+    public static Follower buildFullFollower(UUID id, String token, Instant unregistered, boolean accepted, Course course){
 
         Follower follower = new Follower();
         follower.setId(id);
         follower.setName(NAME);
         follower.setEmail(EMAIL);
         follower.setToken(token);
-        follower.setCourse(buildSavedCourse(1, USER_ID, 100));
+        follower.setCourse(course);
         follower.setRegistered(Instant.now());
         follower.setUnregistered(unregistered);
         follower.setAccepted(accepted);

@@ -20,27 +20,27 @@ public class MessageBuilder {
     @Value("${password.token.expiration}")
     private String pwdTokenExp;
 
-    public Message buildSuccessMessage(Follower follower, Course course) {
+    public Message buildSuccessMessage(Follower follower) {
 
-        String body = String.format("Ahoj %s, úspešne si sa prihlásil na kurz Ješua '%s - %s'.", follower.getName(), course.getDescription(), instantToString(course.getStartDate()));
+        String body = String.format("Ahoj %s, úspešne si sa prihlásil na kurz Ješua '%s - %s'.", follower.getName(), follower.getCourse().getDescription(), instantToString(follower.getCourse().getStartDate()));
         body += getMessageFooter(follower);
 
         return new Message(follower.getEmail(), EMAIL_SUBJECT, body);
     }
 
-    public Message buildUnsuccessMessage(Follower follower, Course course) {
+    public Message buildUnsuccessMessage(Follower follower) {
 
         String body = String.format("Ahoj %s, úspešne si sa prihlásil na kurz Ješua '%s - %s'. <br><br>" +
-                "Momentálne je kapacita kurzu (" + course.getCapacity() + " ľudí) už naplnená.<br>" +
-                "V prípade, že sa niektorý z účastníkov kurzu odhlási, dáme ti okamžite vedieť na tento email.", follower.getName(), course.getDescription(), instantToString(course.getStartDate()));
+                "Momentálne je kapacita kurzu (" + follower.getCourse().getCapacity() + " ľudí) už naplnená.<br>" +
+                "V prípade, že sa niektorý z účastníkov kurzu odhlási, dáme ti okamžite vedieť na tento email.", follower.getName(), follower.getCourse().getDescription(), instantToString(follower.getCourse().getStartDate()));
         body += getMessageFooter(follower);
 
         return new Message(follower.getEmail(), EMAIL_SUBJECT, body);
     }
 
-    public Message buildSubstituteMessage(Follower follower, Course course) {
+    public Message buildSubstituteMessage(Follower follower) {
 
-        String body = String.format("Ahoj %s, niektorý z účastníkov kurzu JEŠUA '%s - %s' sa odhlásil. Radi Ťa uvidíme.", follower.getName(), course.getDescription(), instantToString(course.getStartDate()));
+        String body = String.format("Ahoj %s, niektorý z účastníkov kurzu JEŠUA '%s - %s' sa odhlásil. Radi Ťa uvidíme.", follower.getName(), follower.getCourse().getDescription(), instantToString(follower.getCourse().getStartDate()));
         body += getMessageFooter(follower);
         return new Message(follower.getEmail(), EMAIL_SUBJECT, body);
     }
@@ -52,9 +52,9 @@ public class MessageBuilder {
         return new Message(follower.getEmail(), EMAIL_SUBJECT, body);
     }
 
-    public Message buildNotificationMessage(Follower follower, Course course) {
+    public Message buildNotificationMessage(Follower follower) {
 
-        String body = String.format("Ahoj %s, kurz JEŠUA '%s - %s' sa blíži. Tešíme sa na Teba.", follower.getName(), course.getDescription(), instantToString(course.getStartDate()));
+        String body = String.format("Ahoj %s, kurz JEŠUA '%s - %s' sa blíži. Tešíme sa na Teba.", follower.getName(), follower.getCourse().getDescription(), instantToString(follower.getCourse().getStartDate()));
         body += getMessageFooter(follower);
 
         return new Message(follower.getEmail(), "REMINDER", body);

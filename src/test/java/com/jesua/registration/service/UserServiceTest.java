@@ -108,9 +108,7 @@ class UserServiceTest {
     @Test
     void switchActiveUserAccountNotFound() {
 
-        User user = buildUser(MY_ID);
-
-        doReturn(Optional.of(user)).when(userRepository).findById(MY_ID);
+        doReturn(Optional.empty()).when(userRepository).findById(MY_ID);
 
         assertThatThrownBy(() -> userService.switchActiveUserAccount(MY_ID))
                 .isInstanceOf(NoSuchElementException.class)

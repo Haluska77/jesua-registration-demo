@@ -63,9 +63,6 @@ public class FollowerService {
         // waiting: active = 0, unsubscribed = null
         // declined: active = 0, unsubscribed = NOT null
 
-        //get event that user is applied
-        Course event = courseService.getCourse(courseId);
-
         //get all users
         List<Follower> allFollowersByEventId = getAllFollowersByEventId(courseId);
 
@@ -80,7 +77,7 @@ public class FollowerService {
                                             .ifPresent(waitingFollower -> {
                                                         acceptFollower(waitingFollower);
                                                         eventPublisher.publishEvent(new FollowerCreatedEvent(waitingFollower,
-                                                                messageBuilder.buildSubstituteMessage(waitingFollower, event)));
+                                                                messageBuilder.buildSubstituteMessage(waitingFollower)));
                                                     }
                                             );
                                 }
@@ -115,17 +112,17 @@ public class FollowerService {
         long acceptedFollowers = allFollowersByEventId.stream().filter(Follower::isAccepted).count();
         long waitingFollowers = allFollowersByEventId.stream().filter(b -> !b.isAccepted() && b.getUnregistered() == null).count();
 
-        Course currentCourse = courseService.getCourse(followerDto.getEventId());
+        Course currentCourse = follower.getCourse();
         Message emailMessage;
         String responseMessage = "Vaša registrácia na kurz Ješua (" + currentCourse.getDescription() + ", " + instantToString(currentCourse.getStartDate()) + ") prebehla úspešne! ";
         //build emailMessage
         if (acceptedFollowers < currentCourse.getCapacity()) {
             follower.setAccepted(true);
-            emailMessage = messageBuilder.buildSuccessMessage(follower, currentCourse);
+            emailMessage = messageBuilder.buildSuccessMessage(follower);
             responseMessage += "Tešíme sa na vašu účasť. Vidíme sa na stretnutí.";
         } else {
             follower.setAccepted(false);
-            emailMessage = messageBuilder.buildUnsuccessMessage(follower, currentCourse);
+            emailMessage = messageBuilder.buildUnsuccessMessage(follower);
             responseMessage +=
                     "<br> Momentálne je kapacita kurzu už naplnená. Ste v poradí. " +
                             "<br> Pred vami sa ešte prihlásilo <strong>" + waitingFollowers + "</strong> ľudí. " +
@@ -154,18 +151,18 @@ public class FollowerService {
 
         followerRepository.findByCourse(course).stream()
                 .filter(Follower::isAccepted)
-                .forEach(f -> {
+                .forEach(follower -> {
                     try {
-                        sendEmail(f, course);
+                        sendEmail(follower);
                     } catch (MessagingException e) {
                         e.printStackTrace();
                     }
                 });
     }
 
-    public void sendEmail(Follower follower, Course course) throws MessagingException {
+    public void sendEmail(Follower follower) throws MessagingException {
 
-        Message emailMessage = messageBuilder.buildNotificationMessage(follower, course);
+        Message emailMessage = messageBuilder.buildNotificationMessage(follower);
 
         try {
             emailService.sendMessage(emailMessage);

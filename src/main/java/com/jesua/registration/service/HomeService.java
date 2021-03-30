@@ -25,17 +25,19 @@ public class HomeService {
         List<Course> courses = courseRepository.findByOpenTrue();
         List<Follower> followerByOpenEvent = followerRepository.findFollowerByOpenEvent();
 
-        return courses.stream().map(e -> {
-            Map<String, Object> followerCount = new HashMap<>();
-            followerCount.put("active", followerByOpenEvent.stream().filter(f -> f.getCourse().getId() == e.getId() && f.isAccepted()).count());
-            followerCount.put("waiting", followerByOpenEvent.stream().filter(f -> f.getCourse().getId() == e.getId() && !f.isAccepted() && f.getUnregistered() == null).count());
-            followerCount.put("id", e.getId());
-            followerCount.put("description", e.getDescription());
-            followerCount.put("startDate", e.getStartDate());
-            followerCount.put("capacity", e.getCapacity());
+        return courses.stream().map(course -> generateStatistics(followerByOpenEvent, course)).collect(toList());
 
-            return followerCount;
-        }).collect(toList());
+    }
 
+    private Map<String, Object> generateStatistics(List<Follower> followerByOpenEvent, Course course) {
+        Map<String, Object> followerCount = new HashMap<>();
+        followerCount.put("active", followerByOpenEvent.stream().filter(f -> f.getCourse().getId() == course.getId() && f.isAccepted()).count());
+        followerCount.put("waiting", followerByOpenEvent.stream().filter(f -> f.getCourse().getId() == course.getId() && !f.isAccepted() && f.getUnregistered() == null).count());
+        followerCount.put("id", course.getId());
+        followerCount.put("description", course.getDescription());
+        followerCount.put("startDate", course.getStartDate());
+        followerCount.put("capacity", course.getCapacity());
+
+        return followerCount;
     }
 }
