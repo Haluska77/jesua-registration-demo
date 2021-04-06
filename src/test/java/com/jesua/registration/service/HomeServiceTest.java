@@ -61,12 +61,12 @@ class HomeServiceTest {
         }).collect(Collectors.toList());
 
         doReturn(List.of(course1, course2)).when(courseRepository).findByOpenTrue();
-        doReturn(existingFollowerList).when(followerRepository).findFollowerByOpenEvent();
+        doReturn(existingFollowerList).when(followerRepository).findByCourseOpen(true);
 
         List<Map<String, Object>> statistics = homeService.getStatistics();
 
         verify(courseRepository).findByOpenTrue();
-        verify(followerRepository).findFollowerByOpenEvent();
+        verify(followerRepository).findByCourseOpen(true);
 
         assertThat(statistics).usingRecursiveComparison().isEqualTo(expectedStat);
     }

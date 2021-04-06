@@ -44,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
-    private static final UUID USER_ID = UUID.randomUUID();
     public static final String AUTHENTICATION_IS_REQUIRED = "Full authentication is required to access this resource";
     public static final String USER_HAS_BEEN_SUCCESSFULLY_CHANGED = "User has been successfully changed!";
     public static final String NEW_USER_REGISTERED_SUCCESSFULLY = "New user registered successfully!";
@@ -240,7 +239,7 @@ class UserControllerTest {
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "token").isEqualTo(loginResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(loginResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
-        assertThat(successResponse.getResponse().getBody().getToken()).startsWith("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2MTc3Mj");
+        assertThat(successResponse.getResponse().getBody().getToken()).startsWith("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2MT");
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }

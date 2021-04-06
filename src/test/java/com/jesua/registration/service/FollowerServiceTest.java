@@ -62,9 +62,6 @@ class FollowerServiceTest {
     @Mock
     FollowerMapper followerMapper;
 
-    @Mock
-    CourseService courseService;
-
     @InjectMocks
     FollowerService followerService;
 
@@ -85,20 +82,6 @@ class FollowerServiceTest {
         Optional<Follower> firstWaitingFollower = followerService.getFirstWaitingFollower(List.of(acceptedFollower1, acceptedFollower2, acceptedFollower3));
 
         assertEquals(acceptedFollower1, firstWaitingFollower.get());
-    }
-
-    @Test
-    void getAllFollowersByEventIdTest() {
-
-
-        Follower acceptedFollower = buildFullFollower(MY_FOLLOWER_ID, TOKEN, null, true, course);
-
-        doReturn(List.of(acceptedFollower)).when(followerRepository).findByCourse(any());
-
-        List<Follower> allFollowersByEventId = followerService.getAllFollowersByEventId(1);
-
-        verify(followerRepository).findByCourse(any());
-        assertEquals(1, allFollowersByEventId.size());
     }
 
     @Test
@@ -147,13 +130,11 @@ class FollowerServiceTest {
         FollowerResponseDto.FollowerResponse followerResponse = buildFollowerResponse(MY_FOLLOWER_ID, MY_ACCEPTED);
         FollowerResponseDto followerResponseDto = buildFollowerResponseDto(responseMessage, followerResponse);
 
-        doReturn(course).when(courseService).getCourse(1);
-        doReturn(List.of(existingFollower, myFollower)).when(followerRepository).findByCourse(course);
+        doReturn(List.of(existingFollower, myFollower)).when(followerRepository).findByCourseId(course.getId());
 
-        FollowerResponseDto actualUnsubscribe = followerService.unsubscribe(myFollower.getToken(), 1);
+        FollowerResponseDto actualUnsubscribe = followerService.unsubscribe(myFollower.getToken(), course.getId());
 
-        verify(courseService).getCourse(1);
-        verify(followerRepository).findByCourse(course);
+        verify(followerRepository).findByCourseId(course.getId());
 
         assertThat(actualUnsubscribe).usingRecursiveComparison().isEqualTo(followerResponseDto);
     }
@@ -169,13 +150,11 @@ class FollowerServiceTest {
         FollowerResponseDto.FollowerResponse followerResponse = buildFollowerResponse(MY_FOLLOWER_ID, MY_ACCEPTED);
         FollowerResponseDto followerResponseDto = buildFollowerResponseDto(responseMessage, followerResponse);
 
-        doReturn(course).when(courseService).getCourse(1);
-        doReturn(List.of(existingFollower, myFollower)).when(followerRepository).findByCourse(course);
+        doReturn(List.of(existingFollower, myFollower)).when(followerRepository).findByCourseId(course.getId());
 
-        FollowerResponseDto actualUnsubscribe = followerService.unsubscribe(myFollower.getToken(), 1);
+        FollowerResponseDto actualUnsubscribe = followerService.unsubscribe(myFollower.getToken(), course.getId());
 
-        verify(courseService).getCourse(1);
-        verify(followerRepository).findByCourse(course);
+        verify(followerRepository).findByCourseId(course.getId());
 
         assertThat(actualUnsubscribe).usingRecursiveComparison().isEqualTo(followerResponseDto);
     }
@@ -186,10 +165,9 @@ class FollowerServiceTest {
         Follower existingFollower = buildFullFollower(UUID.randomUUID(), TOKEN, null, false, course);
         Follower myFollower = buildFullFollower(MY_FOLLOWER_ID,"45ssd521d3ASDF54d32df156DF3", Instant.now().plusSeconds(60), false, course);
 
-        doReturn(course).when(courseService).getCourse(1);
-        doReturn(List.of(existingFollower, myFollower)).when(followerRepository).findByCourse(course);
+        doReturn(List.of(existingFollower, myFollower)).when(followerRepository).findByCourseId(course.getId());
 
-        assertThatThrownBy(() -> followerService.unsubscribe(NOT_FOUND_TOKEN, 1))
+        assertThatThrownBy(() -> followerService.unsubscribe(NOT_FOUND_TOKEN, course.getId()))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("User not found !!!");
 
@@ -212,16 +190,15 @@ class FollowerServiceTest {
         //mapper
         doReturn(rawFollower).when(followerMapper).mapDtoToEntity(followerDto);
 
-        doReturn(course).when(courseService).getCourse(1);
         doReturn(newSavedFollower).when(followerRepository).save(any());
-        doReturn(List.of(existingFollower)).when(followerRepository).findByCourse(course);
+        doReturn(List.of(existingFollower)).when(followerRepository).findByCourseId(course.getId());
 
         FollowerResponseDto actualResponseDto = followerService.addFollower(followerDto);
 
         verify(followerMapper).mapDtoToEntity(followerDto);
-        verify(courseService).getCourse(1);
+
         verify(followerRepository).save(any());
-        verify(followerRepository).findByCourse(course);
+        verify(followerRepository).findByCourseId(course.getId());
 
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(followerResponseDto);
     }
@@ -231,31 +208,29 @@ class FollowerServiceTest {
 
         boolean ACCEPTED_FALSE = false;
 
-        Course course1 = buildSavedCourse(2, USER_ID, 2);
-        String responseMessage = "Vaša registrácia na kurz Ješua (" + course1.getDescription() + ", " + instantToString(course1.getStartDate()) + ") " +
+        Course course2 = buildSavedCourse(2, USER_ID, 2);
+        String responseMessage = "Vaša registrácia na kurz Ješua (" + course2.getDescription() + ", " + instantToString(course2.getStartDate()) + ") " +
                 "prebehla úspešne! <br> Momentálne je kapacita kurzu už naplnená. Ste v poradí. <br> Pred vami sa ešte prihlásilo <strong>0</strong> ľudí. " +
                 "<br> V prípade, že sa niektorý z účastníkov odhlási, dáme vám vedieť emailom na vašu adresu <strong>jesua@jesua.com</strong";
 
-        FollowerDto followerDto = buildFollowerDto(course1.getId());
-        Follower rawFollower = buildFollowerFromDto(followerDto, course1);
-        Follower newSavedFollower = buildFullFollower(MY_FOLLOWER_ID, TOKEN, null, ACCEPTED_FALSE, course1);
-        Follower existingFollower1 = buildFullFollower(UUID.randomUUID(),TOKEN, null, true, course1);
-        Follower existingFollower2 = buildFullFollower(UUID.randomUUID(),TOKEN, null, true, course1);
+        FollowerDto followerDto = buildFollowerDto(course2.getId());
+        Follower rawFollower = buildFollowerFromDto(followerDto, course2);
+        Follower newSavedFollower = buildFullFollower(MY_FOLLOWER_ID, TOKEN, null, ACCEPTED_FALSE, course2);
+        Follower existingFollower1 = buildFullFollower(UUID.randomUUID(),TOKEN, null, true, course2);
+        Follower existingFollower2 = buildFullFollower(UUID.randomUUID(),TOKEN, null, true, course2);
         FollowerResponseDto.FollowerResponse followerResponse = buildFollowerResponse(MY_FOLLOWER_ID, ACCEPTED_FALSE);
         FollowerResponseDto followerResponseDto = buildFollowerResponseDto(responseMessage, followerResponse);
 
         //mapper
         doReturn(rawFollower).when(followerMapper).mapDtoToEntity(followerDto);
 
-        doReturn(course1).when(courseService).getCourse(2);
-        doReturn(List.of(existingFollower1, existingFollower2)).when(followerRepository).findByCourse(course1);
+        doReturn(List.of(existingFollower1, existingFollower2)).when(followerRepository).findByCourseId(course2.getId());
         doReturn(newSavedFollower).when(followerRepository).save(any());
 
         FollowerResponseDto actualResponseDto = followerService.addFollower(followerDto);
 
         verify(followerMapper).mapDtoToEntity(followerDto);
-        verify(courseService).getCourse(2);
-        verify(followerRepository).findByCourse(course1);
+        verify(followerRepository).findByCourseId(course2.getId());
         verify(followerRepository).save(any());
 
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(followerResponseDto);

@@ -74,16 +74,16 @@ class FollowerRepositoryTest {
 
     @Test
     void findByCourseTest() {
-        List<Follower> byCourse = followerRepository.findByCourse(course2);
+        List<Follower> byCourse = followerRepository.findByCourseId(course2.getId());
 
         assertEquals(1, byCourse.size());
         assertEquals(byCourse.get(0).getId(), savedFollower2.getId());
     }
 
     @Test
-    void findFollowerByOpenEventTest() {
+    void findFollowerByOpenCourseTest() {
 
-        List<Follower> byCourse = followerRepository.findFollowerByOpenEvent();
+        List<Follower> byCourse = followerRepository.findByCourseOpen(true);
 
         assertEquals(1, byCourse.size());
         assertEquals(byCourse.get(0).getId(), savedFollower1.getId());

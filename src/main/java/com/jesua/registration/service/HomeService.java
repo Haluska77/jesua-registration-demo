@@ -23,7 +23,7 @@ public class HomeService {
     public List<Map<String, Object>> getStatistics() {
 
         List<Course> courses = courseRepository.findByOpenTrue();
-        List<Follower> followerByOpenEvent = followerRepository.findFollowerByOpenEvent();
+        List<Follower> followerByOpenEvent = followerRepository.findByCourseOpen(true);
 
         return courses.stream().map(course -> generateStatistics(followerByOpenEvent, course)).collect(toList());
 

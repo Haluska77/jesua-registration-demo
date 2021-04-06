@@ -34,15 +34,9 @@ public class FollowerService {
 
     private final FollowerRepository followerRepository;
     private final MessageBuilder messageBuilder;
-    private final CourseService courseService;
     private final ApplicationEventPublisher eventPublisher;
     private final FollowerMapper followerMapper;
     private final EmailServiceImpl emailService;
-
-    public List<Follower> getAllFollowersByEventId(int courseId) {
-
-        return followerRepository.findByCourse(courseService.getCourse(courseId));
-    }
 
     public Follower unsubscribeFollower(Follower follower) {
 
@@ -64,7 +58,7 @@ public class FollowerService {
         // declined: active = 0, unsubscribed = NOT null
 
         //get all users
-        List<Follower> allFollowersByEventId = getAllFollowersByEventId(courseId);
+        List<Follower> allFollowersByEventId = followerRepository.findByCourseId(courseId);
 
         return allFollowersByEventId.stream().filter(
                 m -> m.getToken().equals(token))
@@ -108,7 +102,7 @@ public class FollowerService {
         Follower follower = followerMapper.mapDtoToEntity(followerDto);
 
         //Get number of active followers before new subscriber
-        List<Follower> allFollowersByEventId = getAllFollowersByEventId(followerDto.getEventId());
+        List<Follower> allFollowersByEventId = followerRepository.findByCourseId(followerDto.getEventId());
         long acceptedFollowers = allFollowersByEventId.stream().filter(Follower::isAccepted).count();
         long waitingFollowers = allFollowersByEventId.stream().filter(b -> !b.isAccepted() && b.getUnregistered() == null).count();
 
@@ -149,7 +143,7 @@ public class FollowerService {
 
     void sendNotificationEmail(Course course) {
 
-        followerRepository.findByCourse(course).stream()
+        followerRepository.findByCourseId(course.getId()).stream()
                 .filter(Follower::isAccepted)
                 .forEach(follower -> {
                     try {
