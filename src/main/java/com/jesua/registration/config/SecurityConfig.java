@@ -23,6 +23,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -36,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
-    private final CustomUnauthorizedHandler unathorizedHandler;
+    private final CustomUnauthorizedHandler unauthorizedHandler;
     private final RestAccessDeniedHandler accessDeniedHandler;
 
     @Override
@@ -54,10 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(originUrl));
+        configuration.setAllowedOrigins(Collections.singletonList(originUrl));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","DELETE"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -78,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'"))
                 .and().cors()
                 .and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unathorizedHandler)
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
                 .authorizeRequests()
