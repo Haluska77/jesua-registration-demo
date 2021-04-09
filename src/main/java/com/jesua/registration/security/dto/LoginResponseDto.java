@@ -1,12 +1,9 @@
 package com.jesua.registration.security.dto;
 
 import com.jesua.registration.dto.UserResponseDto;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Getter

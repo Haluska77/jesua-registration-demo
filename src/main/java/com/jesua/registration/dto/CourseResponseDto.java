@@ -3,6 +3,8 @@ package com.jesua.registration.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 public class CourseResponseDto {
@@ -12,6 +14,6 @@ public class CourseResponseDto {
     private String startDate;
     private boolean open;
     private int capacity;
-    private String created;
+    private Instant created;
     private UserResponseDto createdBy;
 }

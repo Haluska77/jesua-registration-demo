@@ -90,7 +90,7 @@ public class CourseBuilder {
         courseResponseDto.setCapacity(course.getCapacity());
         courseResponseDto.setOpen(course.getOpen());
         courseResponseDto.setCreatedBy(buildUserResponseDto(course.getUser()));
-        courseResponseDto.setCreated(course.getCreated().toString());
+        courseResponseDto.setCreated(course.getCreated());
 
         return courseResponseDto;
     }

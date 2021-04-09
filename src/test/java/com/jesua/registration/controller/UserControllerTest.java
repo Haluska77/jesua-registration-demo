@@ -43,8 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
-
-    public static final String AUTHENTICATION_IS_REQUIRED = "Full authentication is required to access this resource";
+    public final String AUTHENTICATION_IS_REQUIRED = "Full authentication is required to access this resource";
     public static final String USER_HAS_BEEN_SUCCESSFULLY_CHANGED = "User has been successfully changed!";
     public static final String NEW_USER_REGISTERED_SUCCESSFULLY = "New user registered successfully!";
     public static final String USER_HAS_BEEN_CHANGED = "User has been changed";
@@ -246,7 +245,7 @@ class UserControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void signUpUserSuccessTest() throws Exception {
+    void createUserSuccessTest() throws Exception {
 
         UserDto userDto = buildUserDto();
         User user = buildUserFromDto(userDto);
@@ -272,7 +271,7 @@ class UserControllerTest {
     }
 
     @Test
-    void signUpUserUnauthorizedTest() throws Exception {
+    void createUserUnauthorizedTest() throws Exception {
 
         UserDto userDto = buildUserDto();
 
