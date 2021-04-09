@@ -12,13 +12,10 @@ import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.CourseRepository;
 import com.jesua.registration.repository.UserRepository;
-import com.jesua.registration.service.CourseService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
@@ -47,7 +43,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CourseControllerTest {
 
     public final String AUTHENTICATION_IS_REQUIRED = "Full authentication is required to access this resource";
-    private static final UUID USER_ID = UUID.randomUUID();
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -56,18 +51,10 @@ class CourseControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private CourseRepository courseRepository;
-
-    @Mock
-    private CourseService courseService;
 
     private static User user;
     private Course course;
-    private static Course course1;
-    private static Course course2;
     private int createdCourseId;
 
     @BeforeAll
@@ -78,17 +65,11 @@ class CourseControllerTest {
         userRepository.save(user);
         CourseDto courseDto = buildCourseDto(user.getId());
 
-        course1 = buildCourseFromDto(courseDto);
+        Course course1 = buildCourseFromDto(courseDto);
         courseRepository.save(course1);
-        course2 = buildCourseFromDto(courseDto);
+        Course course2 = buildCourseFromDto(courseDto);
         course2.setOpen(false);
         courseRepository.save(course2);
-    }
-
-    @BeforeEach
-    public void setUp(){
-
-
     }
 
     @AfterEach
@@ -118,7 +99,7 @@ class CourseControllerTest {
         MockHttpServletResponse response = mockMvc
                 .perform(post("/events/addEvent")
                         .content(objectMapper.writeValueAsString(courseDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -132,7 +113,7 @@ class CourseControllerTest {
         createdCourseId = successResponse.getResponse().getBody().getId();
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(expectedCourseResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getId()).isNotNull();
-        assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
@@ -146,7 +127,7 @@ class CourseControllerTest {
         String contentAsString = mockMvc
                 .perform(post("/events/addEvent")
                         .content(objectMapper.writeValueAsString(courseDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
@@ -230,7 +211,7 @@ class CourseControllerTest {
         MockHttpServletResponse response = mockMvc
                 .perform(post("/events/updateEvent/" + course.getId())
                         .content(objectMapper.writeValueAsString(courseDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -241,7 +222,7 @@ class CourseControllerTest {
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "createdBy.created").isEqualTo(expectedCourseResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(expectedCourseResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
-        assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
@@ -256,7 +237,7 @@ class CourseControllerTest {
         String contentAsString = mockMvc
                 .perform(post("/events/updateEvent/" + course.getId())
                         .content(objectMapper.writeValueAsString(courseDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();

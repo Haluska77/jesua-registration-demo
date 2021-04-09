@@ -96,10 +96,10 @@ class FollowerServiceTest {
 
         verify(followerRepository).save(follower);
 
-        assertThat(follower).usingRecursiveComparison().ignoringFields("unregistered", "course").isEqualTo(expectedFollower);
+        assertThat(follower).usingRecursiveComparison().ignoringFields("registered","unregistered", "course").isEqualTo(expectedFollower);
         assertNotNull(follower.getUnregistered());
-        assertThat(follower.getUnregistered())
-                .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+        assertThat(follower.getRegistered()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+        assertThat(follower.getUnregistered()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
     }
 
     @Test

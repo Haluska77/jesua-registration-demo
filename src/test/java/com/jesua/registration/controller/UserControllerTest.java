@@ -123,7 +123,7 @@ class UserControllerTest {
         MockHttpServletResponse response = mockMvc
                 .perform(post("/users/update/" + user.getId())
                         .content(objectMapper.writeValueAsString(userDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -148,7 +148,7 @@ class UserControllerTest {
         String contentAsString = mockMvc
                 .perform(post("/users/update/" + user.getId())
                         .content(objectMapper.writeValueAsString(userDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
@@ -227,7 +227,7 @@ class UserControllerTest {
         MockHttpServletResponse response = mockMvc
                 .perform(post("/users/signin")
                         .content(objectMapper.writeValueAsString(loginDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -254,7 +254,7 @@ class UserControllerTest {
         MockHttpServletResponse response = mockMvc
                 .perform(post("/users/signup")
                         .content(objectMapper.writeValueAsString(userDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -278,7 +278,7 @@ class UserControllerTest {
         String contentAsString = mockMvc
                 .perform(post("/users/signup")
                         .content(objectMapper.writeValueAsString(userDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
