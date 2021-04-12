@@ -6,9 +6,12 @@ import com.jesua.registration.dto.UserTokenDto;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.PasswordTokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.NoSuchElementException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,23 +20,15 @@ public class PasswordTokenController {
 
     private final PasswordTokenService passwordTokenService;
 
-    public static final String USER_NOT_FOUND_OR_NOT_ACTIVE = "User not Found or not active";
-
     //Get user by email and save token for reset password
     @GetMapping("/userAccount/{email}")
     public SuccessResponse<UserResponseDto> userAccount(@PathVariable String email) {
 
         UserResponseDto userResponseDto = passwordTokenService.createAndSendTokenByUserEmail(email);
 
-        if (userResponseDto == null) {
-            throw new NoSuchElementException(USER_NOT_FOUND_OR_NOT_ACTIVE);
-        }
-
         return new SuccessResponse<>(userResponseDto, "Na uvedený email bol poslaný link na zmenu hesla!");
     }
 
-    // submit token from email and send back to UI
-    // if result = success, open change password form in UI, otherwise display blank page and error message
     @GetMapping("validateToken/{token}")
     public UserTokenDto validateToken(@PathVariable String token) {
 

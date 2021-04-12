@@ -59,7 +59,6 @@ class UserServiceTest {
     @Test
     void loadNonExistingUserByUsernameTest() {
 
-        User user = buildUser(MY_ID);
         String userName = "admin";
 
         assertThatThrownBy(() -> userService.loadUserByUsername(userName))

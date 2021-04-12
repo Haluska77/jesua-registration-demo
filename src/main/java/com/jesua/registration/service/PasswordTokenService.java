@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.NoSuchElementException;
 
 import static com.jesua.registration.dto.TokenState.APPLIED;
 import static com.jesua.registration.dto.TokenState.EXPIRED;
@@ -31,6 +32,9 @@ import static com.jesua.registration.util.AppUtil.generateToken;
 @Service
 @RequiredArgsConstructor
 public class PasswordTokenService {
+
+    public static final String USER_NOT_FOUND_OR_NOT_ACTIVE = "User not Found or not active";
+
     private final PasswordTokenRepository passwordTokenRepository;
     private final MessageBuilder messageBuilder;
     private final PasswordEncoder bCryptPasswordEncoder;
@@ -46,7 +50,7 @@ public class PasswordTokenService {
 
         User user = userRepository.findByEmailAndActiveTrue(email)
                 .map(this::savePasswordTokenToActiveUser)
-                .orElse(null);
+                .orElseThrow(() -> new NoSuchElementException(USER_NOT_FOUND_OR_NOT_ACTIVE));
 
         return userMapper.mapEntityToDto(user);
     }
@@ -90,7 +94,7 @@ public class PasswordTokenService {
                     changeAndSavePassword(u, passwordDto.getNewPassword());
                     passwordTokenApplied(passwordDto.getToken());
                     return userMapper.mapEntityToDto(u);
-                }).orElse(null);
+                }).orElseThrow(()-> new NoSuchElementException("User not found"));
     }
 
     private void changeAndSavePassword(User user, String password) {
@@ -98,13 +102,13 @@ public class PasswordTokenService {
         userRepository.save(user);
     }
 
-    private PasswordToken passwordTokenApplied(String token) {
+    public PasswordToken passwordTokenApplied(String token) {
 
         return passwordTokenRepository.findByToken(token)
                 .map(t -> {
                     t.setApplied(true);
                     return passwordTokenRepository.save(t);
-                }).orElse(null);
+                }).orElseThrow(()-> new NoSuchElementException("Password Token not found"));
 
     }
 

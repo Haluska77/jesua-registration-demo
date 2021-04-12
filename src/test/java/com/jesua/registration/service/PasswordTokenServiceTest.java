@@ -20,12 +20,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.FollowerBuilder.TOKEN;
 import static com.jesua.registration.builder.PasswordTokenBuilder.PASSWORD_TOKEN;
 import static com.jesua.registration.builder.PasswordTokenBuilder.buildPasswordToken;
+import static com.jesua.registration.builder.PasswordTokenBuilder.createPasswordDto;
 import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDto;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,6 +78,18 @@ class PasswordTokenServiceTest {
         verify(userMapper).mapEntityToDto(any());
 
         assertThat(actualUserResponseDto).usingRecursiveComparison().isEqualTo(userResponseDto);
+
+    }
+
+    @Test
+    void createAndSendTokenThrowExceptionTest() {
+
+        User user = buildUser(USER_ID);
+        doReturn(Optional.empty()).when(userRepository).findByEmailAndActiveTrue(user.getEmail());
+
+        assertThatThrownBy(() -> passwordTokenService.createAndSendTokenByUserEmail(user.getEmail()))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("User not Found or not active");
 
     }
 
@@ -152,24 +166,49 @@ class PasswordTokenServiceTest {
         User user = buildUser(USER_ID);
         UserResponseDto userResponseDto = buildUserResponseDto(user);
 
-        PasswordDto passwordDto = new PasswordDto();
-        passwordDto.setNewPassword("pwd");
-        passwordDto.setConfirmNewPassword("pwd");
-        passwordDto.setToken(PASSWORD_TOKEN);
+        PasswordDto passwordDto = createPasswordDto("newPwd", PASSWORD_TOKEN);
 
         PasswordToken expectedPasswordToken = buildPasswordToken(1, 10, user);
-        doReturn(Optional.of(expectedPasswordToken)).when(passwordTokenRepository).findByToken(any());
-        doReturn(Optional.of(user)).when(userRepository).findByPasswordTokens_Token(any());
-        doReturn(userResponseDto).when(userMapper).mapEntityToDto(any());
+        doReturn(Optional.of(expectedPasswordToken)).when(passwordTokenRepository).findByToken(PASSWORD_TOKEN);
+        doReturn(Optional.of(user)).when(userRepository).findByPasswordTokens_Token(PASSWORD_TOKEN);
+        doReturn(expectedPasswordToken).when(passwordTokenRepository).save(any());
+        doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
 
         UserResponseDto actualUserResponseDto = passwordTokenService.changePassword(passwordDto);
 
-        verify(passwordTokenRepository, times(2)).findByToken(any());
-        verify(userRepository).findByPasswordTokens_Token(any());
-        verify(userMapper).mapEntityToDto(any());
+        verify(passwordTokenRepository, times(2)).findByToken(PASSWORD_TOKEN);
+        verify(userRepository).findByPasswordTokens_Token(PASSWORD_TOKEN);
+        verify(passwordTokenRepository).save(any());
+        verify(userMapper).mapEntityToDto(user);
 
         assertThat(actualUserResponseDto).usingRecursiveComparison().isEqualTo(userResponseDto);
 
     }
 
+    @Test
+    void changePasswordNotFoundTest() {
+        User user = buildUser(USER_ID);
+
+        PasswordDto passwordDto = createPasswordDto("newPwd", PASSWORD_TOKEN);
+
+        PasswordToken expectedPasswordToken = buildPasswordToken(1, 10, user);
+        doReturn(Optional.of(expectedPasswordToken)).when(passwordTokenRepository).findByToken(PASSWORD_TOKEN);
+        doReturn(Optional.empty()).when(userRepository).findByPasswordTokens_Token(PASSWORD_TOKEN);
+
+        assertThatThrownBy(() -> passwordTokenService.changePassword(passwordDto))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("User not found");
+
+    }
+
+    @Test
+    void passwordTokenAppliedThrowExceptionTest() {
+
+        doReturn(Optional.empty()).when(passwordTokenRepository).findByToken(any());
+
+        assertThatThrownBy(() -> passwordTokenService.passwordTokenApplied(TOKEN))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Password Token not found");
+
+    }
 }

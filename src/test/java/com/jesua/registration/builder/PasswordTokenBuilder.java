@@ -1,5 +1,6 @@
 package com.jesua.registration.builder;
 
+import com.jesua.registration.dto.PasswordDto;
 import com.jesua.registration.entity.PasswordToken;
 import com.jesua.registration.entity.User;
 
@@ -18,5 +19,14 @@ public class PasswordTokenBuilder {
         passwordToken.setApplied(false);
         passwordToken.setUser(user);
         return passwordToken;
+    }
+
+
+    public static PasswordDto createPasswordDto(String password, String token) {
+        PasswordDto passwordDto = new PasswordDto();
+        passwordDto.setNewPassword(password);
+        passwordDto.setConfirmNewPassword(password);
+        passwordDto.setToken(token);
+        return passwordDto;
     }
 }

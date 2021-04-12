@@ -1,7 +1,6 @@
 package com.jesua.registration.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.entity.User;
@@ -11,19 +10,12 @@ import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
-import com.jesua.registration.security.jwt.JwtProvider;
-import com.jesua.registration.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -40,31 +32,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class UserControllerTest {
-    public final String AUTHENTICATION_IS_REQUIRED = "Full authentication is required to access this resource";
+class UserControllerTest extends BaseControllerTest {
+
     public static final String USER_HAS_BEEN_SUCCESSFULLY_CHANGED = "User has been successfully changed!";
     public static final String NEW_USER_REGISTERED_SUCCESSFULLY = "New user registered successfully!";
     public static final String USER_HAS_BEEN_CHANGED = "User has been changed";
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private JwtProvider jwtProvider;
 
     @AfterEach
     public void tearDown() {

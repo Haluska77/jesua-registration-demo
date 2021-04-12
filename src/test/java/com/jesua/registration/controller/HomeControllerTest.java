@@ -1,7 +1,6 @@
 package com.jesua.registration.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.UserDto;
@@ -15,10 +14,7 @@ import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Map;
@@ -33,15 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class HomeControllerTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
+class HomeControllerTest extends BaseControllerTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -55,7 +43,7 @@ class HomeControllerTest {
     @AfterAll
     static void cleanUp(@Autowired UserRepository userRepository,
                         @Autowired CourseRepository courseRepository,
-                        @Autowired FollowerRepository followerRepository){
+                        @Autowired FollowerRepository followerRepository) {
 
         followerRepository.deleteAll();
         courseRepository.deleteAll();
