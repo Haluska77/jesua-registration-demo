@@ -16,4 +16,5 @@ public class CourseResponseDto {
     private int capacity;
     private Instant created;
     private UserResponseDto createdBy;
+    private String image;
 }

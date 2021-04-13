@@ -14,4 +14,5 @@ public class CourseDto {
     private boolean open;
     private int capacity;
     private UUID userId;
+    private String image;
 }

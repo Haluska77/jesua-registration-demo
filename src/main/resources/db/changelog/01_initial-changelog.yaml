@@ -51,6 +51,11 @@ databaseChangeLog:
                     nullable: false
                   name: created_by
                   type: VARCHAR(36)
+              - column:
+                  constraints:
+                    nullable: true
+                  name: image
+                  type: VARCHAR(100)
   - changeSet:
       id: create-table-follower
       author: SH
