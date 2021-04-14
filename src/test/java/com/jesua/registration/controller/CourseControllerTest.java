@@ -141,6 +141,20 @@ class CourseControllerTest extends BaseControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void accessDeniedTest() throws Exception {
+
+        String contentAsString = mockMvc
+                .perform(get("/events/eventList"))
+                .andExpect(status().isInternalServerError())
+                .andReturn().getResponse().getContentAsString();
+
+        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        });
+        assertThat(errorResponse.getError().getMessage()).isEqualTo("Access is denied");
+    }
+
+    @Test
     void getUnauthorizedEventsTest() throws Exception {
 
         String contentAsString = mockMvc
