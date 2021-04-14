@@ -37,6 +37,8 @@ class UserRepositoryTest {
 
     @BeforeAll
     public void setUp(){
+        userRepository.deleteAll();
+
         UserDto userDto1 = buildUserDto();
         user1 = buildUserFromDto(userDto1);
         userRepository.save(user1);

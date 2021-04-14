@@ -56,4 +56,7 @@ databaseChangeLog:
               - column:
                   name: created_by
                   value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
+              - column:
+                  name: image
+                  value: "logo_jesua.png"
 

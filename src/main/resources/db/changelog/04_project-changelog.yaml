@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-project
+      author: SH
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: project
+      changes:
+        - createTable:
+            tableName: project
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: project_pkey
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: short_name
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: description
+                  type: VARCHAR(250)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created
+                  type: DATETIME
+#  - changeSet:
+#      id: fk_passwordtoken__user_id
+#      author: SH
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseColumnNames: user_id
+#            baseTableName: password_token
+#            constraintName: fk_passwordtoken__user_id
+#            deferrable: false
+#            initiallyDeferred: false
+#            onDelete: RESTRICT
+#            onUpdate: RESTRICT
+#            referencedColumnNames: id
+#            referencedTableName: jesua_user
+#            validate: true

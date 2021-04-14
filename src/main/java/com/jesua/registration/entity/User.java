@@ -4,7 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
@@ -51,4 +56,9 @@ public class User {
 
     @OneToMany(mappedBy="user")
     private Set<PasswordToken> passwordTokens;
+
+//    @NotNull
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "project_id")
+//    private Project project;
 }
