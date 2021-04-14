@@ -1,6 +1,5 @@
 package com.jesua.registration.message;
 
-import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,13 +41,6 @@ public class MessageBuilder {
 
         String body = String.format("Ahoj %s, niektorý z účastníkov kurzu JEŠUA '%s - %s' sa odhlásil. Radi Ťa uvidíme.", follower.getName(), follower.getCourse().getDescription(), instantToString(follower.getCourse().getStartDate()));
         body += getMessageFooter(follower);
-        return new Message(follower.getEmail(), EMAIL_SUBJECT, body);
-    }
-
-    public Message buildFailedMessage(Follower follower, Course course) {
-        String body = String.format("Ahoj %s, tvoju registráciu na kurz JEŠUA '%s - %s' sa nepodarilo spracovať. " +
-                "Prosím kontaktuj administrátora.", follower.getName(), course.getDescription(), instantToString(course.getStartDate()));
-
         return new Message(follower.getEmail(), EMAIL_SUBJECT, body);
     }
 
