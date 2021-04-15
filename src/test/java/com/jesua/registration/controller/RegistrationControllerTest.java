@@ -6,7 +6,6 @@ import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.dto.ProjectDto;
-import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.Project;
@@ -37,8 +36,7 @@ import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static com.jesua.registration.util.AppUtil.instantToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,6 +52,7 @@ class RegistrationControllerTest extends BaseControllerTest {
     private static Course course;
     private static Follower follower2;
     private UUID createdFollowerId;
+    private static Project project;
 
     @BeforeAll
     static void createUser(@Autowired UserRepository userRepository,
@@ -62,11 +61,10 @@ class RegistrationControllerTest extends BaseControllerTest {
                            @Autowired ProjectRepository projectRepository){
 
         ProjectDto projectDto = buildProjectDto();
-        Project project = buildProjectFromDto(projectDto);
+        project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        UserDto userDto = buildUserDto(project.getId());
-        user = buildUserFromDtoWithoutId(userDto, project);
+        user = buildUserWithOutId(project);
         userRepository.save(user);
 
         CourseDto courseDto = buildCourseDto(user.getId());
@@ -99,7 +97,7 @@ class RegistrationControllerTest extends BaseControllerTest {
         followerRepository.deleteAll();
         courseRepository.deleteById(course.getId());
         userRepository.deleteById(user.getId());
-        projectRepository.deleteAll();
+        projectRepository.delete(project);
     }
 
     @Test

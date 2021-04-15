@@ -35,6 +35,7 @@ import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponse
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -67,7 +68,7 @@ class UserControllerTest extends BaseControllerTest {
     @AfterAll
     static void cleanUp(@Autowired ProjectRepository projectRepository) {
         
-        projectRepository.deleteAll();
+        projectRepository.delete(project);
     }
     
     @Test
@@ -77,8 +78,7 @@ class UserControllerTest extends BaseControllerTest {
         List<UserResponseDto> userList = Stream.generate(UUID::randomUUID)
                 .limit(5)
                 .map(f -> {
-                    UserDto userDto = buildUserDto(project.getId());
-                    User user = buildUserFromDtoWithoutId(userDto, project);
+                    User user = buildUserWithOutId(project);
                     userRepository.save(user);
                     return buildUserResponseDtoFromEntity(user);
                 })
@@ -162,8 +162,8 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void switchActiveUserAccountTest() throws Exception {
-        UserDto userDto = buildUserDto(project.getId());
-        User user = buildUserFromDtoWithoutId(userDto, project);
+
+        User user = buildUserWithOutId(project);
         userRepository.save(user);
         UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
         userResponseDto.setActive(false);
@@ -189,8 +189,7 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     void switchActiveUserAccountUnauthorizedTest() throws Exception {
 
-        UserDto userDto = buildUserDto(project.getId());
-        User user = buildUserFromDtoWithoutId(userDto, project);
+        User user = buildUserWithOutId(project);
         userRepository.save(user);
 
         String contentAsString = mockMvc

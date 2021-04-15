@@ -32,21 +32,6 @@ public class UserBuilder {
         return buildUserFromDtoWithoutId(userDto, project);
     }
 
-    public static User buildUser(UUID id, Project project) {
-        User user = new User();
-        user.setId(id);
-        user.setUserName(NAME);
-        user.setEmail(EMAIL);
-        user.setPassword(PASSWORD_ENCRYPTED);
-        user.setRole(ROLE_ADMIN);
-        user.setActive(true);
-        user.setCreated(Instant.now());
-        user.setAvatar(AVATAR);
-        user.setProject(project);
-
-        return user;
-    }
-
     public static User buildUserFromDtoWithoutId(UserDto userDto, Project project) {
 
         User user = new User();

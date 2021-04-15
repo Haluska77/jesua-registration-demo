@@ -22,8 +22,8 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
-import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +49,7 @@ class CourseMapperTest {
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUser(USER_ID, project);
+        user = buildUserWithId(USER_ID, project);
     }
 
     @Test

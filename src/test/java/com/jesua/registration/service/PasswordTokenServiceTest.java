@@ -31,8 +31,8 @@ import static com.jesua.registration.builder.PasswordTokenBuilder.PASSWORD_TOKEN
 import static com.jesua.registration.builder.PasswordTokenBuilder.buildPasswordToken;
 import static com.jesua.registration.builder.PasswordTokenBuilder.createPasswordDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
-import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +72,7 @@ class PasswordTokenServiceTest {
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUser(USER_ID, project);
+        user = buildUserWithId(USER_ID, project);
     }
 
     @Test

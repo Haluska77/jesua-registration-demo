@@ -21,7 +21,7 @@ import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUser;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
@@ -56,8 +56,8 @@ class FollowerRepositoryTest {
         project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        User initialUser = buildUser(USER_ID, project);
-        savedUser = userRepository.save(initialUser);
+        savedUser = buildUserWithOutId(project);
+        userRepository.save(savedUser);
 
         course1 = buildCustomCourse(true, 5, savedUser);
         course2 = buildCustomCourse(false, 10, savedUser);

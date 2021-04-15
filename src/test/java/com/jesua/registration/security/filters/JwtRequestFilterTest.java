@@ -2,7 +2,6 @@ package com.jesua.registration.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jesua.registration.dto.ProjectDto;
-import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.repository.ProjectRepository;
@@ -21,8 +20,7 @@ import java.util.Date;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,8 +59,7 @@ class JwtRequestFilterTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        UserDto userDto = buildUserDto(project.getId());
-        User user = buildUserFromDtoWithoutId(userDto, project);
+        User user = buildUserWithOutId(project);
         userRepository.save(user);
 
         String jwtToken = Jwts.builder()

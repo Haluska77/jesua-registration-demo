@@ -3,7 +3,6 @@ package com.jesua.registration.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jesua.registration.dto.PasswordDto;
 import com.jesua.registration.dto.ProjectDto;
-import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.dto.UserTokenDto;
 import com.jesua.registration.entity.PasswordToken;
@@ -28,9 +27,8 @@ import java.time.temporal.ChronoUnit;
 import static com.jesua.registration.builder.PasswordTokenBuilder.createPasswordDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static com.jesua.registration.dto.TokenState.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -59,8 +57,7 @@ class PasswordTokenControllerTest extends BaseControllerTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        UserDto userDto = buildUserDto(project.getId());
-        user = buildUserFromDtoWithoutId(userDto, project);
+        user = buildUserWithOutId(project);
         userRepository.save(user);
 
     }

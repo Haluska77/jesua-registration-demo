@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.CourseResponseDto;
 import com.jesua.registration.dto.ProjectDto;
-import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
@@ -31,8 +30,7 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,8 +54,7 @@ class CourseControllerTest extends BaseControllerTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        UserDto userDto = buildUserDto(project.getId());
-        user = buildUserFromDtoWithoutId(userDto, project);
+        user = buildUserWithOutId(project);
         userRepository.save(user);
 
         CourseDto courseDto = buildCourseDto(user.getId());
@@ -243,6 +240,7 @@ class CourseControllerTest extends BaseControllerTest {
 
     @Test
     void updateUnauthorizedEventsTest() throws Exception {
+
         CourseDto courseDto = buildCourseDto(user.getId());
         Course course = buildCourseFromDto(courseDto, user);
         courseRepository.save(course);

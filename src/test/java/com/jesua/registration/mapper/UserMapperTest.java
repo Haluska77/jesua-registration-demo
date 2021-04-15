@@ -19,10 +19,10 @@ import java.util.UUID;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
-import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.Mockito.doReturn;
@@ -50,7 +50,7 @@ public class UserMapperTest {
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUser(USER_ID, project);
+        user = buildUserWithId(USER_ID, project);
     }
 
     @Test

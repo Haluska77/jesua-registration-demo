@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.ProjectDto;
-import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.Project;
@@ -28,8 +27,7 @@ import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,8 +64,7 @@ class HomeControllerTest extends BaseControllerTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        UserDto userDto = buildUserDto(project.getId());
-        User user = buildUserFromDtoWithoutId(userDto, project);
+        User user = buildUserWithOutId(project);
         userRepository.save(user);
 
         CourseDto courseDto = buildCourseDto(user.getId());

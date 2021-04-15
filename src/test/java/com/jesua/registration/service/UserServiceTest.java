@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
-import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
@@ -51,7 +50,7 @@ class UserServiceTest {
     @BeforeAll
     static void setUp() {
         project = buildProject(1);
-        user = buildUser(USER_ID, project);
+        user = buildUserWithId(USER_ID, project);
     }
 
     @Test
@@ -164,7 +163,7 @@ class UserServiceTest {
     @Test
     void updateUserTest() {
 
-        User user1 = buildUser(USER_ID, project);
+        User user1 = buildUserWithId(USER_ID, project);
         UserDto userDto = buildUserDto(project.getId());
         userDto.setRole("ROLE_MODERATOR");
         userDto.setActive(false);
