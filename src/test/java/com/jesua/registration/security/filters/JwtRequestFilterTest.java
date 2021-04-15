@@ -1,8 +1,11 @@
 package com.jesua.registration.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.UserDto;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
+import com.jesua.registration.repository.ProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,8 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
 
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +39,9 @@ class JwtRequestFilterTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @Value("${jesua.app.jwtSecret}")
     private String jwtSecret;
 
@@ -43,13 +51,18 @@ class JwtRequestFilterTest {
     @AfterEach
     public void tearDown() {
         userRepository.deleteAll();
+        projectRepository.deleteAll();
     }
 
     @Test
     public void jwtSuccessTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        ProjectDto projectDto = buildProjectDto();
+        Project project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
+
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
 
         String jwtToken = Jwts.builder()

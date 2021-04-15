@@ -2,10 +2,12 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.services.UserAuthPrincipal;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,10 +20,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
@@ -30,7 +34,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    public static final UUID MY_ID = UUID.randomUUID();
+    public static final UUID USER_ID = UUID.randomUUID();
 
     @Mock
     UserRepository userRepository;
@@ -41,10 +45,18 @@ class UserServiceTest {
     @InjectMocks
     UserService userService;
 
+    private static User user;
+    private static Project project;
+
+    @BeforeAll
+    static void setUp() {
+        project = buildProject(1);
+        user = buildUser(USER_ID, project);
+    }
+
     @Test
     void loadExistingUserByUsernameTest() {
 
-        User user = buildUser(MY_ID);
         UserDetails expectedUserDetails = new UserAuthPrincipal(user);
 
         doReturn(Optional.of(user)).when(userRepository).findByEmailAndActiveTrue(user.getEmail());
@@ -69,16 +81,15 @@ class UserServiceTest {
     @Test
     void switchActiveUserAccountToFalse() {
 
-        User user = buildUser(MY_ID);
-        UserResponseDto userResponseDto = buildUserResponseDto(user);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
         userResponseDto.setActive(false);
 
-        doReturn(Optional.of(user)).when(userRepository).findById(MY_ID);
+        doReturn(Optional.of(user)).when(userRepository).findById(USER_ID);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
 
-        UserResponseDto actualUserResponse = userService.switchActiveUserAccount(MY_ID);
+        UserResponseDto actualUserResponse = userService.switchActiveUserAccount(USER_ID);
 
-        verify(userRepository).findById(MY_ID);
+        verify(userRepository).findById(USER_ID);
         verify(userMapper).mapEntityToDto(user);
 
         assertThat(actualUserResponse).usingRecursiveComparison().isEqualTo(userResponseDto);
@@ -88,17 +99,16 @@ class UserServiceTest {
     @Test
     void switchActiveUserAccountToTrue() {
 
-        User user = buildUser(MY_ID);
         user.setActive(false);
-        UserResponseDto userResponseDto = buildUserResponseDto(user);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
         userResponseDto.setActive(true);
 
-        doReturn(Optional.of(user)).when(userRepository).findById(MY_ID);
+        doReturn(Optional.of(user)).when(userRepository).findById(USER_ID);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
 
-        UserResponseDto actualUserResponse = userService.switchActiveUserAccount(MY_ID);
+        UserResponseDto actualUserResponse = userService.switchActiveUserAccount(USER_ID);
 
-        verify(userRepository).findById(MY_ID);
+        verify(userRepository).findById(USER_ID);
         verify(userMapper).mapEntityToDto(user);
 
         assertThat(actualUserResponse).usingRecursiveComparison().isEqualTo(userResponseDto);
@@ -107,9 +117,9 @@ class UserServiceTest {
     @Test
     void switchActiveUserAccountNotFound() {
 
-        doReturn(Optional.empty()).when(userRepository).findById(MY_ID);
+        doReturn(Optional.empty()).when(userRepository).findById(USER_ID);
 
-        assertThatThrownBy(() -> userService.switchActiveUserAccount(MY_ID))
+        assertThatThrownBy(() -> userService.switchActiveUserAccount(USER_ID))
                 .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("User not Found!");
     }
@@ -117,26 +127,31 @@ class UserServiceTest {
     @Test
     void createSuccessUserTest() {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
-        UserResponseDto userResponseDto = buildUserResponseDto(buildUser(MY_ID));
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
+
+        User userWithId = buildUserWithId(USER_ID, project);
+
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(userWithId);
 
         doReturn(false).when(userRepository).existsByEmail(userDto.getEmail());
         doReturn(user).when(userMapper).mapDtoToEntity(userDto);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
+        doReturn(userWithId).when(userRepository).save(user);
 
         UserResponseDto actualUserResponse = userService.createUser(userDto);
 
         verify(userRepository).existsByEmail(userDto.getEmail());
         verify(userMapper).mapDtoToEntity(userDto);
         verify(userMapper).mapEntityToDto(user);
+        verify(userRepository).save(user);
 
         assertThat(actualUserResponse).usingRecursiveComparison().isEqualTo(userResponseDto);
     }
 
     @Test
     void createFailedUserTest() {
-        UserDto userDto = buildUserDto();
+        UserDto userDto = buildUserDto(project.getId());
 
         doReturn(true).when(userRepository).existsByEmail(userDto.getEmail());
 
@@ -148,20 +163,21 @@ class UserServiceTest {
 
     @Test
     void updateUserTest() {
-        User user1 = buildUser(MY_ID);
-        UserDto userDto = buildUserDto();
+
+        User user1 = buildUser(USER_ID, project);
+        UserDto userDto = buildUserDto(project.getId());
         userDto.setRole("ROLE_MODERATOR");
         userDto.setActive(false);
-        User expectedUser = buildUserFromDto(userDto);
-        UserResponseDto userResponseDto = buildUserResponseDto(expectedUser);
+        User expectedUser = buildUserFromDtoWithoutId(userDto, project);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(expectedUser);
 
-        doReturn(user1).when(userRepository).getOne(MY_ID);
+        doReturn(user1).when(userRepository).getOne(USER_ID);
         doReturn(expectedUser).when(userMapper).mapDtoToEntity(userDto, user1);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(expectedUser);
 
-        UserResponseDto actualUserResponse = userService.updateUser(MY_ID, userDto);
+        UserResponseDto actualUserResponse = userService.updateUser(USER_ID, userDto);
 
-        verify(userRepository).getOne(MY_ID);
+        verify(userRepository).getOne(USER_ID);
         verify(userMapper).mapDtoToEntity(userDto, user1);
         verify(userMapper).mapEntityToDto(expectedUser);
 

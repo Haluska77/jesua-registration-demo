@@ -1,7 +1,9 @@
 package com.jesua.registration.repository;
 
+import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.PasswordToken;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,8 +15,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.Instant;
 import java.util.List;
 
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,6 +33,9 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
     private PasswordTokenRepository passwordTokenRepository;
 
     User user1;
@@ -39,8 +46,12 @@ class UserRepositoryTest {
     public void setUp(){
         userRepository.deleteAll();
 
-        UserDto userDto1 = buildUserDto();
-        user1 = buildUserFromDto(userDto1);
+        ProjectDto projectDto = buildProjectDto();
+        Project project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
+
+        UserDto userDto1 = buildUserDto(project.getId());
+        user1 = buildUserFromDtoWithoutId(userDto1, project);
         userRepository.save(user1);
 
         passwordToken = new PasswordToken();
@@ -50,10 +61,10 @@ class UserRepositoryTest {
         passwordToken.setUser(user1);
         passwordTokenRepository.save(passwordToken);
 
-        UserDto userDto2 = buildUserDto();
+        UserDto userDto2 = buildUserDto(project.getId());
         userDto2.setEmail("another@user.com");
         userDto2.setActive(false);
-        user2 = buildUserFromDto(userDto2);
+        user2 = buildUserFromDtoWithoutId(userDto2, project);
         userRepository.save(user2);
     }
 
@@ -62,6 +73,7 @@ class UserRepositoryTest {
         passwordTokenRepository.delete(passwordToken);
         userRepository.delete(user1);
         userRepository.delete(user2);
+        projectRepository.deleteAll();
     }
 
     @Test

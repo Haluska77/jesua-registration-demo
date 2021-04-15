@@ -5,5 +5,3 @@ databaseChangeLog:
       file: db/changelog/02_initial-entry-data.yaml
   - include:
       file: db/changelog/03_password-token-changelog.yaml
-  - include:
-      file: db/changelog/04_project-changelog.yaml

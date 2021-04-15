@@ -4,8 +4,10 @@ import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.CourseResponseDto;
 import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.entity.Course;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.service.UserService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +21,9 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
+import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.UserBuilder.buildUser;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,11 +43,20 @@ class CourseMapperTest {
     @Mock
     private UserMapperImpl userMapper;
 
+    private static User user;
+    private static Project project;
+
+    @BeforeAll
+    static void setUp(){
+        project = buildProject(1);
+        user = buildUser(USER_ID, project);
+    }
+
     @Test
     void mapDtoToEntityTest() {
-        User user = buildUser(USER_ID);
+
         CourseDto courseDto = buildCourseDto(USER_ID);
-        Course expectedCourse = buildCourseFromDto(courseDto);
+        Course expectedCourse = buildCourseFromDto(courseDto, user);
 
         doReturn(user).when(userService).getUser(USER_ID);
 
@@ -58,10 +70,10 @@ class CourseMapperTest {
 
     @Test
     void mapDtoToExistingEntityTest() {
-        User user = buildUser(USER_ID);
-        Course course = buildSavedCourse(3, USER_ID, 80);
+
+        Course course = buildSavedCourse(3, user, 80);
         CourseDto courseDto = buildCourseDto(USER_ID);
-        Course expectedCourse = buildCourseFromDto(courseDto);
+        Course expectedCourse = buildCourseFromDto(courseDto, user);
 
         doReturn(user).when(userService).getUser(USER_ID);
 
@@ -76,8 +88,8 @@ class CourseMapperTest {
     @Test
     void mapEntityToDtoTest() {
 
-        UserResponseDto userResponseDto = buildUserResponseDto(buildUser(USER_ID));
-        Course course = buildSavedCourse(3, USER_ID, 80);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        Course course = buildSavedCourse(3, user, 80);
         CourseResponseDto expectedCourseResponseDto = buildCourseResponseDtoFromEntity(course);
 
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(any());

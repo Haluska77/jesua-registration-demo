@@ -3,13 +3,16 @@ package com.jesua.registration.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.FollowerDto;
+import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.CourseRepository;
 import com.jesua.registration.repository.FollowerRepository;
+import com.jesua.registration.repository.ProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -23,8 +26,10 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,25 +45,33 @@ class HomeControllerTest extends BaseControllerTest {
     @Autowired
     private FollowerRepository followerRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @AfterAll
     static void cleanUp(@Autowired UserRepository userRepository,
                         @Autowired CourseRepository courseRepository,
-                        @Autowired FollowerRepository followerRepository) {
+                        @Autowired FollowerRepository followerRepository,
+                        @Autowired ProjectRepository projectRepository) {
 
         followerRepository.deleteAll();
         courseRepository.deleteAll();
         userRepository.deleteAll();
+        projectRepository.deleteAll();
     }
 
     @Test
     void getStatisticsTest() throws Exception {
+        ProjectDto projectDto = buildProjectDto();
+        Project project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
 
         CourseDto courseDto = buildCourseDto(user.getId());
-        Course course = buildCourseFromDto(courseDto);
+        Course course = buildCourseFromDto(courseDto, user);
         courseRepository.save(course);
 
         FollowerDto followerDto = buildFollowerDto(course.getId());

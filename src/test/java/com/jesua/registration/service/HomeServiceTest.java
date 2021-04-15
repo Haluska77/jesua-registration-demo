@@ -2,6 +2,8 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
+import com.jesua.registration.entity.Project;
+import com.jesua.registration.entity.User;
 import com.jesua.registration.repository.CourseRepository;
 import com.jesua.registration.repository.FollowerRepository;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static com.jesua.registration.builder.FollowerBuilder.TOKEN;
 import static com.jesua.registration.builder.FollowerBuilder.buildFullFollower;
+import static com.jesua.registration.builder.ProjectBuilder.buildProject;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -39,9 +43,11 @@ class HomeServiceTest {
 
     @Test
     void getStatisticsTest() {
+        Project project = buildProject(1);
+        User user = buildUserWithId(USER_ID, project);
 
-        Course course1 = buildSavedCourse(1, USER_ID, 10);
-        Course course2 = buildSavedCourse(2, USER_ID, 50);
+        Course course1 = buildSavedCourse(1, user, 10);
+        Course course2 = buildSavedCourse(2, user, 50);
         List<Course> courseList = List.of(course1, course2);
         Follower existingFollower1 = buildFullFollower(UUID.randomUUID(), TOKEN, null, true, course2);
         Follower existingFollower2 = buildFullFollower(UUID.randomUUID(), TOKEN, null, true, course2);

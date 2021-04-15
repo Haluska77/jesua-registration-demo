@@ -1,5 +1,6 @@
 package com.jesua.registration.security.services;
 
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 public class UserAuthPrincipal implements UserDetails {
 
-    private User user;
+    private final User user;
 
     public UserAuthPrincipal(User user) {
         this.user = user;
@@ -76,5 +77,9 @@ public class UserAuthPrincipal implements UserDetails {
 
     public Instant getCreated() {
         return user.getCreated();
+    }
+
+    public Project getProject() {
+        return user.getProject();
     }
 }

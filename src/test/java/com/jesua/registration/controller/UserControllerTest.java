@@ -1,16 +1,22 @@
 package com.jesua.registration.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.jesua.registration.dto.ProjectDto;
+import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.ErrorDTO;
 import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
+import com.jesua.registration.repository.ProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,9 +29,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,11 +50,26 @@ class UserControllerTest extends BaseControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    private static Project project;
+    
+    @BeforeAll
+    static void setUp(@Autowired ProjectRepository projectRepository) {
+        ProjectDto projectDto = buildProjectDto();
+        project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
+    }
+    
     @AfterEach
     public void tearDown() {
         userRepository.deleteAll();
     }
 
+    @AfterAll
+    static void cleanUp(@Autowired ProjectRepository projectRepository) {
+        
+        projectRepository.deleteAll();
+    }
+    
     @Test
     @WithMockUser(roles = "ADMIN")
     void usersSuccessTest() throws Exception {
@@ -53,10 +77,10 @@ class UserControllerTest extends BaseControllerTest {
         List<UserResponseDto> userList = Stream.generate(UUID::randomUUID)
                 .limit(5)
                 .map(f -> {
-                    UserDto userDto = buildUserDto();
-                    User user = buildUserFromDto(userDto);
+                    UserDto userDto = buildUserDto(project.getId());
+                    User user = buildUserFromDtoWithoutId(userDto, project);
                     userRepository.save(user);
-                    return buildUserResponseDto(user);
+                    return buildUserResponseDtoFromEntity(user);
                 })
                 .collect(Collectors.toList());
 
@@ -68,7 +92,7 @@ class UserControllerTest extends BaseControllerTest {
 
         SuccessResponse<List<UserResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
         });
-        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created").isEqualTo(userList);
+        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "project.created").isEqualTo(userList);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(userList.size());
 
     }
@@ -90,10 +114,10 @@ class UserControllerTest extends BaseControllerTest {
     @WithMockUser(roles = "ADMIN")
     void updateSuccessTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
-        UserResponseDto userResponseDto = buildUserResponseDto(user);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
 
         MockHttpServletResponse response = mockMvc
                 .perform(post("/users/update/" + user.getId())
@@ -107,8 +131,9 @@ class UserControllerTest extends BaseControllerTest {
         });
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
-        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created").isEqualTo(userResponseDto);
+        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "project.created").isEqualTo(userResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(userResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isEqualTo(USER_HAS_BEEN_SUCCESSFULLY_CHANGED);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
 
@@ -117,8 +142,8 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     void updateUnauthorizedTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
 
         String contentAsString = mockMvc
                 .perform(post("/users/update/" + user.getId())
@@ -137,10 +162,10 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void switchActiveUserAccountTest() throws Exception {
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
-        UserResponseDto userResponseDto = buildUserResponseDto(user);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
         userResponseDto.setActive(false);
 
         MockHttpServletResponse response = mockMvc
@@ -154,8 +179,9 @@ class UserControllerTest extends BaseControllerTest {
         });
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
-        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created").isEqualTo(userResponseDto);
+        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "project.created").isEqualTo(userResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(userResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isEqualTo(USER_HAS_BEEN_CHANGED);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
@@ -163,8 +189,8 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     void switchActiveUserAccountUnauthorizedTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
 
         String contentAsString = mockMvc
@@ -183,10 +209,11 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     void signInTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
+        ProjectResponseDto projectResponseDto = buildProjectResponseDtoFromEntity(project);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
-        UserResponseDto userResponseDto = buildUserResponseDto(user);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
 
         LoginDto loginDto = new LoginDto();
         loginDto.setEmail(userDto.getEmail());
@@ -194,7 +221,7 @@ class UserControllerTest extends BaseControllerTest {
 
         LoginResponseDto loginResponseDto = new LoginResponseDto(userResponseDto.getId(), userResponseDto.getAvatar(),
                 userResponseDto.getName(), userResponseDto.getEmail(), userResponseDto.getRole(), userResponseDto.getActive(),
-                userResponseDto.getCreated(), "eyJhbGciOiJIUzUxMiJ9." +
+                userResponseDto.getCreated(), projectResponseDto, "eyJhbGciOiJIUzUxMiJ9." +
                 "eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2MTc3MjE5MTIsImV4cCI6MTYxNzczMDkxMn0." +
                 "xI-wP_2_R3xQP4Xk3PmW2n5z9Q41ECT1CsT-gqZQ3rMKfFxIRU5qevc9_TGmU1GthN-EqClncNyeO5d8bhoGfQ");
 
@@ -211,8 +238,10 @@ class UserControllerTest extends BaseControllerTest {
         });
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
-        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "token").isEqualTo(loginResponseDto);
+        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison()
+                .ignoringFields("created", "project.created","token").isEqualTo(loginResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(loginResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(loginResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getToken()).startsWith("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2MT");
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
@@ -222,9 +251,9 @@ class UserControllerTest extends BaseControllerTest {
     @WithMockUser(roles = "ADMIN")
     void createUserSuccessTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
-        User user = buildUserFromDto(userDto);
-        UserResponseDto userResponseDto = buildUserResponseDto(user);
+        UserDto userDto = buildUserDto(project.getId());
+        User user = buildUserFromDtoWithoutId(userDto, project);
+        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
 
         MockHttpServletResponse response = mockMvc
                 .perform(post("/users/signup")
@@ -238,9 +267,11 @@ class UserControllerTest extends BaseControllerTest {
         });
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
-        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("id", "created").isEqualTo(userResponseDto);
+        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison()
+                .ignoringFields("id", "created", "project.created").isEqualTo(userResponseDto);
         assertThat(successResponse.getResponse().getBody().getId()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(userResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isEqualTo(NEW_USER_REGISTERED_SUCCESSFULLY);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
@@ -248,7 +279,7 @@ class UserControllerTest extends BaseControllerTest {
     @Test
     void createUserUnauthorizedTest() throws Exception {
 
-        UserDto userDto = buildUserDto();
+        UserDto userDto = buildUserDto(project.getId());
 
         String contentAsString = mockMvc
                 .perform(post("/users/signup")

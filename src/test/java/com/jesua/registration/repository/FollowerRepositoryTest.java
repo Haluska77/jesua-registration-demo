@@ -1,8 +1,10 @@
 package com.jesua.registration.repository;
 
 import com.jesua.registration.dto.FollowerDto;
+import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,6 +19,8 @@ import java.util.UUID;
 import static com.jesua.registration.builder.CourseBuilder.buildCustomCourse;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FollowerRepositoryTest {
 
-    private static final UUID ID = UUID.randomUUID();
+    private static final UUID USER_ID = UUID.randomUUID();
 
     @Autowired
     private CourseRepository courseRepository;
@@ -35,15 +39,24 @@ class FollowerRepositoryTest {
     @Autowired
     private FollowerRepository followerRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     private User savedUser;
     private Course course1;
     private Course course2;
     private Follower savedFollower1;
     private Follower savedFollower2;
+    private Project project;
 
     @BeforeAll
-    public void setUp(){
-        User initialUser = buildUser(ID);
+    public void setUp() {
+
+        ProjectDto projectDto = buildProjectDto();
+        project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
+
+        User initialUser = buildUser(USER_ID, project);
         savedUser = userRepository.save(initialUser);
 
         course1 = buildCustomCourse(true, 5, savedUser);
@@ -64,12 +77,13 @@ class FollowerRepositoryTest {
     }
 
     @AfterAll
-    public void tearDown(){
+    public void tearDown() {
         followerRepository.delete(savedFollower1);
         followerRepository.delete(savedFollower2);
         courseRepository.delete(course1);
         courseRepository.delete(course2);
         userRepository.delete(savedUser);
+        projectRepository.delete(project);
     }
 
     @Test

@@ -5,15 +5,18 @@ import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
+import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.ErrorDTO;
 import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.CourseRepository;
 import com.jesua.registration.repository.FollowerRepository;
+import com.jesua.registration.repository.ProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -32,8 +35,10 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static com.jesua.registration.util.AppUtil.instantToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,13 +58,19 @@ class RegistrationControllerTest extends BaseControllerTest {
     @BeforeAll
     static void createUser(@Autowired UserRepository userRepository,
                            @Autowired CourseRepository courseRepository,
-                           @Autowired FollowerRepository followerRepository){
-        UserDto userDto = buildUserDto();
-        user = buildUserFromDto(userDto);
+                           @Autowired FollowerRepository followerRepository,
+                           @Autowired ProjectRepository projectRepository){
+
+        ProjectDto projectDto = buildProjectDto();
+        Project project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
+
+        UserDto userDto = buildUserDto(project.getId());
+        user = buildUserFromDtoWithoutId(userDto, project);
         userRepository.save(user);
 
         CourseDto courseDto = buildCourseDto(user.getId());
-        course = buildCourseFromDto(courseDto);
+        course = buildCourseFromDto(courseDto, user);
         courseRepository.save(course);
 
         FollowerDto followerDto = buildFollowerDto(course.getId());
@@ -82,11 +93,13 @@ class RegistrationControllerTest extends BaseControllerTest {
     @AfterAll
     static void cleanUp(@Autowired UserRepository userRepository,
                         @Autowired CourseRepository courseRepository,
-                        @Autowired FollowerRepository followerRepository){
+                        @Autowired FollowerRepository followerRepository,
+                        @Autowired ProjectRepository projectRepository){
 
         followerRepository.deleteAll();
         courseRepository.deleteById(course.getId());
         userRepository.deleteById(user.getId());
+        projectRepository.deleteAll();
     }
 
     @Test

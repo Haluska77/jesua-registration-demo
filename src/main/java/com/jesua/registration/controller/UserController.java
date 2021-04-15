@@ -1,8 +1,10 @@
 package com.jesua.registration.controller;
 
+import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.exception.SuccessResponse;
+import com.jesua.registration.mapper.ProjectMapper;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
 import com.jesua.registration.security.jwt.JwtProvider;
@@ -34,6 +36,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final ProjectMapper projectMapper;
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
@@ -71,10 +74,11 @@ public class UserController {
         String jwtToken = jwtProvider.generateJwtToken(authentication);
 
         UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
+        ProjectResponseDto project = projectMapper.mapEntityToDto(userDetails.getProject());
 
         return ResponseEntity.ok(new LoginResponseDto(userDetails.getId(), userDetails.getAvatar(), userDetails.getName(),
                 userDetails.getUsername(), userDetails.getRole(),
-                userDetails.isEnabled(), userDetails.getCreated(), jwtToken));
+                userDetails.isEnabled(), userDetails.getCreated(), project, jwtToken));
 
     }
 

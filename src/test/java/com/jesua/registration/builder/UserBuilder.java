@@ -2,11 +2,14 @@ package com.jesua.registration.builder;
 
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.Instant;
 import java.util.UUID;
+
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
 
 public class UserBuilder {
 
@@ -17,7 +20,19 @@ public class UserBuilder {
     public static final String PASSWORD_ENCRYPTED = "$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm";
     public static final String PASSWORD = "admin";
 
-    public static User buildUser(UUID id) {
+
+    public static User buildUserWithId(UUID id, Project project) {
+        User user = buildUserWithOutId(project);
+        user.setId(id);
+        return user;
+    }
+
+    public static User buildUserWithOutId(Project project) {
+        UserDto userDto = buildUserDto(project.getId());
+        return buildUserFromDtoWithoutId(userDto, project);
+    }
+
+    public static User buildUser(UUID id, Project project) {
         User user = new User();
         user.setId(id);
         user.setUserName(NAME);
@@ -27,11 +42,12 @@ public class UserBuilder {
         user.setActive(true);
         user.setCreated(Instant.now());
         user.setAvatar(AVATAR);
+        user.setProject(project);
 
         return user;
     }
 
-    public static User buildUserFromDto(UserDto userDto) {
+    public static User buildUserFromDtoWithoutId(UserDto userDto, Project project) {
 
         User user = new User();
         user.setEmail(userDto.getEmail());
@@ -41,12 +57,13 @@ public class UserBuilder {
         user.setActive(userDto.getActive());
         user.setCreated(Instant.now());
         user.setPassword(new BCryptPasswordEncoder(10).encode(userDto.getPassword()));
+        user.setProject(project);
 
         return user;
     }
 
     // input user from UI
-    public static UserDto buildUserDto() {
+    public static UserDto buildUserDto(int projectId) {
 
         UserDto userDto = new UserDto();
         userDto.setName(NAME);
@@ -55,12 +72,13 @@ public class UserBuilder {
         userDto.setRole(ROLE_ADMIN);
         userDto.setActive(true);
         userDto.setAvatar(AVATAR);
+        userDto.setProjectId(projectId);
 
         return userDto;
     }
 
     // output user submitted to UI
-    public static UserResponseDto buildUserResponseDto(User user) {
+    public static UserResponseDto buildUserResponseDtoFromEntity(User user) {
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setId(user.getId());
         userResponseDto.setEmail(user.getEmail());
@@ -69,6 +87,7 @@ public class UserBuilder {
         userResponseDto.setRole(user.getRole());
         userResponseDto.setActive(user.getActive());
         userResponseDto.setCreated(user.getCreated());
+        userResponseDto.setProject(buildProjectResponseDtoFromEntity(user.getProject()));
 
         return userResponseDto;
     }

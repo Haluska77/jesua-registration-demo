@@ -3,7 +3,6 @@ package com.jesua.registration.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -22,4 +21,5 @@ public class UserResponseDto {
     private String role;
     private Boolean active;
     private Instant created;
+    private ProjectResponseDto project;
 }

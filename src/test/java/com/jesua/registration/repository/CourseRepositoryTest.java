@@ -1,6 +1,9 @@
 package com.jesua.registration.repository;
 
+import com.jesua.registration.dto.ProjectDto;
+import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
+import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterAll;
@@ -14,18 +17,19 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCustomCourse;
-import static com.jesua.registration.builder.UserBuilder.buildUser;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.within;
 
 @DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CourseRepositoryTest {
-
-    private static final UUID ID = UUID.randomUUID();
 
     @Autowired
     private CourseRepository courseRepository;
@@ -33,18 +37,29 @@ public class CourseRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User savedUser;
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    private User user;
     private Course openCourse;
     private Course closeCourse;
+    private Project project;
 
     @BeforeAll
     public void setUp(){
-        User initialUser = buildUser(ID);
-        savedUser = userRepository.save(initialUser);
-        openCourse = buildCustomCourse(true, 5, savedUser);
+
+        ProjectDto projectDto = buildProjectDto();
+        project = buildProjectFromDto(projectDto);
+        projectRepository.save(project);
+
+        UserDto userDto = buildUserDto(project.getId());
+        user = buildUserFromDtoWithoutId(userDto, project);
+        userRepository.save(user);
+
+        openCourse = buildCustomCourse(true, 5, user);
         courseRepository.save(openCourse);
 
-        closeCourse = buildCustomCourse(false, 1, savedUser);
+        closeCourse = buildCustomCourse(false, 1, user);
         courseRepository.save(closeCourse);
 
     }
@@ -53,20 +68,25 @@ public class CourseRepositoryTest {
     public void tearDown(){
         courseRepository.delete(openCourse);
         courseRepository.delete(closeCourse);
-        userRepository.delete(savedUser);
+        userRepository.delete(user);
+        projectRepository.delete(project);
     }
 
     @Test
     void findByIdTest() {
-        Course actualCourse = courseRepository.findById(openCourse.getId()).orElse(null);
+        Course actualCourse = courseRepository.findById(openCourse.getId()).orElseGet(()-> fail("Course not found"));
 
         assertThat(actualCourse).usingRecursiveComparison().ignoringFields("created", "startDate", "user").isEqualTo(openCourse);
         assertThat(actualCourse.getCreated()).isCloseTo(openCourse.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(actualCourse.getStartDate()).isCloseTo(openCourse.getStartDate(), within(1, ChronoUnit.SECONDS));
         User user = (User) Hibernate.unproxy(actualCourse.getUser());
-        assertThat(user).usingRecursiveComparison().ignoringFields("created", "passwordTokens").isEqualTo(openCourse.getUser());
+        assertThat(user).usingRecursiveComparison().ignoringFields("created", "passwordTokens", "project").isEqualTo(openCourse.getUser());
         assertThat(user.getCreated()).isCloseTo(openCourse.getUser().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(user.getPasswordTokens()).isEmpty();
+        //FIXME to resolve no Session for nested objects
+//        Project project = (Project) Hibernate.unproxy(actualCourse.getUser().getProject());
+//        assertThat(project).usingRecursiveComparison().ignoringFields("created").isEqualTo(openCourse.getUser().getProject());
+
     }
 
     @Test

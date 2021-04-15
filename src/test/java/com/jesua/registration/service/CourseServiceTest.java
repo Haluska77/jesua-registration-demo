@@ -1,11 +1,13 @@
 package com.jesua.registration.service;
 
-import com.jesua.registration.builder.CourseBuilder;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.CourseResponseDto;
 import com.jesua.registration.entity.Course;
+import com.jesua.registration.entity.Project;
+import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.CourseMapper;
 import com.jesua.registration.repository.CourseRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,8 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
+import static com.jesua.registration.builder.ProjectBuilder.buildProject;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -37,9 +41,18 @@ public class CourseServiceTest {
     @InjectMocks
     CourseService courseService;
 
+    private static User user;
+
+    @BeforeAll
+    static void setUp(){
+        Project project = buildProject(1);
+        user = buildUserWithId(USER_ID, project);
+    }
+
     @Test
     void getCoursesTest() {
-        Course course1 = buildSavedCourse(1, USER_ID,  20);
+
+        Course course1 = buildSavedCourse(1, user,  20);
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
@@ -57,7 +70,8 @@ public class CourseServiceTest {
 
     @Test
     void getActiveCoursesTest() {
-        Course course1 = buildSavedCourse(1, USER_ID, 80);
+
+        Course course1 = buildSavedCourse(1, user, 80);
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
@@ -78,7 +92,7 @@ public class CourseServiceTest {
     void addCourseTest() {
 
         CourseDto courseDto = buildCourseDto(USER_ID);
-        Course courseEntity = CourseBuilder.buildCourseFromDto(courseDto);
+        Course courseEntity = buildCourseFromDto(courseDto, user);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(courseEntity);
 
         when(courseMapper.mapDtoToEntity(courseDto)).thenReturn(courseEntity);
@@ -99,9 +113,10 @@ public class CourseServiceTest {
 
     @Test
     void updateCourseTest() {
+
         CourseDto courseDto = buildCourseDto(USER_ID);
-        Course savedCourse = buildSavedCourse(1, USER_ID, 50);
-        Course updatedCourse = buildCourseFromDto(courseDto, savedCourse);
+        Course savedCourse = buildSavedCourse(1, user, 50);
+        Course updatedCourse = buildCourseFromDto(courseDto, savedCourse, user);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(updatedCourse);
 
         when(courseRepository.getOne(any())).thenReturn(savedCourse);

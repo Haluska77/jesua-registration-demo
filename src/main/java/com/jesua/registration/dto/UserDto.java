@@ -13,4 +13,5 @@ public class UserDto {
     private String password;
     private String role;
     private Boolean active;
+    private int projectId;
 }

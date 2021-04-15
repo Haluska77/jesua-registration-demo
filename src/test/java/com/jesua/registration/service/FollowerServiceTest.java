@@ -4,6 +4,8 @@ import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
+import com.jesua.registration.entity.Project;
+import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.FollowerMapper;
 import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.MessageBuilder;
@@ -29,6 +31,8 @@ import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDt
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerResponse;
 import static com.jesua.registration.builder.FollowerBuilder.buildFollowerResponseDto;
 import static com.jesua.registration.builder.FollowerBuilder.buildFullFollower;
+import static com.jesua.registration.builder.ProjectBuilder.buildProject;
+import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static com.jesua.registration.util.AppUtil.instantToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -66,10 +70,13 @@ class FollowerServiceTest {
     FollowerService followerService;
 
     public static Course course;
+    public static User user;
 
     @BeforeAll
     static void setUp(){
-        course = buildSavedCourse(1, USER_ID, 100);
+        Project project = buildProject(1);
+        user = buildUserWithId(USER_ID, project);
+        course = buildSavedCourse(1, user, 100);
     }
 
     @Test
@@ -208,7 +215,7 @@ class FollowerServiceTest {
 
         boolean ACCEPTED_FALSE = false;
 
-        Course course2 = buildSavedCourse(2, USER_ID, 2);
+        Course course2 = buildSavedCourse(2, user, 2);
         String responseMessage = "Vaša registrácia na kurz Ješua (" + course2.getDescription() + ", " + instantToString(course2.getStartDate()) + ") " +
                 "prebehla úspešne! <br> Momentálne je kapacita kurzu už naplnená. Ste v poradí. <br> Pred vami sa ešte prihlásilo <strong>0</strong> ľudí. " +
                 "<br> V prípade, že sa niektorý z účastníkov odhlási, dáme vám vedieť emailom na vašu adresu <strong>jesua@jesua.com</strong";

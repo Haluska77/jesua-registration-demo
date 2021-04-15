@@ -9,38 +9,39 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import static com.jesua.registration.builder.UserBuilder.buildUser;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDto;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
 import static com.jesua.registration.util.AppUtil.stringToInstant;
 
 public class CourseBuilder {
 
-    public static Course buildCourseFromDto(CourseDto courseDto){
+    public static Course buildCourseFromDto(CourseDto courseDto, User user){
 
         Course course = new Course();
         course.setDescription(courseDto.getDescription());
         course.setStartDate(stringToInstant(courseDto.getStartDate()));
         course.setCapacity(courseDto.getCapacity());
         course.setOpen(courseDto.isOpen());
-        course.setUser(buildUser(courseDto.getUserId()));
+        course.setUser(user);
         course.setCreated(Instant.now());
+        course.setImage(courseDto.getImage());
 
         return course;
     }
 
-    public static Course buildCourseFromDto(CourseDto courseDto, Course course){
+    public static Course buildCourseFromDto(CourseDto courseDto, Course course, User user){
 
         course.setDescription(courseDto.getDescription());
         course.setStartDate(stringToInstant(courseDto.getStartDate()));
         course.setCapacity(courseDto.getCapacity());
         course.setOpen(courseDto.isOpen());
-        course.setUser(buildUser(courseDto.getUserId()));
+        course.setUser(user);
         course.setCreated(Instant.now());
+        course.setImage(courseDto.getImage());
 
         return course;
     }
 
-    public static Course buildSavedCourse(int id, UUID userId, int capacity){
+    public static Course buildSavedCourse(int id, User user, int capacity){
 
         Course course = new Course();
         course.setId(id);
@@ -48,8 +49,9 @@ public class CourseBuilder {
         course.setStartDate(Instant.now());
         course.setCapacity(capacity);
         course.setOpen(true);
-        course.setUser(buildUser(userId));
+        course.setUser(user);
         course.setCreated(Instant.now());
+        course.setImage("logo");
 
         return course;
     }
@@ -63,6 +65,7 @@ public class CourseBuilder {
         course.setOpen(open);
         course.setUser(user);
         course.setCreated(Instant.now());
+        course.setImage("my logo");
 
         return course;
     }
@@ -76,6 +79,7 @@ public class CourseBuilder {
         courseDto.setCapacity(100);
         courseDto.setOpen(true);
         courseDto.setUserId(userId);
+        courseDto.setImage("logo");
 
         return courseDto;
     }
@@ -89,8 +93,9 @@ public class CourseBuilder {
         courseResponseDto.setStartDate(course.getStartDate().toString());
         courseResponseDto.setCapacity(course.getCapacity());
         courseResponseDto.setOpen(course.getOpen());
-        courseResponseDto.setCreatedBy(buildUserResponseDto(course.getUser()));
+        courseResponseDto.setCreatedBy(buildUserResponseDtoFromEntity(course.getUser()));
         courseResponseDto.setCreated(course.getCreated());
+        courseResponseDto.setImage(course.getImage());
 
         return courseResponseDto;
     }
