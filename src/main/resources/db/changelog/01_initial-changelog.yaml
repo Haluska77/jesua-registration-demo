@@ -149,6 +149,11 @@ databaseChangeLog:
                     nullable: true
                   name: image
                   type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: project_id
+                  type: INT
   - changeSet:
       id: create-table-follower
       author: SH
@@ -252,6 +257,21 @@ databaseChangeLog:
             baseColumnNames: project_id
             baseTableName: jesua_user
             constraintName: fk_user__project_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: project
+            validate: true
+  - changeSet:
+      id: fk_course__project_id
+      author: SH
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: project_id
+            baseTableName: course
+            constraintName: fk_course__project_id
             deferrable: false
             initiallyDeferred: false
             onDelete: RESTRICT

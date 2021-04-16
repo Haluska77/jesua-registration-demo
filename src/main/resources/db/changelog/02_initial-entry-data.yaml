@@ -81,4 +81,6 @@ databaseChangeLog:
               - column:
                   name: image
                   value: "logo_jesua.png"
-
+              - column:
+                  name: project_id
+                  value: 1

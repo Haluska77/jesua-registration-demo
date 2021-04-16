@@ -15,4 +15,5 @@ public class CourseDto {
     private int capacity;
     private UUID userId;
     private String image;
+    private int projectId;
 }

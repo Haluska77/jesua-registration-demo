@@ -17,4 +17,5 @@ public class CourseResponseDto {
     private Instant created;
     private UserResponseDto createdBy;
     private String image;
+    private ProjectResponseDto project;
 }

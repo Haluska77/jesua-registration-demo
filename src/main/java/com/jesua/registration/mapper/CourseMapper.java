@@ -2,10 +2,8 @@ package com.jesua.registration.mapper;
 
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.CourseResponseDto;
-import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.User;
-import com.jesua.registration.service.CourseService;
 import com.jesua.registration.service.UserService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,10 +26,12 @@ public abstract class CourseMapper {
     @Mapping(target = "startDate", qualifiedByName = "InstantDateTime")
     @Mapping(target = "created", expression  = "java(Instant.now())")
     @Mapping(target = "user", source = "userId", qualifiedByName = "user")
+    @Mapping(target = "project", source = "projectId", qualifiedByName = "project")
     public abstract Course mapDtoToEntity(CourseDto courseDto);
 
     @Mapping(target = "startDate", qualifiedByName = "InstantDateTime")
     @Mapping(target = "user", source = "userId", qualifiedByName = "user")
+    @Mapping(target = "project", source = "projectId", qualifiedByName = "project")
     public abstract Course mapDtoToEntity(CourseDto courseDto, @MappingTarget Course course);
 
     @Named("InstantDateTime")
