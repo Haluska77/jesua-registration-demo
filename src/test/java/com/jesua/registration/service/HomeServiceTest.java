@@ -63,6 +63,7 @@ class HomeServiceTest {
             expStat.put("description", course.getDescription());
             expStat.put("startDate", course.getStartDate());
             expStat.put("capacity", course.getCapacity());
+            expStat.put("project", course.getProject());
             return expStat;
         }).collect(Collectors.toList());
 

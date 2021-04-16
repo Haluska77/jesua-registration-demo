@@ -95,9 +95,9 @@ class RegistrationControllerTest extends BaseControllerTest {
                         @Autowired ProjectRepository projectRepository){
 
         followerRepository.deleteAll();
-        courseRepository.deleteById(course.getId());
-        userRepository.deleteById(user.getId());
-        projectRepository.delete(project);
+        courseRepository.deleteAll();
+        userRepository.deleteAll();
+        projectRepository.deleteAll();
     }
 
     @Test

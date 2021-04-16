@@ -37,6 +37,7 @@ public class HomeService {
         followerCount.put("description", course.getDescription());
         followerCount.put("startDate", course.getStartDate());
         followerCount.put("capacity", course.getCapacity());
+        followerCount.put("project", course.getProject());
 
         return followerCount;
     }

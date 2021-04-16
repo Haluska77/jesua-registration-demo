@@ -23,7 +23,7 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
-    public List<ProjectResponseDto> geEvents() {
+    public List<ProjectResponseDto> all() {
         return projectService.getProjects();
     }
 
@@ -35,7 +35,7 @@ public class ProjectController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("update/{id}")
-    public ProjectResponseDto updateEvent(@RequestBody ProjectDto projectDto, @PathVariable("id") int id) {
+    public ProjectResponseDto update(@RequestBody ProjectDto projectDto, @PathVariable("id") int id) {
         return projectService.updateProject(projectDto, id);
     }
 

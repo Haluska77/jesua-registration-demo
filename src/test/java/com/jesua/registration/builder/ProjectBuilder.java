@@ -27,7 +27,7 @@ public class ProjectBuilder {
         project.setShortName(projectDto.getShortName());
         project.setDescription(projectDto.getDescription());
         project.setCreated(origProject.getCreated());
-        project.setActive(origProject.isActive());
+        project.setActive(projectDto.isActive());
 
         return project;
     }

@@ -68,7 +68,7 @@ class UserControllerTest extends BaseControllerTest {
     @AfterAll
     static void cleanUp(@Autowired ProjectRepository projectRepository) {
         
-        projectRepository.delete(project);
+        projectRepository.deleteAll();
     }
     
     @Test

@@ -68,8 +68,10 @@ class PasswordTokenControllerTest extends BaseControllerTest {
     }
 
     @AfterAll
-    static void tearDown(@Autowired UserRepository userRepository) {
+    static void tearDown(@Autowired UserRepository userRepository,
+                         @Autowired ProjectRepository projectRepository) {
         userRepository.deleteAll();
+        projectRepository.deleteAll();
     }
 
     @Test
