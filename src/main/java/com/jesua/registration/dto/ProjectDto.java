@@ -9,5 +9,6 @@ public class ProjectDto {
 
     private String shortName;
     private String description;
+    private boolean active;
 
 }

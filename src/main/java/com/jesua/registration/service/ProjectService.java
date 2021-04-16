@@ -32,10 +32,6 @@ public class ProjectService {
         return projectMapper.mapEntityToDto(project);
     }
 
-    public void deleteProject(int id) {
-        projectRepository.deleteById(id);
-    }
-
     public ProjectResponseDto updateProject(ProjectDto projectDto, int id) {
 
         Project savedProject = projectRepository.getOne(id);

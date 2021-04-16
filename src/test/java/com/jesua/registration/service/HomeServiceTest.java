@@ -46,8 +46,8 @@ class HomeServiceTest {
         Project project = buildProject(1);
         User user = buildUserWithId(USER_ID, project);
 
-        Course course1 = buildSavedCourse(1, user, 10);
-        Course course2 = buildSavedCourse(2, user, 50);
+        Course course1 = buildSavedCourse(1, user, 10, project);
+        Course course2 = buildSavedCourse(2, user, 50, project);
         List<Course> courseList = List.of(course1, course2);
         Follower existingFollower1 = buildFullFollower(UUID.randomUUID(), TOKEN, null, true, course2);
         Follower existingFollower2 = buildFullFollower(UUID.randomUUID(), TOKEN, null, true, course2);

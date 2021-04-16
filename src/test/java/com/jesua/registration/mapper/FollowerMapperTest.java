@@ -45,17 +45,18 @@ class FollowerMapperTest {
     private CourseMapper courseMapper;
 
     private static User user;
+    private static Project project;
 
     @BeforeAll
     static void setUp(){
-        Project project = buildProject(1);
+        project = buildProject(1);
         user = buildUserWithId(USER_ID, project);
     }
 
     @Test
     void mapDtoToEntityTest() {
 
-        Course course = buildSavedCourse(2, user, 70);
+        Course course = buildSavedCourse(2, user, 70, project);
         FollowerDto followerDto = buildFollowerDto(course.getId());
         Follower expectedFollower = buildFollowerFromDto(followerDto, course);
 
@@ -71,7 +72,7 @@ class FollowerMapperTest {
     @Test
     void mapEntityToDtoTest() {
 
-        Course course = buildSavedCourse(3, user, 80);
+        Course course = buildSavedCourse(3, user, 80, project);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course);
         FollowerDto followerDto = buildFollowerDto(course.getId());
         Follower follower = buildFollowerFromDto(followerDto, course);

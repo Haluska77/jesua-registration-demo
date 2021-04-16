@@ -55,10 +55,11 @@ class CourseMapperTest {
     @Test
     void mapDtoToEntityTest() {
 
-        CourseDto courseDto = buildCourseDto(USER_ID);
-        Course expectedCourse = buildCourseFromDto(courseDto, user);
+        CourseDto courseDto = buildCourseDto(USER_ID, project.getId());
+        Course expectedCourse = buildCourseFromDto(courseDto, user, project);
 
         doReturn(user).when(userService).getUser(USER_ID);
+        doReturn(project).when(userMapper).getProject(project.getId());
 
         Course actualCourse = courseMapper.mapDtoToEntity(courseDto);
 
@@ -71,11 +72,12 @@ class CourseMapperTest {
     @Test
     void mapDtoToExistingEntityTest() {
 
-        Course course = buildSavedCourse(3, user, 80);
-        CourseDto courseDto = buildCourseDto(USER_ID);
-        Course expectedCourse = buildCourseFromDto(courseDto, user);
+        Course course = buildSavedCourse(3, user, 80, project);
+        CourseDto courseDto = buildCourseDto(USER_ID, project.getId());
+        Course expectedCourse = buildCourseFromDto(courseDto, user, project);
 
         doReturn(user).when(userService).getUser(USER_ID);
+        doReturn(project).when(userMapper).getProject(project.getId());
 
         Course actualCourse = courseMapper.mapDtoToEntity(courseDto, course);
 
@@ -89,7 +91,7 @@ class CourseMapperTest {
     void mapEntityToDtoTest() {
 
         UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
-        Course course = buildSavedCourse(3, user, 80);
+        Course course = buildSavedCourse(3, user, 80, project);
         CourseResponseDto expectedCourseResponseDto = buildCourseResponseDtoFromEntity(course);
 
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(any());

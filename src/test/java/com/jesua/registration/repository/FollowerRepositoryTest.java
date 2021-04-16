@@ -59,8 +59,8 @@ class FollowerRepositoryTest {
         savedUser = buildUserWithOutId(project);
         userRepository.save(savedUser);
 
-        course1 = buildCustomCourse(true, 5, savedUser);
-        course2 = buildCustomCourse(false, 10, savedUser);
+        course1 = buildCustomCourse(true, 5, savedUser, project);
+        course2 = buildCustomCourse(false, 10, savedUser, project);
 
         courseRepository.save(course1);
         courseRepository.save(course2);

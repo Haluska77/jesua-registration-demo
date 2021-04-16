@@ -15,25 +15,29 @@ public class ProjectBuilder {
         project.setShortName("orig jesua");
         project.setDescription("orig description");
         project.setCreated(Instant.now());
+        project.setActive(true);
 
         return project;
     }
 
-    public static Project buildProject(Project origProject, ProjectDto projectDto){
+    public static Project buildProjectFromDto(Project origProject, ProjectDto projectDto){
 
         Project project = new Project();
         project.setId(origProject.getId());
         project.setShortName(projectDto.getShortName());
         project.setDescription(projectDto.getDescription());
         project.setCreated(origProject.getCreated());
+        project.setActive(origProject.isActive());
 
         return project;
     }
+
     public static ProjectDto buildProjectDto(){
 
         ProjectDto projectDto = new ProjectDto();
         projectDto.setShortName("jesua");
         projectDto.setDescription("new description");
+        projectDto.setActive(true);
 
         return projectDto;
     }
@@ -44,6 +48,7 @@ public class ProjectBuilder {
         project.setShortName(projectDto.getShortName());
         project.setDescription(projectDto.getDescription());
         project.setCreated(Instant.now());
+        project.setActive(projectDto.isActive());
 
         return project;
     }
@@ -56,6 +61,7 @@ public class ProjectBuilder {
         projectResponseDto.setShortName(project.getShortName());
         projectResponseDto.setDescription(project.getDescription());
         projectResponseDto.setCreated(project.getCreated());
+        projectResponseDto.setActive(project.isActive());
 
         return projectResponseDto;
     }

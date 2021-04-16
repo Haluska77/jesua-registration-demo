@@ -42,17 +42,20 @@ public class CourseServiceTest {
     CourseService courseService;
 
     private static User user;
+    private static Project project;
+    private static CourseDto courseDto;
 
     @BeforeAll
     static void setUp(){
-        Project project = buildProject(1);
+        project = buildProject(1);
         user = buildUserWithId(USER_ID, project);
+        courseDto = buildCourseDto(USER_ID, project.getId());
     }
 
     @Test
     void getCoursesTest() {
 
-        Course course1 = buildSavedCourse(1, user,  20);
+        Course course1 = buildSavedCourse(1, user,  20, project);
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
@@ -71,7 +74,7 @@ public class CourseServiceTest {
     @Test
     void getActiveCoursesTest() {
 
-        Course course1 = buildSavedCourse(1, user, 80);
+        Course course1 = buildSavedCourse(1, user, 80, project);
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
@@ -91,8 +94,7 @@ public class CourseServiceTest {
     @Test
     void addCourseTest() {
 
-        CourseDto courseDto = buildCourseDto(USER_ID);
-        Course courseEntity = buildCourseFromDto(courseDto, user);
+        Course courseEntity = buildCourseFromDto(courseDto, user, project);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(courseEntity);
 
         when(courseMapper.mapDtoToEntity(courseDto)).thenReturn(courseEntity);
@@ -114,9 +116,8 @@ public class CourseServiceTest {
     @Test
     void updateCourseTest() {
 
-        CourseDto courseDto = buildCourseDto(USER_ID);
-        Course savedCourse = buildSavedCourse(1, user, 50);
-        Course updatedCourse = buildCourseFromDto(courseDto, savedCourse, user);
+        Course savedCourse = buildSavedCourse(1, user, 50, project);
+        Course updatedCourse = buildCourseFromDto(courseDto, savedCourse, user, project);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(updatedCourse);
 
         when(courseRepository.getOne(any())).thenReturn(savedCourse);

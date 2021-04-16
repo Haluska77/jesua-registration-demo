@@ -34,6 +34,12 @@ databaseChangeLog:
                     nullable: false
                   name: created
                   type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: true
+                  name: active
+                  type: BOOLEAN
   - changeSet:
       id: create-table-jesua-user
       author: SH

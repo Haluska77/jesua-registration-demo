@@ -53,10 +53,10 @@ public class CourseRepositoryTest {
         user = buildUserWithOutId(project);
         userRepository.save(user);
 
-        openCourse = buildCustomCourse(true, 5, user);
+        openCourse = buildCustomCourse(true, 5, user, project);
         courseRepository.save(openCourse);
 
-        closeCourse = buildCustomCourse(false, 1, user);
+        closeCourse = buildCustomCourse(false, 1, user, project);
         courseRepository.save(closeCourse);
 
     }
@@ -73,7 +73,7 @@ public class CourseRepositoryTest {
     void findByIdTest() {
         Course actualCourse = courseRepository.findById(openCourse.getId()).orElseGet(()-> fail("Course not found"));
 
-        assertThat(actualCourse).usingRecursiveComparison().ignoringFields("created", "startDate", "user").isEqualTo(openCourse);
+        assertThat(actualCourse).usingRecursiveComparison().ignoringFields("created", "startDate", "user", "project").isEqualTo(openCourse);
         assertThat(actualCourse.getCreated()).isCloseTo(openCourse.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(actualCourse.getStartDate()).isCloseTo(openCourse.getStartDate(), within(1, ChronoUnit.SECONDS));
         User user = (User) Hibernate.unproxy(actualCourse.getUser());
@@ -91,7 +91,7 @@ public class CourseRepositoryTest {
         List<Course> actualCourseList = courseRepository.findByOpenTrue();
 
         assertThat(actualCourseList.size()).isEqualTo(1);
-        assertThat(actualCourseList.get(0)).usingRecursiveComparison().ignoringFields("created", "startDate", "user").isEqualTo(openCourse);
+        assertThat(actualCourseList.get(0)).usingRecursiveComparison().ignoringFields("created", "startDate", "user", "project").isEqualTo(openCourse);
         assertThat(actualCourseList.get(0).getCreated()).isCloseTo(openCourse.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(actualCourseList.get(0).getStartDate()).isCloseTo(openCourse.getStartDate(), within(1, ChronoUnit.SECONDS));
     }
@@ -100,7 +100,7 @@ public class CourseRepositoryTest {
     void findByStartDateBetweenTest() {
         List<Course> byStartDateBetween = courseRepository.findByStartDateBetween(Instant.now(), Instant.now().plus(Duration.ofDays(3)));
         assertThat(byStartDateBetween.size()).isEqualTo(1);
-        assertThat(byStartDateBetween.get(0)).usingRecursiveComparison().ignoringFields("created", "startDate", "user").isEqualTo(closeCourse);
+        assertThat(byStartDateBetween.get(0)).usingRecursiveComparison().ignoringFields("created", "startDate", "user", "project").isEqualTo(closeCourse);
         assertThat(byStartDateBetween.get(0).getCreated()).isCloseTo(closeCourse.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(byStartDateBetween.get(0).getStartDate()).isCloseTo(closeCourse.getStartDate(), within(1, ChronoUnit.SECONDS));
     }

@@ -67,8 +67,8 @@ class RegistrationControllerTest extends BaseControllerTest {
         user = buildUserWithOutId(project);
         userRepository.save(user);
 
-        CourseDto courseDto = buildCourseDto(user.getId());
-        course = buildCourseFromDto(courseDto, user);
+        CourseDto courseDto = buildCourseDto(user.getId(), project.getId());
+        course = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course);
 
         FollowerDto followerDto = buildFollowerDto(course.getId());

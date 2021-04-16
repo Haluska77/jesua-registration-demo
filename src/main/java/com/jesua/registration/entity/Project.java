@@ -30,6 +30,9 @@ public class Project {
     @Size(max = 250)
     private String description;
 
+    @NotNull
+    private boolean active;
+
     @Column(updatable = false)
     private Instant created;
 

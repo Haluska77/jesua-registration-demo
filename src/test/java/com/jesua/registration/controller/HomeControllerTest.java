@@ -67,8 +67,8 @@ class HomeControllerTest extends BaseControllerTest {
         User user = buildUserWithOutId(project);
         userRepository.save(user);
 
-        CourseDto courseDto = buildCourseDto(user.getId());
-        Course course = buildCourseFromDto(courseDto, user);
+        CourseDto courseDto = buildCourseDto(user.getId(), project.getId());
+        Course course = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course);
 
         FollowerDto followerDto = buildFollowerDto(course.getId());

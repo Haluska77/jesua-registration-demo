@@ -44,30 +44,33 @@ class CourseControllerTest extends BaseControllerTest {
 
     private static User user;
     private int createdCourseId;
+    private static Project project;
+    private static CourseDto courseDto;
 
     @BeforeAll
     static void createUser(@Autowired UserRepository userRepository,
                            @Autowired CourseRepository courseRepository,
-                           @Autowired ProjectRepository projectRepository){
+                           @Autowired ProjectRepository projectRepository) {
 
         ProjectDto projectDto = buildProjectDto();
-        Project project = buildProjectFromDto(projectDto);
+        project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
         user = buildUserWithOutId(project);
         userRepository.save(user);
 
-        CourseDto courseDto = buildCourseDto(user.getId());
-        Course course1 = buildCourseFromDto(courseDto, user);
+        courseDto = buildCourseDto(user.getId(), project.getId());
+        Course course1 = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course1);
-        Course course2 = buildCourseFromDto(courseDto, user);
+        Course course2 = buildCourseFromDto(courseDto, user, project);
         course2.setOpen(false);
         courseRepository.save(course2);
+
     }
 
     @AfterEach
     public void tearDown() {
-        if(createdCourseId != 0) {
+        if (createdCourseId != 0) {
             courseRepository.deleteById(createdCourseId);
         }
 
@@ -76,7 +79,7 @@ class CourseControllerTest extends BaseControllerTest {
     @AfterAll
     static void cleanUp(@Autowired UserRepository userRepository,
                         @Autowired CourseRepository courseRepository,
-                        @Autowired ProjectRepository projectRepository){
+                        @Autowired ProjectRepository projectRepository) {
 
         courseRepository.deleteAll();
         userRepository.deleteAll();
@@ -92,7 +95,8 @@ class CourseControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<List<CourseResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {});
+        SuccessResponse<List<CourseResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody().size()).isEqualTo(2);
@@ -136,7 +140,8 @@ class CourseControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<List<CourseResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {});
+        SuccessResponse<List<CourseResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody().size()).isEqualTo(1);
@@ -152,8 +157,7 @@ class CourseControllerTest extends BaseControllerTest {
     @WithMockUser(roles = "ADMIN")
     void createSuccessfulEventTest() throws Exception {
 
-        CourseDto courseDto = buildCourseDto(user.getId());
-        Course course = buildCourseFromDto(courseDto, user);
+        Course course = buildCourseFromDto(courseDto, user, project);
         CourseResponseDto expectedCourseResponseDto = buildCourseResponseDtoFromEntity(course);
 
         MockHttpServletResponse response = mockMvc
@@ -164,26 +168,26 @@ class CourseControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<CourseResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {});
+        SuccessResponse<CourseResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison()
-                .ignoringFields("id", "created", "createdBy.id", "createdBy.created", "createdBy.project.created").isEqualTo(expectedCourseResponseDto);
+                .ignoringFields("id", "created", "createdBy.id", "createdBy.created", "createdBy.project.created", "project.created").isEqualTo(expectedCourseResponseDto);
         assertThat(successResponse.getResponse().getBody().getId()).isNotNull();
         createdCourseId = successResponse.getResponse().getBody().getId();
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(expectedCourseResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getId()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getProject().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getProject().getCreated(), within(3, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(expectedCourseResponseDto.getProject().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
 
     @Test
     void createUnauthorizedEventTest() throws Exception {
-
-        CourseDto courseDto = buildCourseDto(user.getId());
 
         String contentAsString = mockMvc
                 .perform(post("/events/addEvent")
@@ -203,8 +207,7 @@ class CourseControllerTest extends BaseControllerTest {
     void updateSuccessfulEventTest() throws Exception {
 
         //save course
-        CourseDto courseDto = buildCourseDto(user.getId());
-        Course course = buildCourseFromDto(courseDto, user);
+        Course course = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course);
         createdCourseId = course.getId();
 
@@ -213,7 +216,7 @@ class CourseControllerTest extends BaseControllerTest {
         courseDto.setDescription("new Description");
         courseDto.setStartDate("2022-05-01T15:00");
 
-        Course updatedCourse = buildCourseFromDto(courseDto, user);
+        Course updatedCourse = buildCourseFromDto(courseDto, user, project);
         CourseResponseDto expectedCourseResponseDto = buildCourseResponseDtoFromEntity(updatedCourse);
         expectedCourseResponseDto.setId(course.getId());
 
@@ -225,15 +228,17 @@ class CourseControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<CourseResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {});
+        SuccessResponse<CourseResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison()
-                .ignoringFields("created", "createdBy.created", "createdBy.project.created").isEqualTo(expectedCourseResponseDto);
+                .ignoringFields("created", "createdBy.created", "createdBy.project.created", "project.created").isEqualTo(expectedCourseResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(expectedCourseResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getProject().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getProject().getCreated(), within(3, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(expectedCourseResponseDto.getProject().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
@@ -241,8 +246,7 @@ class CourseControllerTest extends BaseControllerTest {
     @Test
     void updateUnauthorizedEventsTest() throws Exception {
 
-        CourseDto courseDto = buildCourseDto(user.getId());
-        Course course = buildCourseFromDto(courseDto, user);
+        Course course = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course);
         createdCourseId = course.getId();
 

@@ -13,5 +13,5 @@ public class ProjectResponseDto {
     private String shortName;
     private String description;
     private Instant created;
-
+    private boolean active;
 }
