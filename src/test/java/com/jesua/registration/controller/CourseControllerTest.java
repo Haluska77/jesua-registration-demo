@@ -43,7 +43,7 @@ class CourseControllerTest extends BaseControllerTest {
     private CourseRepository courseRepository;
 
     private static User user;
-    private int createdCourseId;
+    private long createdCourseId;
     private static Project project;
     private static CourseDto courseDto;
 

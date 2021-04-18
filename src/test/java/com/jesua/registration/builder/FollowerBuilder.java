@@ -18,7 +18,7 @@ public class FollowerBuilder {
     public static final String TOKEN = "sdfsd521d3ASDF54d32df156DF3";
     public static final String DEVICE = "Ipad Air, iOS 14 version";
 
-    public static FollowerDto buildFollowerDto(int courseId){
+    public static FollowerDto buildFollowerDto(long courseId){
 
         FollowerDto followerDto = new FollowerDto();
         followerDto.setName(NAME);

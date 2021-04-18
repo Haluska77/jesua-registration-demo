@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface FollowerRepository extends JpaRepository<Follower, UUID> {
 
-    List<Follower> findByCourseId(int courseId);
+    List<Follower> findByCourseId(long courseId);
 
     List<Follower> findByCourseOpen(boolean open);
 

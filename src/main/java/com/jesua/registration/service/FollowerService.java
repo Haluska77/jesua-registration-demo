@@ -52,7 +52,7 @@ public class FollowerService {
     }
 
     @Transactional
-    public FollowerResponseDto unsubscribe(String token, int courseId) {
+    public FollowerResponseDto unsubscribe(String token, long courseId) {
         // accepted: active = 1
         // waiting: active = 0, unsubscribed = null
         // declined: active = 0, unsubscribed = NOT null

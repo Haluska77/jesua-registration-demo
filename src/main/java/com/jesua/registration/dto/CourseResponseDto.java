@@ -9,7 +9,7 @@ import java.time.Instant;
 @Setter
 public class CourseResponseDto {
 
-    private int id;
+    private long id;
     private String description;
     private String startDate;
     private boolean open;

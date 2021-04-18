@@ -48,7 +48,7 @@ public class UserBuilder {
     }
 
     // input user from UI
-    public static UserDto buildUserDto(int projectId) {
+    public static UserDto buildUserDto(long projectId) {
 
         UserDto userDto = new UserDto();
         userDto.setName(NAME);

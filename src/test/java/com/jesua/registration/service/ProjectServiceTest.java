@@ -82,7 +82,7 @@ class ProjectServiceTest {
         Project updatedProject = buildProjectFromDto(origProject, projectDto);
         ProjectResponseDto expectedResponseDto = buildProjectResponseDtoFromEntity(origProject);
 
-        doReturn(origProject).when(projectRepository).getOne(1);
+        doReturn(origProject).when(projectRepository).getOne(1L);
         doReturn(updatedProject).when(projectMapper).mapDtoToEntity(projectDto, origProject);
         doReturn(updatedProject).when(projectRepository).save(any());
         doReturn(expectedResponseDto).when(projectMapper).mapEntityToDto(updatedProject);
@@ -91,7 +91,7 @@ class ProjectServiceTest {
         ProjectResponseDto projectResponseDto = projectService.updateProject(projectDto, 1);
 
         //test
-        verify(projectRepository).getOne(1);
+        verify(projectRepository).getOne(1L);
         verify(projectMapper).mapDtoToEntity(projectDto, origProject);
         verify(projectRepository).save(any());
         verify(projectMapper).mapEntityToDto(updatedProject);

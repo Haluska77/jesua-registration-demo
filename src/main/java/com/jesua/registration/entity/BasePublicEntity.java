@@ -1,0 +1,25 @@
+package com.jesua.registration.entity;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import java.util.UUID;
+
+@Getter
+@Setter
+@MappedSuperclass
+public class BasePublicEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Type(type = "uuid-char")
+    @Column(name = "id", length = 36, updatable = false)
+    private UUID id;
+
+}

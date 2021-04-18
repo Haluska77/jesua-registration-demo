@@ -8,7 +8,7 @@ import lombok.Setter;
 public class FollowerDto {
     private String name;
     private String email;
-    private int eventId;
+    private long eventId;
     private boolean gdpr;
     private String deviceDetail;
 }

@@ -45,7 +45,7 @@ public abstract class UserMapper {
     }
 
     @Named("project")
-    Project getProject(int id) {
+    Project getProject(long id) {
         return projectRepository.getOne(id);
     }
 

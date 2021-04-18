@@ -18,7 +18,7 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
 
-    public Course getCourse(int id){
+    public Course getCourse(long id){
         return courseRepository.findById(id)
                 .orElse(null);
     }
@@ -43,11 +43,11 @@ public class CourseService {
         return courseMapper.mapEntityToDto(save);
     }
 
-    public void deleteCourse(int id) {
+    public void deleteCourse(long id) {
         courseRepository.deleteById(id);
     }
 
-    public CourseResponseDto updateCourse(CourseDto courseDto, int id) {
+    public CourseResponseDto updateCourse(CourseDto courseDto, long id) {
 
         Course savedCourse = courseRepository.getOne(id);
         Course course = courseMapper.mapDtoToEntity(courseDto, savedCourse);

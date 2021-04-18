@@ -127,7 +127,7 @@ public class CourseServiceTest {
 
         CourseResponseDto actualResponseDto = courseService.updateCourse(courseDto, 1);
 
-        verify(courseRepository).getOne(1);
+        verify(courseRepository).getOne(1L);
         verify(courseMapper).mapDtoToEntity(courseDto, savedCourse);
         verify(courseRepository).save(updatedCourse);
         verify(courseMapper).mapEntityToDto(updatedCourse);

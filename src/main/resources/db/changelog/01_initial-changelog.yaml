@@ -18,7 +18,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: project_pkey
                   name: id
-                  type: INT
+                  type: BIGINT
               - column:
                   constraints:
                     nullable: false
@@ -97,7 +97,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: project_id
-                  type: INT
+                  type: BIGINT
   - changeSet:
       id: create-table-course
       author: SH
@@ -117,7 +117,7 @@ databaseChangeLog:
                       primaryKey: true
                       primaryKeyName: course_pkey
                     name: id
-                    type: INT
+                    type: BIGINT
               - column:
                     constraints:
                       nullable: false
@@ -159,7 +159,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: project_id
-                  type: INT
+                  type: BIGINT
   - changeSet:
       id: create-table-follower
       author: SH
@@ -194,7 +194,7 @@ databaseChangeLog:
                       constraints:
                         nullable: false
                       name: course_id
-                      type: INT
+                      type: BIGINT
                 - column:
                       constraints:
                         nullable: false

@@ -32,7 +32,7 @@ public class ProjectService {
         return projectMapper.mapEntityToDto(project);
     }
 
-    public ProjectResponseDto updateProject(ProjectDto projectDto, int id) {
+    public ProjectResponseDto updateProject(ProjectDto projectDto, long id) {
 
         Project savedProject = projectRepository.getOne(id);
         Project project = projectMapper.mapDtoToEntity(projectDto, savedProject);

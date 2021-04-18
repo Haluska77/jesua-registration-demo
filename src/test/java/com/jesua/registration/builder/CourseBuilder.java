@@ -77,7 +77,7 @@ public class CourseBuilder {
     }
 
     // input course dto from UI
-    public static CourseDto buildCourseDto(UUID userId, int projectId){
+    public static CourseDto buildCourseDto(UUID userId, long projectId){
 
         CourseDto courseDto = new CourseDto();
         courseDto.setDescription("desc");

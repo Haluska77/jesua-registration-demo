@@ -9,7 +9,7 @@ import java.time.Instant;
 @Setter
 public class ProjectResponseDto {
 
-    private int id;
+    private long id;
     private String shortName;
     private String description;
     private Instant created;
