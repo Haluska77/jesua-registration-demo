@@ -80,6 +80,7 @@ public class FollowerBuilder {
         FollowerEntityResponseDto followerEntityResponseDto = new FollowerEntityResponseDto();
         followerEntityResponseDto.setName(follower.getName());
         followerEntityResponseDto.setEmail(follower.getEmail());
+        followerEntityResponseDto.setToken(follower.getToken());
         followerEntityResponseDto.setCourse(courseResponseDto);
         followerEntityResponseDto.setCreated(follower.getCreated());
         followerEntityResponseDto.setUnregistered(follower.getUnregistered());

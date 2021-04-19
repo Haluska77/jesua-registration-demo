@@ -49,7 +49,7 @@ public class RegistrationController {
     @GetMapping("unsubscribe")
     public SuccessResponse<FollowerResponseDto.FollowerResponse> unsubscribeFollower(
             @RequestParam("token") String token,
-            @RequestParam("event") int eventId) {
+            @RequestParam("event") long eventId) {
 
         FollowerResponseDto followerResponseDto = followerService.unsubscribe(token, eventId);
 

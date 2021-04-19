@@ -11,6 +11,7 @@ public class FollowerEntityResponseDto {
 
     private String email;
     private String name;
+    private String token;
     private CourseResponseDto course;
     private Instant created;
     private Instant unregistered;
