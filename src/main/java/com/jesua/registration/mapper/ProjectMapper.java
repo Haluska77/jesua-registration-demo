@@ -7,14 +7,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import java.time.Instant;
-
-@Mapper(componentModel = "spring", imports = {Instant.class})
+@Mapper(componentModel = "spring")
 public abstract class ProjectMapper {
 
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "created", expression = "java(Instant.now())")
     public abstract Project mapDtoToEntity(ProjectDto projectDto);
 
     public abstract Project mapDtoToEntity(ProjectDto projectDto, @MappingTarget Project project);

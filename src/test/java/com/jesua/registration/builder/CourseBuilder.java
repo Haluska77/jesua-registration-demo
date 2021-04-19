@@ -24,7 +24,6 @@ public class CourseBuilder {
         course.setCapacity(courseDto.getCapacity());
         course.setOpen(courseDto.isOpen());
         course.setUser(user);
-        course.setCreated(Instant.now());
         course.setImage(courseDto.getImage());
         course.setProject(project);
 
@@ -33,12 +32,13 @@ public class CourseBuilder {
 
     public static Course buildCourseFromDto(CourseDto courseDto, Course course, User user, Project project){
 
+        course.setId(course.getId());
         course.setDescription(courseDto.getDescription());
         course.setStartDate(stringToInstant(courseDto.getStartDate()));
         course.setCapacity(courseDto.getCapacity());
         course.setOpen(courseDto.isOpen());
         course.setUser(user);
-        course.setCreated(Instant.now());
+        course.setCreated(course.getCreated());
         course.setImage(courseDto.getImage());
         course.setProject(project);
 
@@ -54,7 +54,6 @@ public class CourseBuilder {
         course.setCapacity(capacity);
         course.setOpen(true);
         course.setUser(user);
-        course.setCreated(Instant.now());
         course.setImage("logo");
         course.setProject(project);
 
@@ -69,7 +68,6 @@ public class CourseBuilder {
         course.setCapacity(1000);
         course.setOpen(open);
         course.setUser(user);
-        course.setCreated(Instant.now());
         course.setImage("my logo");
         course.setProject(project);
 

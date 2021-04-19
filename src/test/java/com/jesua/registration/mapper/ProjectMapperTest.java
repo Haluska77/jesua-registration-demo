@@ -8,14 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.temporal.ChronoUnit;
-
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectMapperTest {
@@ -31,8 +28,7 @@ class ProjectMapperTest {
 
         Project actualProject = projectMapper.mapDtoToEntity(projectDto);
 
-        assertThat(actualProject).usingRecursiveComparison().ignoringFields("created").isEqualTo(project);
-        assertThat(actualProject.getCreated()).isCloseTo(project.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(actualProject).usingRecursiveComparison().isEqualTo(project);
     }
 
     @Test
@@ -45,8 +41,7 @@ class ProjectMapperTest {
 
         Project actualProject = projectMapper.mapDtoToEntity(projectDto, savedProject);
 
-        assertThat(actualProject).usingRecursiveComparison().ignoringFields("created").isEqualTo(expectedProject);
-        assertThat(actualProject.getCreated()).isCloseTo(expectedProject.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(actualProject).usingRecursiveComparison().isEqualTo(expectedProject);
 
     }
 

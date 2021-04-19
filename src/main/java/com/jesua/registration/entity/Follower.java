@@ -38,10 +38,6 @@ public class Follower extends BasePublicEntity {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @NotNull
-    @Column(updatable = false)
-    private Instant registered;
-
     private Instant unregistered;
 
     @NotNull

@@ -12,7 +12,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
 import java.util.Set;
 
 @Getter
@@ -43,9 +42,6 @@ public class User extends BasePublicEntity {
 
     @NotNull
     private Boolean active;
-
-    @Column(updatable = false)
-    private Instant created;
 
     @OneToMany(mappedBy="user")
     private Set<PasswordToken> passwordTokens;

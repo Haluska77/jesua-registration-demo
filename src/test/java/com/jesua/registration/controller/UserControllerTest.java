@@ -269,7 +269,7 @@ class UserControllerTest extends BaseControllerTest {
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison()
                 .ignoringFields("id", "created", "project.created").isEqualTo(userResponseDto);
         assertThat(successResponse.getResponse().getBody().getId()).isNotNull();
-        assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(userResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(successResponse.getResponse().getBody().getCreated()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isEqualTo(NEW_USER_REGISTERED_SUCCESSFULLY);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);

@@ -32,9 +32,6 @@ public class Course extends BasePrivateEntity{
     @NotNull
     private int capacity;
 
-    @Column(updatable = false)
-    private Instant created;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")

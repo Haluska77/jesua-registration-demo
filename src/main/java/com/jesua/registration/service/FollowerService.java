@@ -91,7 +91,7 @@ public class FollowerService {
 
     public Optional<Follower> getFirstWaitingFollower(List<Follower> allUsersByEventId) {
         return allUsersByEventId.stream()
-                .sorted(Comparator.comparing(Follower::getRegistered))
+                .sorted(Comparator.comparing(Follower::getCreated))
                 .filter(d -> !d.isAccepted() && d.getUnregistered() == null)
                 .findFirst();
     }

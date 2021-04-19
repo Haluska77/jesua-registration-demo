@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
@@ -26,7 +25,6 @@ import static com.jesua.registration.builder.FollowerBuilder.buildFollowerFromDt
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -64,9 +62,8 @@ class FollowerMapperTest {
 
         Follower actualFollower = followerMapper.mapDtoToEntity(followerDto);
 
-        assertThat(actualFollower).usingRecursiveComparison().ignoringFields("registered", "token").isEqualTo(expectedFollower);
+        assertThat(actualFollower).usingRecursiveComparison().ignoringFields("token").isEqualTo(expectedFollower);
         assertThat(actualFollower.getToken()).isNotNull();
-        assertThat(actualFollower.getRegistered()).isCloseTo(expectedFollower.getRegistered(), within(1, ChronoUnit.SECONDS));
     }
 
     @Test

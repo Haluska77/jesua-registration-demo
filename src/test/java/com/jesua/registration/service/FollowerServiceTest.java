@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -84,8 +83,11 @@ class FollowerServiceTest {
     void findFirstWaitingFollowerTest() {
 
         Follower acceptedFollower1 = buildFullFollower(UUID.randomUUID(), TOKEN, null, false, course);
+        acceptedFollower1.setCreated(Instant.now());
         Follower acceptedFollower2 = buildFullFollower(UUID.randomUUID(), TOKEN, null, true, course);
+        acceptedFollower2.setCreated(Instant.now().plusMillis(100));
         Follower acceptedFollower3 = buildFullFollower(UUID.randomUUID(), TOKEN, null, false, course);
+        acceptedFollower3.setCreated(Instant.now().plusMillis(200));
 
         Optional<Follower> firstWaitingFollower = followerService.getFirstWaitingFollower(List.of(acceptedFollower1, acceptedFollower2, acceptedFollower3));
 
@@ -104,10 +106,8 @@ class FollowerServiceTest {
 
         verify(followerRepository).save(follower);
 
-        assertThat(follower).usingRecursiveComparison().ignoringFields("registered","unregistered", "course").isEqualTo(expectedFollower);
-        assertNotNull(follower.getUnregistered());
-        assertThat(follower.getRegistered()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
-        assertThat(follower.getUnregistered()).isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+        assertThat(follower).usingRecursiveComparison().ignoringFields("unregistered").isEqualTo(expectedFollower);
+        assertThat(follower.getUnregistered()).isCloseTo(expectedFollower.getUnregistered(), within(1, ChronoUnit.SECONDS));
     }
 
     @Test
@@ -132,9 +132,10 @@ class FollowerServiceTest {
         boolean MY_ACCEPTED = false;
         String responseMessage = "You have been successfully unsubscribed";
 
-
         Follower existingFollower = buildFullFollower(UUID.randomUUID(), TOKEN, null, false, course);
+        existingFollower.setCreated(Instant.now());
         Follower myFollower = buildFullFollower(MY_FOLLOWER_ID,"45ssd521d3ASDF54d32df156DF3", null, true, course);
+        myFollower.setCreated(Instant.now());
         FollowerResponseDto.FollowerResponse followerResponse = buildFollowerResponse(MY_FOLLOWER_ID, MY_ACCEPTED);
         FollowerResponseDto followerResponseDto = buildFollowerResponseDto(responseMessage, followerResponse);
 

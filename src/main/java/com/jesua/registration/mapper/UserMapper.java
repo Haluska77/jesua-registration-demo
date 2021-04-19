@@ -14,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
-@Mapper(componentModel = "spring", imports = {Instant.class},
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = ProjectMapper.class)
+@Mapper(componentModel = "spring", uses = ProjectMapper.class,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 @Component
 public abstract class UserMapper {
 
@@ -30,7 +27,6 @@ public abstract class UserMapper {
 
     @Mapping(source = "name", target = "userName")
     @Mapping(target = "password", qualifiedByName = "encodePassword")
-    @Mapping(target = "created", expression  = "java(Instant.now())")
     @Mapping(target = "project", source = "projectId", qualifiedByName = "project")
     public abstract User mapDtoToEntity(UserDto userDto);
 

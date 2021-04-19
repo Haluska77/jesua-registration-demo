@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
@@ -25,7 +24,6 @@ import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -44,12 +42,14 @@ class CourseMapperTest {
     private UserMapperImpl userMapper;
 
     private static User user;
+    private static User savedUser;
     private static Project project;
 
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
         user = buildUserWithId(USER_ID, project);
+        savedUser = buildUserWithId(USER_ID, project);
     }
 
     @Test
@@ -63,32 +63,27 @@ class CourseMapperTest {
 
         Course actualCourse = courseMapper.mapDtoToEntity(courseDto);
 
-        assertThat(actualCourse).usingRecursiveComparison().ignoringFields("created", "user.created").isEqualTo(expectedCourse);
-        assertThat(actualCourse.getCreated()).isCloseTo(expectedCourse.getCreated(), within(1, ChronoUnit.SECONDS));
-        assertThat(actualCourse.getUser().getCreated()).isCloseTo(expectedCourse.getUser().getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(actualCourse).usingRecursiveComparison().isEqualTo(expectedCourse);
 
     }
 
     @Test
     void mapDtoToExistingEntityTest() {
 
-        Course course = buildSavedCourse(3, user, 80, project);
+        Course savedCourse = buildSavedCourse(3, savedUser, 80, project);
         CourseDto courseDto = buildCourseDto(USER_ID, project.getId());
-        Course expectedCourse = buildCourseFromDto(courseDto, user, project);
+        Course expectedCourse = buildCourseFromDto(courseDto, savedCourse, savedUser, project);
 
         doReturn(user).when(userService).getUser(USER_ID);
         doReturn(project).when(userMapper).getProject(project.getId());
 
-        Course actualCourse = courseMapper.mapDtoToEntity(courseDto, course);
+        Course actualCourse = courseMapper.mapDtoToEntity(courseDto, savedCourse);
 
-        assertThat(actualCourse).usingRecursiveComparison().ignoringFields("id", "created", "user.created").isEqualTo(expectedCourse);
-        assertThat(actualCourse.getId()).isEqualTo(course.getId());
-        assertThat(actualCourse.getCreated()).isCloseTo(expectedCourse.getCreated(), within(1, ChronoUnit.SECONDS));
-        assertThat(actualCourse.getUser().getCreated()).isCloseTo(expectedCourse.getUser().getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(actualCourse).usingRecursiveComparison().isEqualTo(expectedCourse);
     }
 
     @Test
-    void mapEntityToDtoTest() {
+    void mapEntityToResponseDtoTest() {
 
         UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
         Course course = buildSavedCourse(3, user, 80, project);
@@ -98,7 +93,6 @@ class CourseMapperTest {
 
         CourseResponseDto actualCourseResponseDto = courseMapper.mapEntityToDto(course);
 
-        assertThat(actualCourseResponseDto).usingRecursiveComparison().ignoringFields("createdBy.created").isEqualTo(expectedCourseResponseDto);
-        assertThat(actualCourseResponseDto.getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(actualCourseResponseDto).usingRecursiveComparison().isEqualTo(expectedCourseResponseDto);
     }
 }

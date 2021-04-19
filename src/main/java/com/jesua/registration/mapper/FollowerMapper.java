@@ -13,11 +13,9 @@ import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-
 import static com.jesua.registration.util.AppUtil.generateToken;
 
-@Mapper(componentModel = "spring", imports = {Instant.class}, uses = CourseMapper.class)
+@Mapper(componentModel = "spring", uses = CourseMapper.class)
 @Component
 public abstract class FollowerMapper {
 
@@ -27,7 +25,6 @@ public abstract class FollowerMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "token", ignore = true)
     @Mapping(target = "course", source = "eventId", qualifiedByName = "course")
-    @Mapping(target = "registered", expression  = "java(Instant.now())")
     public abstract Follower mapDtoToEntity(FollowerDto followerDto);
 
     @Named("course")

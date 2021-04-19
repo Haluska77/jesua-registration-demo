@@ -33,7 +33,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: created
-                  type: DATETIME
+                  type: DATETIME(6)
               - column:
                   constraints:
                     nullable: false
@@ -89,7 +89,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: created
-                  type: DATETIME
+                  type: DATETIME(6)
               - column:
                   name: avatar
                   type: VARCHAR(50)
@@ -127,7 +127,7 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                     name: start_date
-                    type: DATETIME
+                    type: DATETIME(6)
               - column:
                     constraints:
                       nullable: false
@@ -144,7 +144,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: created
-                  type: DATETIME
+                  type: DATETIME(6)
               - column:
                   constraints:
                     nullable: false
@@ -208,13 +208,13 @@ databaseChangeLog:
                 - column:
                       constraints:
                         nullable: false
-                      name: registered
-                      type: DATETIME
+                      name: created
+                      type: DATETIME(6)
                 - column:
                       constraints:
                         nullable: true
                       name: unregistered
-                      type: DATETIME
+                      type: DATETIME(6)
                 - column:
                     constraints:
                       nullable: false

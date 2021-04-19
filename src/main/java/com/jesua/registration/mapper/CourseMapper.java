@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static com.jesua.registration.util.AppUtil.stringToInstant;
 
-@Mapper(componentModel = "spring", imports = {Instant.class}, uses = UserMapper.class)
+@Mapper(componentModel = "spring", uses = UserMapper.class)
 public abstract class CourseMapper {
 
     @Autowired
@@ -24,7 +24,6 @@ public abstract class CourseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "startDate", qualifiedByName = "InstantDateTime")
-    @Mapping(target = "created", expression  = "java(Instant.now())")
     @Mapping(target = "user", source = "userId", qualifiedByName = "user")
     @Mapping(target = "project", source = "projectId", qualifiedByName = "project")
     public abstract Course mapDtoToEntity(CourseDto courseDto);

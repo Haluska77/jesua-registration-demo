@@ -6,7 +6,6 @@ import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
@@ -19,7 +18,6 @@ public class UserBuilder {
     public static final String NAME = "admin";
     public static final String PASSWORD_ENCRYPTED = "$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm";
     public static final String PASSWORD = "admin";
-
 
     public static User buildUserWithId(UUID id, Project project) {
         User user = buildUserWithOutId(project);
@@ -40,11 +38,25 @@ public class UserBuilder {
         user.setAvatar(userDto.getAvatar());
         user.setRole(userDto.getRole());
         user.setActive(userDto.getActive());
-        user.setCreated(Instant.now());
         user.setPassword(new BCryptPasswordEncoder(10).encode(userDto.getPassword()));
         user.setProject(project);
 
         return user;
+    }
+
+    public static User buildUserFromDto(UserDto userDto, User savedUser, Project project) {
+
+        savedUser.setEmail(userDto.getEmail());
+        savedUser.setUserName(userDto.getName());
+        savedUser.setAvatar(userDto.getAvatar());
+        savedUser.setRole(userDto.getRole());
+        savedUser.setActive(userDto.getActive());
+        if (userDto.getPassword()!=null){
+            savedUser.setPassword(userDto.getPassword());
+        }
+        savedUser.setProject(project);
+
+        return savedUser;
     }
 
     // input user from UI

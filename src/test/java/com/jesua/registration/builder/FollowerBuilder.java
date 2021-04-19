@@ -53,7 +53,6 @@ public class FollowerBuilder {
         follower.setEmail(followerDto.getEmail());
         follower.setToken(TOKEN);
         follower.setCourse(course);
-        follower.setRegistered(Instant.now());
         follower.setGdpr(followerDto.isGdpr());
         follower.setDeviceDetail(followerDto.getDeviceDetail());
 
@@ -68,7 +67,6 @@ public class FollowerBuilder {
         follower.setEmail(EMAIL);
         follower.setToken(token);
         follower.setCourse(course);
-        follower.setRegistered(Instant.now());
         follower.setUnregistered(unregistered);
         follower.setAccepted(accepted);
         follower.setGdpr(true);
@@ -83,7 +81,7 @@ public class FollowerBuilder {
         followerEntityResponseDto.setName(follower.getName());
         followerEntityResponseDto.setEmail(follower.getEmail());
         followerEntityResponseDto.setCourse(courseResponseDto);
-        followerEntityResponseDto.setRegistered(follower.getRegistered());
+        followerEntityResponseDto.setCreated(follower.getCreated());
         followerEntityResponseDto.setUnregistered(follower.getUnregistered());
         followerEntityResponseDto.setAccepted(follower.isAccepted());
         followerEntityResponseDto.setGdpr(follower.isGdpr());

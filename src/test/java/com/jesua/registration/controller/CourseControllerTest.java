@@ -176,8 +176,8 @@ class CourseControllerTest extends BaseControllerTest {
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison()
                 .ignoringFields("id", "created", "createdBy.id", "createdBy.created", "createdBy.project.created", "project.created").isEqualTo(expectedCourseResponseDto);
         assertThat(successResponse.getResponse().getBody().getId()).isNotNull();
+        assertThat(successResponse.getResponse().getBody().getCreated()).isNotNull();
         createdCourseId = successResponse.getResponse().getBody().getId();
-        assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(expectedCourseResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getId()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getCreated(), within(3, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getBody().getCreatedBy().getProject().getCreated()).isCloseTo(expectedCourseResponseDto.getCreatedBy().getProject().getCreated(), within(3, ChronoUnit.SECONDS));
@@ -206,22 +206,21 @@ class CourseControllerTest extends BaseControllerTest {
     @WithMockUser(roles = "ADMIN")
     void updateSuccessfulEventTest() throws Exception {
 
-        //save course
-        Course course = buildCourseFromDto(courseDto, user, project);
-        courseRepository.save(course);
-        createdCourseId = course.getId();
+        //save origCourse
+        Course origCourse = buildCourseFromDto(courseDto, user, project);
+        courseRepository.save(origCourse);
+        createdCourseId = origCourse.getId();
 
         // update Dto to send updated data from UI
         courseDto.setOpen(false);
         courseDto.setDescription("new Description");
         courseDto.setStartDate("2022-05-01T15:00");
 
-        Course updatedCourse = buildCourseFromDto(courseDto, user, project);
+        Course updatedCourse = buildCourseFromDto(courseDto, origCourse, user, project);
         CourseResponseDto expectedCourseResponseDto = buildCourseResponseDtoFromEntity(updatedCourse);
-        expectedCourseResponseDto.setId(course.getId());
 
         MockHttpServletResponse response = mockMvc
-                .perform(post("/events/updateEvent/" + course.getId())
+                .perform(post("/events/updateEvent/" + origCourse.getId())
                         .content(objectMapper.writeValueAsString(courseDto))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )

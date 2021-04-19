@@ -4,8 +4,6 @@ import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.entity.Project;
 
-import java.time.Instant;
-
 public class ProjectBuilder {
 
     public static Project buildProject(int id){
@@ -14,7 +12,6 @@ public class ProjectBuilder {
         project.setId(id);
         project.setShortName("orig jesua");
         project.setDescription("orig description");
-        project.setCreated(Instant.now());
         project.setActive(true);
 
         return project;
@@ -47,7 +44,6 @@ public class ProjectBuilder {
         Project project = new Project();
         project.setShortName(projectDto.getShortName());
         project.setDescription(projectDto.getDescription());
-        project.setCreated(Instant.now());
         project.setActive(projectDto.isActive());
 
         return project;
