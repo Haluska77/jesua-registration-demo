@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
@@ -25,6 +26,7 @@ import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +50,7 @@ public class CourseServiceTest {
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
+        user = buildUserWithId(USER_ID);
         courseDto = buildCourseDto(USER_ID, project.getId());
     }
 
@@ -120,14 +122,14 @@ public class CourseServiceTest {
         Course updatedCourse = buildCourseFromDto(courseDto, savedCourse, user, project);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(updatedCourse);
 
-        when(courseRepository.getOne(any())).thenReturn(savedCourse);
+        doReturn(Optional.of(savedCourse)).when(courseRepository).findById(1L);
         when(courseMapper.mapDtoToEntity(courseDto, savedCourse)).thenReturn(updatedCourse);
         when(courseRepository.save(any())).thenReturn(updatedCourse);
         when(courseMapper.mapEntityToDto(updatedCourse)).thenReturn(courseResponseDto);
 
         CourseResponseDto actualResponseDto = courseService.updateCourse(courseDto, 1);
 
-        verify(courseRepository).getOne(1L);
+        verify(courseRepository).findById(1L);
         verify(courseMapper).mapDtoToEntity(courseDto, savedCourse);
         verify(courseRepository).save(updatedCourse);
         verify(courseMapper).mapEntityToDto(updatedCourse);

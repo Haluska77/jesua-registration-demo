@@ -4,9 +4,12 @@ import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.entity.Project;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class ProjectBuilder {
 
-    public static Project buildProject(int id){
+    public static Project buildProject(long id){
 
         Project project = new Project();
         project.setId(id);
@@ -17,7 +20,7 @@ public class ProjectBuilder {
         return project;
     }
 
-    public static Project buildProjectFromDto(Project origProject, ProjectDto projectDto){
+    public static Project buildProjectFromDtoAndSavedProject(Project origProject, ProjectDto projectDto){
 
         Project project = new Project();
         project.setId(origProject.getId());
@@ -60,5 +63,20 @@ public class ProjectBuilder {
         projectResponseDto.setActive(project.isActive());
 
         return projectResponseDto;
+    }
+
+    public static Set<ProjectResponseDto> buildProjectResponseDtoSetFromEntitySet(Set<Project> project) {
+
+        return project.stream().map(p -> {
+                    ProjectResponseDto projectResponseDto = new ProjectResponseDto();
+                    projectResponseDto.setId(p.getId());
+                    projectResponseDto.setShortName(p.getShortName());
+                    projectResponseDto.setDescription(p.getDescription());
+                    projectResponseDto.setCreated(p.getCreated());
+                    projectResponseDto.setActive(p.isActive());
+                    return projectResponseDto;
+                }
+        )
+                .collect(Collectors.toSet());
     }
 }

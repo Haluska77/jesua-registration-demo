@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
@@ -46,11 +47,13 @@ class UserServiceTest {
 
     private static User user;
     private static Project project;
+    private static Set<Project> projects;
 
     @BeforeAll
     static void setUp() {
         project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
+        projects = Set.of(project);
+        user = buildUserWithId(USER_ID);
     }
 
     @Test
@@ -126,10 +129,10 @@ class UserServiceTest {
     @Test
     void createSuccessUserTest() {
 
-        UserDto userDto = buildUserDto(project.getId());
-        User user = buildUserFromDtoWithoutId(userDto, project);
+        UserDto userDto = buildUserDto();
+        User user = buildUserFromDtoWithoutId(userDto);
 
-        User userWithId = buildUserWithId(USER_ID, project);
+        User userWithId = buildUserWithId(USER_ID);
 
         UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(userWithId);
 
@@ -150,7 +153,7 @@ class UserServiceTest {
 
     @Test
     void createFailedUserTest() {
-        UserDto userDto = buildUserDto(project.getId());
+        UserDto userDto = buildUserDto();
 
         doReturn(true).when(userRepository).existsByEmail(userDto.getEmail());
 
@@ -163,11 +166,11 @@ class UserServiceTest {
     @Test
     void updateUserTest() {
 
-        User user1 = buildUserWithId(USER_ID, project);
-        UserDto userDto = buildUserDto(project.getId());
+        User user1 = buildUserWithId(USER_ID);
+        UserDto userDto = buildUserDto();
         userDto.setRole("ROLE_MODERATOR");
         userDto.setActive(false);
-        User expectedUser = buildUserFromDtoWithoutId(userDto, project);
+        User expectedUser = buildUserFromDtoWithoutId(userDto);
         UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(expectedUser);
 
         doReturn(user1).when(userRepository).getOne(USER_ID);

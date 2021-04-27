@@ -50,8 +50,8 @@ class UserRepositoryTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        UserDto userDto1 = buildUserDto(project.getId());
-        user1 = buildUserFromDtoWithoutId(userDto1, project);
+        UserDto userDto1 = buildUserDto();
+        user1 = buildUserFromDtoWithoutId(userDto1);
         userRepository.save(user1);
 
         passwordToken = new PasswordToken();
@@ -61,10 +61,10 @@ class UserRepositoryTest {
         passwordToken.setUser(user1);
         passwordTokenRepository.save(passwordToken);
 
-        UserDto userDto2 = buildUserDto(project.getId());
+        UserDto userDto2 = buildUserDto();
         userDto2.setEmail("another@user.com");
         userDto2.setActive(false);
-        user2 = buildUserFromDtoWithoutId(userDto2, project);
+        user2 = buildUserFromDtoWithoutId(userDto2);
         userRepository.save(user2);
     }
 

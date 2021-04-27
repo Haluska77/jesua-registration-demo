@@ -2,13 +2,12 @@ package com.jesua.registration.builder;
 
 import com.jesua.registration.dto.UserDto;
 import com.jesua.registration.dto.UserResponseDto;
-import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.UUID;
 
-import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoSetFromEntitySet;
 
 public class UserBuilder {
 
@@ -19,18 +18,18 @@ public class UserBuilder {
     public static final String PASSWORD_ENCRYPTED = "$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm";
     public static final String PASSWORD = "admin";
 
-    public static User buildUserWithId(UUID id, Project project) {
-        User user = buildUserWithOutId(project);
+    public static User buildUserWithId(UUID id) {
+        User user = buildUserWithOutId();
         user.setId(id);
         return user;
     }
 
-    public static User buildUserWithOutId(Project project) {
-        UserDto userDto = buildUserDto(project.getId());
-        return buildUserFromDtoWithoutId(userDto, project);
+    public static User buildUserWithOutId() {
+        UserDto userDto = buildUserDto();
+        return buildUserFromDtoWithoutId(userDto);
     }
 
-    public static User buildUserFromDtoWithoutId(UserDto userDto, Project project) {
+    public static User buildUserFromDtoWithoutId(UserDto userDto) {
 
         User user = new User();
         user.setEmail(userDto.getEmail());
@@ -39,12 +38,11 @@ public class UserBuilder {
         user.setRole(userDto.getRole());
         user.setActive(userDto.getActive());
         user.setPassword(new BCryptPasswordEncoder(10).encode(userDto.getPassword()));
-        user.setProject(project);
 
         return user;
     }
 
-    public static User buildUserFromDto(UserDto userDto, User savedUser, Project project) {
+    public static User buildUserFromDto(UserDto userDto, User savedUser) {
 
         savedUser.setEmail(userDto.getEmail());
         savedUser.setUserName(userDto.getName());
@@ -54,13 +52,12 @@ public class UserBuilder {
         if (userDto.getPassword()!=null){
             savedUser.setPassword(userDto.getPassword());
         }
-        savedUser.setProject(project);
 
         return savedUser;
     }
 
     // input user from UI
-    public static UserDto buildUserDto(long projectId) {
+    public static UserDto buildUserDto() {
 
         UserDto userDto = new UserDto();
         userDto.setName(NAME);
@@ -69,7 +66,6 @@ public class UserBuilder {
         userDto.setRole(ROLE_ADMIN);
         userDto.setActive(true);
         userDto.setAvatar(AVATAR);
-        userDto.setProjectId(projectId);
 
         return userDto;
     }
@@ -84,7 +80,7 @@ public class UserBuilder {
         userResponseDto.setRole(user.getRole());
         userResponseDto.setActive(user.getActive());
         userResponseDto.setCreated(user.getCreated());
-        userResponseDto.setProject(buildProjectResponseDtoFromEntity(user.getProject()));
+        userResponseDto.setProjects(buildProjectResponseDtoSetFromEntitySet(user.getProjects()));
 
         return userResponseDto;
     }

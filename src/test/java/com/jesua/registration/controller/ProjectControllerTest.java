@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDtoAndSavedProject;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -145,7 +146,7 @@ class ProjectControllerTest extends BaseControllerTest {
         updatedProjectDto.setDescription("updated Description");
         updatedProjectDto.setActive(false);
 
-        Project updatedProject = buildProjectFromDto(project, updatedProjectDto);
+        Project updatedProject = buildProjectFromDtoAndSavedProject(project, updatedProjectDto);
         ProjectResponseDto expectedProjectResponseDto = buildProjectResponseDtoFromEntity(updatedProject);
 
         MockHttpServletResponse response = mockMvc

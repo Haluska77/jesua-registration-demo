@@ -8,6 +8,7 @@ import com.jesua.registration.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class CourseService {
 
     public CourseResponseDto updateCourse(CourseDto courseDto, long id) {
 
-        Course savedCourse = courseRepository.getOne(id);
+        Course savedCourse = courseRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Course not found!!!"));
         Course course = courseMapper.mapDtoToEntity(courseDto, savedCourse);
 
         Course save = courseRepository.save(course);

@@ -57,7 +57,7 @@ class PasswordTokenControllerTest extends BaseControllerTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        user = buildUserWithOutId(project);
+        user = buildUserWithOutId();
         userRepository.save(user);
 
     }
@@ -92,7 +92,7 @@ class PasswordTokenControllerTest extends BaseControllerTest {
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "project.created").isEqualTo(userResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(userResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
-        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
+//        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isEqualTo(LINK_NA_ZMENU_HESLA);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }

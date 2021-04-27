@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.Set;
+
 @Mapper(componentModel = "spring")
 public abstract class ProjectMapper {
 
@@ -17,4 +19,6 @@ public abstract class ProjectMapper {
     public abstract Project mapDtoToEntity(ProjectDto projectDto, @MappingTarget Project project);
 
     public abstract ProjectResponseDto mapEntityToDto(Project project);
+
+    public abstract Set<ProjectResponseDto> mapEntitySetToDtoSet(Set<Project> project);
 }

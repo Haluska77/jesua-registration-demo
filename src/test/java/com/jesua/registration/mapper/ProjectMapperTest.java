@@ -37,7 +37,7 @@ class ProjectMapperTest {
         Project savedProject = buildProject(1);
         ProjectDto projectDto = buildProjectDto();
         Project expectedProject = buildProjectFromDto(projectDto);
-        expectedProject.setId(1);
+        expectedProject.setId(savedProject.getId());
 
         Project actualProject = projectMapper.mapDtoToEntity(projectDto, savedProject);
 

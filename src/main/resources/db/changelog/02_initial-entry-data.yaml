@@ -1,7 +1,8 @@
 databaseChangeLog:
   - changeSet:
-      id: default-project
+      id: project01
       author: SH
+      context: dev
       changes:
         - insert:
             tableName: project
@@ -19,7 +20,47 @@ databaseChangeLog:
                   name: created
                   value: now()
   - changeSet:
-      id: default-user
+      id: project02
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: project
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: short_name
+                  value: "Kalvarka"
+              - column:
+                  name: description
+                  value: "Omse - Kalvarka Kosice"
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: project03
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: project
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: short_name
+                  value: "trihorky"
+              - column:
+                  name: description
+                  value: "Omse - Tri Horky Kosice"
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: user01
       author: SH
       changes:
         - insert:
@@ -46,9 +87,86 @@ databaseChangeLog:
               - column:
                   name: avatar
                   value: "038-concierge.svg"
+  - changeSet:
+      id: user02
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: jesua_user
+            columns:
+              - column:
+                  name: id
+                  value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
+              - column:
+                  name: user_name
+                  value: "barka"
+              - column:
+                  name: password
+                  value: "$2a$10$ulfgUjdwVcRsm/RldIaFS.z5wFUNR7QE6.rC7sd1PkKUtlPAHJaHa"
+              - column:
+                  name: email
+                  value: "barka@gmail.com"
+              - column:
+                  name: role
+                  value: "ROLE_MODERATOR"
+              - column:
+                  name: created
+                  value: now()
+              - column:
+                  name: avatar
+                  value: "011-priest.svg"
+  - changeSet:
+      id: user-project01
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: user_project
+            columns:
+              - column:
+                  name: user_id
+                  value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
               - column:
                   name: project_id
                   value: 1
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: user-project02
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: user_project
+            columns:
+              - column:
+                  name: user_id
+                  value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
+              - column:
+                  name: project_id
+                  value: 2
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: user-project03
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: user_project
+            columns:
+              - column:
+                  name: user_id
+                  value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
+              - column:
+                  name: project_id
+                  value: 3
+              - column:
+                  name: created
+                  value: now()
   - changeSet:
       id: default-course-item
       author: SH

@@ -48,7 +48,7 @@ class FollowerMapperTest {
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
+        user = buildUserWithId(USER_ID);
     }
 
     @Test

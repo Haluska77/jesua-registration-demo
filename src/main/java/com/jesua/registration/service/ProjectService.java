@@ -8,6 +8,7 @@ import com.jesua.registration.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,5 +40,11 @@ public class ProjectService {
         projectRepository.save(project);
 
         return projectMapper.mapEntityToDto(project);
+    }
+
+
+    public Project getProject(Long id) {
+
+        return projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 }

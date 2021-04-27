@@ -15,7 +15,7 @@ import java.util.List;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
-import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
+import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDtoAndSavedProject;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,7 +79,7 @@ class ProjectServiceTest {
     void updateProjectTest() {
         ProjectDto projectDto = buildProjectDto();
         Project origProject = buildProject(1);
-        Project updatedProject = buildProjectFromDto(origProject, projectDto);
+        Project updatedProject = buildProjectFromDtoAndSavedProject(origProject, projectDto);
         ProjectResponseDto expectedResponseDto = buildProjectResponseDtoFromEntity(origProject);
 
         doReturn(origProject).when(projectRepository).getOne(1L);

@@ -50,7 +50,7 @@ public class CourseRepositoryTest {
         project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        user = buildUserWithOutId(project);
+        user = buildUserWithOutId();
         userRepository.save(user);
 
         openCourse = buildCustomCourse(true, 5, user, project);

@@ -6,6 +6,7 @@ import com.jesua.registration.dto.UserResponseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
+import com.jesua.registration.service.ProjectService;
 import com.jesua.registration.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,17 +40,18 @@ class CourseMapperTest {
     private UserService userService;
 
     @Mock
+    private ProjectService projectService;
+
+    @Mock
     private UserMapperImpl userMapper;
 
     private static User user;
-    private static User savedUser;
     private static Project project;
 
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
-        savedUser = buildUserWithId(USER_ID, project);
+        user = buildUserWithId(USER_ID);
     }
 
     @Test
@@ -59,7 +61,7 @@ class CourseMapperTest {
         Course expectedCourse = buildCourseFromDto(courseDto, user, project);
 
         doReturn(user).when(userService).getUser(USER_ID);
-        doReturn(project).when(userMapper).getProject(project.getId());
+        doReturn(project).when(projectService).getProject(project.getId());
 
         Course actualCourse = courseMapper.mapDtoToEntity(courseDto);
 
@@ -70,12 +72,11 @@ class CourseMapperTest {
     @Test
     void mapDtoToExistingEntityTest() {
 
-        Course savedCourse = buildSavedCourse(3, savedUser, 80, project);
+        Course savedCourse = buildSavedCourse(3, user, 80, project);
         CourseDto courseDto = buildCourseDto(USER_ID, project.getId());
-        Course expectedCourse = buildCourseFromDto(courseDto, savedCourse, savedUser, project);
+        Course expectedCourse = buildCourseFromDto(courseDto, savedCourse, user, project);
 
         doReturn(user).when(userService).getUser(USER_ID);
-        doReturn(project).when(userMapper).getProject(project.getId());
 
         Course actualCourse = courseMapper.mapDtoToEntity(courseDto, savedCourse);
 

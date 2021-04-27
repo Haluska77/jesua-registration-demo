@@ -45,7 +45,7 @@ public class CourseBuilder {
         return course;
     }
 
-    public static Course buildSavedCourse(int id, User user, int capacity, Project project){
+    public static Course buildSavedCourse(long id, User user, int capacity, Project project){
 
         Course course = new Course();
         course.setId(id);

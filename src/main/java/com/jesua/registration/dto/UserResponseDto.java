@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -21,5 +22,5 @@ public class UserResponseDto {
     private String role;
     private Boolean active;
     private Instant created;
-    private ProjectResponseDto project;
+    private Set<ProjectResponseDto> projects;
 }

@@ -75,7 +75,7 @@ class FollowerServiceTest {
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
+        user = buildUserWithId(USER_ID);
         course = buildSavedCourse(1, user, 100, project);
     }
 

@@ -9,7 +9,6 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +23,9 @@ public abstract class FollowerMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "token", ignore = true)
-    @Mapping(target = "course", source = "eventId", qualifiedByName = "course")
+    @Mapping(target = "course", source = "eventId")
     public abstract Follower mapDtoToEntity(FollowerDto followerDto);
 
-    @Named("course")
     Course mapCourse(int eventId) {
         return courseService.getCourse(eventId);
     }

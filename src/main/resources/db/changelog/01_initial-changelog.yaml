@@ -93,11 +93,6 @@ databaseChangeLog:
               - column:
                   name: avatar
                   type: VARCHAR(50)
-              - column:
-                  constraints:
-                    nullable: false
-                  name: project_id
-                  type: BIGINT
   - changeSet:
       id: create-table-course
       author: SH
@@ -224,7 +219,33 @@ databaseChangeLog:
                 - column:
                     name: device_detail
                     type: VARCHAR(250)
-
+  - changeSet:
+      id: create-table-user_project
+      author: SH
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_project
+      changes:
+        - createTable:
+            tableName: user_project
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: VARCHAR(36)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created
+                  type: DATETIME(6)
   - changeSet:
       id: fk_course__user_id
       author: SH
@@ -254,21 +275,6 @@ databaseChangeLog:
             onUpdate: RESTRICT
             referencedColumnNames: id
             referencedTableName: course
-            validate: true
-  - changeSet:
-      id: fk_user__project_id
-      author: SH
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: project_id
-            baseTableName: jesua_user
-            constraintName: fk_user__project_id
-            deferrable: false
-            initiallyDeferred: false
-            onDelete: RESTRICT
-            onUpdate: RESTRICT
-            referencedColumnNames: id
-            referencedTableName: project
             validate: true
   - changeSet:
       id: fk_course__project_id

@@ -59,7 +59,7 @@ class JwtRequestFilterTest {
         Project project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        User user = buildUserWithOutId(project);
+        User user = buildUserWithOutId();
         userRepository.save(user);
 
         String jwtToken = Jwts.builder()

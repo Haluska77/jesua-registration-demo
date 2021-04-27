@@ -44,7 +44,7 @@ class HomeServiceTest {
     @Test
     void getStatisticsTest() {
         Project project = buildProject(1);
-        User user = buildUserWithId(USER_ID, project);
+        User user = buildUserWithId(USER_ID);
 
         Course course1 = buildSavedCourse(1, user, 10, project);
         Course course2 = buildSavedCourse(2, user, 50, project);

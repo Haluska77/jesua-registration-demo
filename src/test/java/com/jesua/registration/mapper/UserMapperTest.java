@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
@@ -45,21 +46,22 @@ public class UserMapperTest {
 
     private static User user;
     private static Project project;
+    private static Set<Project>  projects;
 
     @BeforeAll
     static void setUp(){
         project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
+        projects = Set.of(project);
+        user = buildUserWithId(USER_ID);
     }
 
     @Test
     void mapDtoToEntityTest() {
 
-        UserDto userDto = buildUserDto(project.getId());
-        User expectedUser = buildUserFromDtoWithoutId(userDto, project);
+        UserDto userDto = buildUserDto();
+        User expectedUser = buildUserFromDtoWithoutId(userDto);
 
         doReturn("$2a$10$FdrdQKY43A1klR8adtBKseAJvAlkH/Y5zQ1uZS4w0gjap3V4m6yam").when(bCryptPasswordEncoder).encode(userDto.getPassword());
-        doReturn(project).when(projectRepository).getOne(project.getId());
 
         User actualUser = userMapper.mapDtoToEntity(userDto);
 
@@ -69,27 +71,28 @@ public class UserMapperTest {
 
     @Test
     void mapDtoToSavedEntityTest() {
-        User savedUser = buildUserWithId(USER_ID, project);
-        UserDto userDto = buildUserDto(project.getId());
+
+        user.setProjects(projects);
+        UserDto userDto = buildUserDto();
         userDto.setRole("ROLE_MODERATOR");
         userDto.setActive(false);
         userDto.setPassword(null);
-        User expectedUser = buildUserFromDto(userDto, savedUser, project);
 
-        doReturn(project).when(projectRepository).getOne(project.getId());
+        User expectedUser = buildUserFromDto(userDto, user);
 
-        User actualUser = userMapper.mapDtoToEntity(userDto, UserMapperTest.user);
+        User actualUser = userMapper.mapDtoToEntity(userDto, user);
 
         assertThat(actualUser).usingRecursiveComparison().ignoringFields("password").isEqualTo(expectedUser);
         assertThat(actualUser.getPassword()).startsWith("$2a$10$");
     }
 
     @Test
-    void testMapEntityToDtoTest() {
+    void testMapEntityToResponseDtoTest() {
 
+        user.setProjects(projects);
         UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
         ProjectResponseDto projectResponseDto = buildProjectResponseDtoFromEntity(project);
-        doReturn(projectResponseDto).when(projectMapper).mapEntityToDto(project);
+        doReturn(Set.of(projectResponseDto)).when(projectMapper).mapEntitySetToDtoSet(projects);
 
         UserResponseDto actualResponseDto = userMapper.mapEntityToDto(user);
 

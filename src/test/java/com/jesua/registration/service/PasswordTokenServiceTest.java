@@ -67,12 +67,11 @@ class PasswordTokenServiceTest {
     private PasswordTokenService passwordTokenService;
 
     private static User user;
-    private static Project project;
 
     @BeforeAll
     static void setUp(){
-        project = buildProject(1);
-        user = buildUserWithId(USER_ID, project);
+        Project project = buildProject(1);
+        user = buildUserWithId(USER_ID);
     }
 
     @Test

@@ -79,7 +79,7 @@ public class UserAuthPrincipal implements UserDetails {
         return user.getCreated();
     }
 
-    public Project getProject() {
-        return user.getProject();
+    public Set<Project> getProjects() {
+        return user.getProjects();
     }
 }
