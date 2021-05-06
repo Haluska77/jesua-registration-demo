@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -27,6 +29,9 @@ public class UserProject extends BaseCreatedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("projectId")
     private Project project;
+
+    @Enumerated(EnumType.STRING)
+    private ProjectRole role = ProjectRole.OWNER;
 
     @Override
     public boolean equals(Object o) {

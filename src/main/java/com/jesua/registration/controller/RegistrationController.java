@@ -7,7 +7,6 @@ import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.FollowerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,11 +36,10 @@ public class RegistrationController {
         return new SuccessResponse<>(followerResponseDto.getFollower(), followerResponseDto.getMessage());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping("")
-    public List<FollowerEntityResponseDto> getAllFollowers() {
+    public List<FollowerEntityResponseDto> getAllFollowersByProjects(@RequestParam("projects") List<Long> projectList) {
 
-        return followerService.getAllFollowers();
+        return followerService.getAllFollowersByProjects(projectList);
 
     }
 

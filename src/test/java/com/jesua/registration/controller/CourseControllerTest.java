@@ -24,7 +24,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Set;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
@@ -46,7 +45,6 @@ class CourseControllerTest extends BaseControllerTest {
     private static User user;
     private long createdCourseId;
     private static Project project;
-    private static Set<Project> projects;
     private static CourseDto courseDto;
 
     @BeforeAll
@@ -57,7 +55,9 @@ class CourseControllerTest extends BaseControllerTest {
         ProjectDto projectDto = buildProjectDto();
         project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
-        projects = Set.of(project);
+
+        Project project2 = buildProjectFromDto(projectDto);
+        projectRepository.save(project2);
 
         user = buildUserWithOutId();
         userRepository.save(user);
@@ -65,7 +65,8 @@ class CourseControllerTest extends BaseControllerTest {
         courseDto = buildCourseDto(user.getId(), project.getId());
         Course course1 = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course1);
-        Course course2 = buildCourseFromDto(courseDto, user, project);
+        CourseDto courseDto2 = buildCourseDto(user.getId(), project2.getId());
+        Course course2 = buildCourseFromDto(courseDto2, user, project2);
         course2.setOpen(false);
         courseRepository.save(course2);
 
@@ -90,8 +91,7 @@ class CourseControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void getSuccessfulEventsTest() throws Exception {
+    void getSuccessfulEventsWithoutFilteringTest() throws Exception {
 
         MockHttpServletResponse response = mockMvc
                 .perform(get("/events/eventList"))
@@ -108,38 +108,10 @@ class CourseControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "USER")
-    void accessDeniedTest() throws Exception {
-
-        String contentAsString = mockMvc
-                .perform(get("/events/eventList"))
-                .andExpect(status().isInternalServerError())
-                .andReturn().getResponse().getContentAsString();
-
-        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
-        });
-        assertThat(errorResponse.getError().getMessage()).isEqualTo("Access is denied");
-    }
-
-    @Test
-    void getUnauthorizedEventsTest() throws Exception {
-
-        String contentAsString = mockMvc
-                .perform(get("/events/eventList"))
-                .andExpect(status().isUnauthorized())
-                .andReturn().getResponse().getContentAsString();
-
-        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
-        });
-        assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
-
-    }
-
-    @Test
-    void getSuccessfulActiveEventsTest() throws Exception {
+    void getSuccessfulEventsOpenFilterTest() throws Exception {
 
         MockHttpServletResponse response = mockMvc
-                .perform(get("/events/activeEventList"))
+                .perform(get("/events/eventList?open=true"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -153,7 +125,20 @@ class CourseControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void deleteEvent() {
+    void getSuccessfulEventsProjectFilterTest() throws Exception {
+
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/events/eventList?projectList="+project.getId()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        SuccessResponse<List<CourseResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(successResponse.getResponse().getBody()).isNotNull();
+        assertThat(successResponse.getResponse().getBody().size()).isEqualTo(1);
+        assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
+
     }
 
     @Test

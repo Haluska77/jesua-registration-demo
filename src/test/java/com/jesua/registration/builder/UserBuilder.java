@@ -1,13 +1,11 @@
 package com.jesua.registration.builder;
 
 import com.jesua.registration.dto.UserDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.UUID;
-
-import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoSetFromEntitySet;
 
 public class UserBuilder {
 
@@ -71,8 +69,8 @@ public class UserBuilder {
     }
 
     // output user submitted to UI
-    public static UserResponseDto buildUserResponseDtoFromEntity(User user) {
-        UserResponseDto userResponseDto = new UserResponseDto();
+    public static UserResponseBaseDto buildUserResponseBaseDtoFromEntity(User user) {
+        UserResponseBaseDto userResponseDto = new UserResponseBaseDto();
         userResponseDto.setId(user.getId());
         userResponseDto.setEmail(user.getEmail());
         userResponseDto.setName(user.getUserName());
@@ -80,7 +78,6 @@ public class UserBuilder {
         userResponseDto.setRole(user.getRole());
         userResponseDto.setActive(user.getActive());
         userResponseDto.setCreated(user.getCreated());
-        userResponseDto.setProjects(buildProjectResponseDtoSetFromEntitySet(user.getProjects()));
 
         return userResponseDto;
     }

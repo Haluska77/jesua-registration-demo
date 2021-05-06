@@ -12,7 +12,6 @@ import java.util.UUID;
 
 public class FollowerBuilder {
 
-    private static final UUID USER_ID = UUID.randomUUID();
     public static final String NAME = "sancho";
     public static final String EMAIL = "jesua@jesua.com";
     public static final String TOKEN = "sdfsd521d3ASDF54d32df156DF3";

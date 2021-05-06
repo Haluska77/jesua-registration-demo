@@ -1,11 +1,8 @@
 package com.jesua.registration.mapper;
 
-import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.dto.UserDto;
-import com.jesua.registration.dto.UserResponseDto;
-import com.jesua.registration.entity.Project;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.User;
-import com.jesua.registration.repository.ProjectRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,15 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Set;
 import java.util.UUID;
 
-import static com.jesua.registration.builder.ProjectBuilder.buildProject;
-import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseBaseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -35,23 +29,13 @@ public class UserMapperTest {
     @Mock
     PasswordEncoder bCryptPasswordEncoder;
 
-    @Mock
-    ProjectRepository projectRepository;
-
-    @Mock
-    private ProjectMapperImpl projectMapper;
-
     @InjectMocks
     private UserMapperImpl userMapper;
 
     private static User user;
-    private static Project project;
-    private static Set<Project>  projects;
 
     @BeforeAll
     static void setUp(){
-        project = buildProject(1);
-        projects = Set.of(project);
         user = buildUserWithId(USER_ID);
     }
 
@@ -72,7 +56,6 @@ public class UserMapperTest {
     @Test
     void mapDtoToSavedEntityTest() {
 
-        user.setProjects(projects);
         UserDto userDto = buildUserDto();
         userDto.setRole("ROLE_MODERATOR");
         userDto.setActive(false);
@@ -89,12 +72,9 @@ public class UserMapperTest {
     @Test
     void testMapEntityToResponseDtoTest() {
 
-        user.setProjects(projects);
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
-        ProjectResponseDto projectResponseDto = buildProjectResponseDtoFromEntity(project);
-        doReturn(Set.of(projectResponseDto)).when(projectMapper).mapEntitySetToDtoSet(projects);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
 
-        UserResponseDto actualResponseDto = userMapper.mapEntityToDto(user);
+        UserResponseBaseDto actualResponseDto = userMapper.mapEntityToDto(user);
 
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(userResponseDto);
     }

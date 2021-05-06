@@ -244,6 +244,11 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
+                  name: role
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
                   name: created
                   type: DATETIME(6)
   - changeSet:

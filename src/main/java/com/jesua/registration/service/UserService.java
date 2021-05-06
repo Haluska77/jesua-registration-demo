@@ -1,7 +1,7 @@
 package com.jesua.registration.service;
 
 import com.jesua.registration.dto.UserDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.repository.UserRepository;
@@ -38,12 +38,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
-    public List<UserResponseDto> getAllUsers() {
+    public List<UserResponseBaseDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
-    public UserResponseDto switchActiveUserAccount(UUID userId) {
+    public UserResponseBaseDto switchActiveUserAccount(UUID userId) {
 
         return userRepository.findById(userId)
                 .map(this::getUserResponseDto)
@@ -51,13 +51,13 @@ public class UserService implements UserDetailsService {
 
     }
 
-    private UserResponseDto getUserResponseDto(User u) {
-        u.setActive(!u.getActive());
-        userRepository.save(u);
-        return userMapper.mapEntityToDto(u);
+    private UserResponseBaseDto getUserResponseDto(User user) {
+        user.setActive(!user.getActive());
+        userRepository.save(user);
+        return userMapper.mapEntityToDto(user);
     }
 
-    public UserResponseDto createUser(UserDto userDto) {
+    public UserResponseBaseDto createUser(UserDto userDto) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new IllegalStateException("Email is already registered!");
         }
@@ -68,7 +68,7 @@ public class UserService implements UserDetailsService {
         return userMapper.mapEntityToDto(user);
     }
 
-    public UserResponseDto updateUser(UUID id, UserDto userDto) {
+    public UserResponseBaseDto updateUser(UUID id, UserDto userDto) {
 
         User origUser = userRepository.getOne(id);
         User user = userMapper.mapDtoToEntity(userDto, origUser);

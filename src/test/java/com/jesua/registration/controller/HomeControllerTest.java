@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -67,9 +69,22 @@ class HomeControllerTest extends BaseControllerTest {
         User user = buildUserWithOutId();
         userRepository.save(user);
 
+        //valid course - open - ok, starting in future - ok
         CourseDto courseDto = buildCourseDto(user.getId(), project.getId());
         Course course = buildCourseFromDto(courseDto, user, project);
+        course.setStartDate(Instant.now().plus(1, ChronoUnit.DAYS));
         courseRepository.save(course);
+
+        //invalid course - open - ok, starting in past - notok
+        Course course2 = buildCourseFromDto(courseDto, user, project);
+        course2.setStartDate(Instant.now().minus(1, ChronoUnit.DAYS));
+        courseRepository.save(course2);
+
+        //invalid course - closed - notok, starting in future - ok
+        Course course3 = buildCourseFromDto(courseDto, user, project);
+        course3.setOpen(false);
+        course3.setStartDate(Instant.now().plus(1, ChronoUnit.DAYS));
+        courseRepository.save(course3);
 
         FollowerDto followerDto = buildFollowerDto(course.getId());
         Follower follower1 = buildFollowerFromDto(followerDto, course);

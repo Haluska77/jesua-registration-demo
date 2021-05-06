@@ -2,7 +2,7 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.dto.PasswordDto;
 import com.jesua.registration.dto.TokenState;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.dto.UserTokenDto;
 import com.jesua.registration.entity.PasswordToken;
 import com.jesua.registration.entity.User;
@@ -46,7 +46,7 @@ public class PasswordTokenService {
     private int pwdTokenExp;
 
     @Transactional
-    public UserResponseDto createAndSendTokenByUserEmail(String email) {
+    public UserResponseBaseDto createAndSendTokenByUserEmail(String email) {
 
         User user = userRepository.findByEmailAndActiveTrue(email)
                 .map(this::savePasswordTokenToActiveUser)
@@ -85,7 +85,7 @@ public class PasswordTokenService {
     }
 
     @Transactional
-    public UserResponseDto changePassword(PasswordDto passwordDto) {
+    public UserResponseBaseDto changePassword(PasswordDto passwordDto) {
         //validate token once again just before changing password
         validatePasswordResetToken(passwordDto.getToken());
 

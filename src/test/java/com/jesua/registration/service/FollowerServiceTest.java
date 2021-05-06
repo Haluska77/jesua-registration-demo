@@ -187,7 +187,7 @@ class FollowerServiceTest {
 
         boolean ACCEPTED_TRUE = true;
 
-        String responseMessage = "Vaša registrácia na kurz Ješua (" + course.getDescription() + ", " + instantToString(course.getStartDate()) + ") prebehla úspešne! Tešíme sa na vašu účasť. Vidíme sa na stretnutí.";
+        String responseMessage = "Tvoja registrácia na akciu (" + course.getDescription() + ", " + instantToString(course.getStartDate()) + ") prebehla úspešne! Tešíme sa na vašu účasť. Vidíme sa na stretnutí.";
 
         FollowerDto followerDto = buildFollowerDto(course.getId());
         Follower rawFollower = buildFollowerFromDto(followerDto, course);
@@ -218,8 +218,8 @@ class FollowerServiceTest {
         boolean ACCEPTED_FALSE = false;
 
         Course course2 = buildSavedCourse(2, user, 2, project);
-        String responseMessage = "Vaša registrácia na kurz Ješua (" + course2.getDescription() + ", " + instantToString(course2.getStartDate()) + ") " +
-                "prebehla úspešne! <br> Momentálne je kapacita kurzu už naplnená. Ste v poradí. <br> Pred vami sa ešte prihlásilo <strong>0</strong> ľudí. " +
+        String responseMessage = "Tvoja registrácia na akciu (" + course2.getDescription() + ", " + instantToString(course2.getStartDate()) + ") " +
+                "prebehla úspešne! <br> Momentálne je kapacita akcie už naplnená. Ste v poradí. <br> Pred vami sa ešte prihlásilo <strong>0</strong> ľudí. " +
                 "<br> V prípade, že sa niektorý z účastníkov odhlási, dáme vám vedieť emailom na vašu adresu <strong>jesua@jesua.com</strong";
 
         FollowerDto followerDto = buildFollowerDto(course2.getId());

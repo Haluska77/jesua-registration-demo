@@ -15,7 +15,7 @@ public class CourseResponseDto {
     private boolean open;
     private int capacity;
     private Instant created;
-    private UserResponseDto createdBy;
+    private UserResponseBaseDto createdBy;
     private String image;
     private ProjectResponseDto project;
 }

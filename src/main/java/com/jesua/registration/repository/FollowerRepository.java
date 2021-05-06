@@ -10,6 +10,8 @@ public interface FollowerRepository extends JpaRepository<Follower, UUID> {
 
     List<Follower> findByCourseId(long courseId);
 
-    List<Follower> findByCourseOpen(boolean open);
+    List<Follower> findByCourseIdIn(List<Long> ids);
+
+    List<Follower> findByCourseProjectIdIn(List<Long> ids);
 
 }

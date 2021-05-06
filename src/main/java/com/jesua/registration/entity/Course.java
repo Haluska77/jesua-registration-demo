@@ -33,10 +33,10 @@ public class Course extends BasePrivateEntity{
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
+    @JoinColumn(name = "created_by", updatable = false)
     private User user;
 
-    @Size(max = 100)
+    @Column(columnDefinition = "varchar(100) default 'no-image.svg'")
     private String image;
 
     @NotNull

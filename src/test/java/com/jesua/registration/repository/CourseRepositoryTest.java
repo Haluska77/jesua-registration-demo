@@ -4,6 +4,7 @@ import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
+import com.jesua.registration.entity.filter.CourseFilter;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -88,7 +90,12 @@ public class CourseRepositoryTest {
 
     @Test
     void findByOpenTrueTest() {
-        List<Course> actualCourseList = courseRepository.findByOpenTrue();
+
+        CourseFilter courseFilter = new CourseFilter();
+        courseFilter.setOpen(true);
+        Specification<Course> courseSpecification = new CourseSpecification(courseFilter);
+
+        List<Course> actualCourseList = courseRepository.findAll(courseSpecification);
 
         assertThat(actualCourseList.size()).isEqualTo(1);
         assertThat(actualCourseList.get(0)).usingRecursiveComparison().ignoringFields("created", "startDate", "user", "project").isEqualTo(openCourse);

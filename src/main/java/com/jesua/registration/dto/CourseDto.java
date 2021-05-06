@@ -12,7 +12,7 @@ public class CourseDto {
     private String description;
     private String startDate;
     private boolean open;
-    private int capacity;
+    private Integer capacity;
     private UUID userId;
     private String image;
     private long projectId;

@@ -6,14 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDto {
+public class UserResponseBaseDto {
 
     private UUID id;
     private String avatar;
@@ -22,5 +21,5 @@ public class UserResponseDto {
     private String role;
     private Boolean active;
     private Instant created;
-    private Set<ProjectResponseDto> projects;
+
 }

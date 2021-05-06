@@ -3,6 +3,8 @@ package com.jesua.registration.builder;
 import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.entity.Project;
+import com.jesua.registration.entity.filter.ProjectFilter;
+import com.jesua.registration.repository.ProjectSpecification;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -78,5 +80,16 @@ public class ProjectBuilder {
                 }
         )
                 .collect(Collectors.toSet());
+    }
+
+    public static ProjectSpecification createProjectSpecification(String name){
+        ProjectFilter projectFilter = createProjectFilter(name);
+        return new ProjectSpecification(projectFilter);
+    }
+
+    public static ProjectFilter createProjectFilter(String name) {
+        ProjectFilter projectFilter = new ProjectFilter();
+        projectFilter.setName(name);
+        return projectFilter;
     }
 }

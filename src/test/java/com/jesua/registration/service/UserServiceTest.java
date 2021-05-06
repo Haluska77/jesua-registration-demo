@@ -1,7 +1,7 @@
 package com.jesua.registration.service;
 
 import com.jesua.registration.dto.UserDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.UserMapper;
@@ -24,7 +24,7 @@ import java.util.UUID;
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
 import static com.jesua.registration.builder.UserBuilder.buildUserDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserFromDtoWithoutId;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseBaseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -83,13 +83,13 @@ class UserServiceTest {
     @Test
     void switchActiveUserAccountToFalse() {
 
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
         userResponseDto.setActive(false);
 
         doReturn(Optional.of(user)).when(userRepository).findById(USER_ID);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
 
-        UserResponseDto actualUserResponse = userService.switchActiveUserAccount(USER_ID);
+        UserResponseBaseDto actualUserResponse = userService.switchActiveUserAccount(USER_ID);
 
         verify(userRepository).findById(USER_ID);
         verify(userMapper).mapEntityToDto(user);
@@ -102,13 +102,13 @@ class UserServiceTest {
     void switchActiveUserAccountToTrue() {
 
         user.setActive(false);
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
         userResponseDto.setActive(true);
 
         doReturn(Optional.of(user)).when(userRepository).findById(USER_ID);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
 
-        UserResponseDto actualUserResponse = userService.switchActiveUserAccount(USER_ID);
+        UserResponseBaseDto actualUserResponse = userService.switchActiveUserAccount(USER_ID);
 
         verify(userRepository).findById(USER_ID);
         verify(userMapper).mapEntityToDto(user);
@@ -134,14 +134,14 @@ class UserServiceTest {
 
         User userWithId = buildUserWithId(USER_ID);
 
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(userWithId);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(userWithId);
 
         doReturn(false).when(userRepository).existsByEmail(userDto.getEmail());
         doReturn(user).when(userMapper).mapDtoToEntity(userDto);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
         doReturn(userWithId).when(userRepository).save(user);
 
-        UserResponseDto actualUserResponse = userService.createUser(userDto);
+        UserResponseBaseDto actualUserResponse = userService.createUser(userDto);
 
         verify(userRepository).existsByEmail(userDto.getEmail());
         verify(userMapper).mapDtoToEntity(userDto);
@@ -171,13 +171,13 @@ class UserServiceTest {
         userDto.setRole("ROLE_MODERATOR");
         userDto.setActive(false);
         User expectedUser = buildUserFromDtoWithoutId(userDto);
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(expectedUser);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(expectedUser);
 
         doReturn(user1).when(userRepository).getOne(USER_ID);
         doReturn(expectedUser).when(userMapper).mapDtoToEntity(userDto, user1);
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(expectedUser);
 
-        UserResponseDto actualUserResponse = userService.updateUser(USER_ID, userDto);
+        UserResponseBaseDto actualUserResponse = userService.updateUser(USER_ID, userDto);
 
         verify(userRepository).getOne(USER_ID);
         verify(userMapper).mapDtoToEntity(userDto, user1);

@@ -2,10 +2,9 @@ package com.jesua.registration.service;
 
 import com.jesua.registration.dto.PasswordDto;
 import com.jesua.registration.dto.TokenState;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.dto.UserTokenDto;
 import com.jesua.registration.entity.PasswordToken;
-import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.PasswordTokenException;
 import com.jesua.registration.mapper.UserMapper;
@@ -30,8 +29,7 @@ import static com.jesua.registration.builder.FollowerBuilder.TOKEN;
 import static com.jesua.registration.builder.PasswordTokenBuilder.PASSWORD_TOKEN;
 import static com.jesua.registration.builder.PasswordTokenBuilder.buildPasswordToken;
 import static com.jesua.registration.builder.PasswordTokenBuilder.createPasswordDto;
-import static com.jesua.registration.builder.ProjectBuilder.buildProject;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseBaseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -70,19 +68,18 @@ class PasswordTokenServiceTest {
 
     @BeforeAll
     static void setUp(){
-        Project project = buildProject(1);
         user = buildUserWithId(USER_ID);
     }
 
     @Test
     void createAndSendTokenTest() {
 
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
 
         doReturn(Optional.of(user)).when(userRepository).findByEmailAndActiveTrue(user.getEmail());
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(any());
 
-        UserResponseDto actualUserResponseDto = passwordTokenService.createAndSendTokenByUserEmail(user.getEmail());
+        UserResponseBaseDto actualUserResponseDto = passwordTokenService.createAndSendTokenByUserEmail(user.getEmail());
 
         verify(userRepository).findByEmailAndActiveTrue(user.getEmail());
         verify(userMapper).mapEntityToDto(any());
@@ -172,7 +169,7 @@ class PasswordTokenServiceTest {
     @Test
     void changePasswordTest() {
 
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
 
         PasswordDto passwordDto = createPasswordDto("newPwd", PASSWORD_TOKEN);
 
@@ -182,7 +179,7 @@ class PasswordTokenServiceTest {
         doReturn(expectedPasswordToken).when(passwordTokenRepository).save(any());
         doReturn(userResponseDto).when(userMapper).mapEntityToDto(user);
 
-        UserResponseDto actualUserResponseDto = passwordTokenService.changePassword(passwordDto);
+        UserResponseBaseDto actualUserResponseDto = passwordTokenService.changePassword(passwordDto);
 
         verify(passwordTokenRepository, times(2)).findByToken(PASSWORD_TOKEN);
         verify(userRepository).findByPasswordTokens_Token(PASSWORD_TOKEN);

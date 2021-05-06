@@ -1,7 +1,7 @@
 package com.jesua.registration.controller;
 
 import com.jesua.registration.dto.PasswordDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.dto.UserTokenDto;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.PasswordTokenService;
@@ -22,9 +22,9 @@ public class PasswordTokenController {
 
     //Get user by email and save token for reset password
     @GetMapping("/userAccount/{email}")
-    public SuccessResponse<UserResponseDto> userAccount(@PathVariable String email) {
+    public SuccessResponse<UserResponseBaseDto> userAccount(@PathVariable String email) {
 
-        UserResponseDto userResponseDto = passwordTokenService.createAndSendTokenByUserEmail(email);
+        UserResponseBaseDto userResponseDto = passwordTokenService.createAndSendTokenByUserEmail(email);
 
         return new SuccessResponse<>(userResponseDto, "Na uvedený email bol poslaný link na zmenu hesla!");
     }
@@ -36,10 +36,10 @@ public class PasswordTokenController {
     }
 
     @PostMapping("changePassword")
-    public SuccessResponse<UserResponseDto> changePassword(
+    public SuccessResponse<UserResponseBaseDto> changePassword(
             @RequestBody PasswordDto passwordDto) { // TODO add entry PasswordDto validation
 
-        UserResponseDto response = passwordTokenService.changePassword(passwordDto);
+        UserResponseBaseDto response = passwordTokenService.changePassword(passwordDto);
         return new SuccessResponse<>(response, "Password has been successfully changed !!!");
     }
 }

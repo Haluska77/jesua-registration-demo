@@ -1,7 +1,7 @@
 package com.jesua.registration.mapper;
 
 import com.jesua.registration.dto.UserDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -34,5 +34,6 @@ public abstract class UserMapper {
     }
 
     @Mapping(source = "userName", target = "name")
-    public abstract UserResponseDto mapEntityToDto(User user);
+//    @Mapping(target = "projects", ignore = true)
+    public abstract UserResponseBaseDto mapEntityToDto(User user);
 }

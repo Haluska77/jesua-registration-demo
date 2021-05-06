@@ -2,15 +2,12 @@ package com.jesua.registration.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.jesua.registration.dto.PasswordDto;
-import com.jesua.registration.dto.ProjectDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.dto.UserTokenDto;
 import com.jesua.registration.entity.PasswordToken;
-import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.PasswordTokenRepository;
-import com.jesua.registration.repository.ProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -25,9 +22,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static com.jesua.registration.builder.PasswordTokenBuilder.createPasswordDto;
-import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
-import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseBaseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
 import static com.jesua.registration.dto.TokenState.SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,20 +37,12 @@ class PasswordTokenControllerTest extends BaseControllerTest {
     public static final String PASSWORD_HAS_BEEN_SUCCESSFULLY_CHANGED = "Password has been successfully changed !!!";
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private PasswordTokenRepository passwordTokenRepository;
 
     private static User user;
 
     @BeforeAll
-    static void createUser(@Autowired UserRepository userRepository,
-                           @Autowired ProjectRepository projectRepository){
-
-        ProjectDto projectDto = buildProjectDto();
-        Project project = buildProjectFromDto(projectDto);
-        projectRepository.save(project);
+    static void createUser(@Autowired UserRepository userRepository){
 
         user = buildUserWithOutId();
         userRepository.save(user);
@@ -68,16 +55,14 @@ class PasswordTokenControllerTest extends BaseControllerTest {
     }
 
     @AfterAll
-    static void tearDown(@Autowired UserRepository userRepository,
-                         @Autowired ProjectRepository projectRepository) {
+    static void tearDown(@Autowired UserRepository userRepository) {
         userRepository.deleteAll();
-        projectRepository.deleteAll();
     }
 
     @Test
     void userAccountTest() throws Exception {
 
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
 
         MockHttpServletResponse response = mockMvc
                 .perform(get("/password/userAccount/" + user.getEmail())
@@ -85,14 +70,13 @@ class PasswordTokenControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<UserResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
+        SuccessResponse<UserResponseBaseDto> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
         });
 
         assertThat(successResponse.getResponse()).isNotNull();
         assertThat(successResponse.getResponse().getBody()).isNotNull();
-        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created", "project.created").isEqualTo(userResponseDto);
+        assertThat(successResponse.getResponse().getBody()).usingRecursiveComparison().ignoringFields("created").isEqualTo(userResponseDto);
         assertThat(successResponse.getResponse().getBody().getCreated()).isCloseTo(userResponseDto.getCreated(), within(1, ChronoUnit.SECONDS));
-//        assertThat(successResponse.getResponse().getBody().getProject().getCreated()).isCloseTo(userResponseDto.getProject().getCreated(), within(1, ChronoUnit.SECONDS));
         assertThat(successResponse.getResponse().getMessage()).isEqualTo(LINK_NA_ZMENU_HESLA);
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
@@ -132,7 +116,7 @@ class PasswordTokenControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<UserResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
+        SuccessResponse<UserResponseBaseDto> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
         });
 
         assertThat(successResponse.getResponse()).isNotNull();

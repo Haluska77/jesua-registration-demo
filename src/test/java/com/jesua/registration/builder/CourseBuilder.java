@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectResponseDtoFromEntity;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseBaseDtoFromEntity;
 import static com.jesua.registration.util.AppUtil.stringToInstant;
 
 public class CourseBuilder {
@@ -98,7 +98,7 @@ public class CourseBuilder {
         courseResponseDto.setStartDate(course.getStartDate().toString());
         courseResponseDto.setCapacity(course.getCapacity());
         courseResponseDto.setOpen(course.getOpen());
-        courseResponseDto.setCreatedBy(buildUserResponseDtoFromEntity(course.getUser()));
+        courseResponseDto.setCreatedBy(buildUserResponseBaseDtoFromEntity(course.getUser()));
         courseResponseDto.setCreated(course.getCreated());
         courseResponseDto.setImage(course.getImage());
         courseResponseDto.setProject(buildProjectResponseDtoFromEntity(course.getProject()));

@@ -131,6 +131,9 @@ databaseChangeLog:
                   name: project_id
                   value: 1
               - column:
+                  name: role
+                  value: "OWNER"
+              - column:
                   name: created
                   value: now()
   - changeSet:
@@ -148,6 +151,9 @@ databaseChangeLog:
                   name: project_id
                   value: 2
               - column:
+                  name: role
+                  value: "OWNER"
+              - column:
                   name: created
                   value: now()
   - changeSet:
@@ -164,6 +170,29 @@ databaseChangeLog:
               - column:
                   name: project_id
                   value: 3
+              - column:
+                  name: role
+                  value: "OWNER"
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: user-project04
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: user_project
+            columns:
+              - column:
+                  name: user_id
+                  value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
+              - column:
+                  name: project_id
+                  value: 2
+              - column:
+                  name: role
+                  value: "USER"
               - column:
                   name: created
                   value: now()

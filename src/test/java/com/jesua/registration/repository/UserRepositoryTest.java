@@ -70,9 +70,8 @@ class UserRepositoryTest {
 
     @AfterAll
     public void tearDown(){
-        passwordTokenRepository.delete(passwordToken);
-        userRepository.delete(user1);
-        userRepository.delete(user2);
+        passwordTokenRepository.deleteAll();
+        userRepository.deleteAll();
         projectRepository.deleteAll();
     }
 

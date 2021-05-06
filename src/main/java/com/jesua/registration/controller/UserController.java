@@ -1,10 +1,12 @@
 package com.jesua.registration.controller;
 
-import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.dto.UserDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserProjectResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
+import com.jesua.registration.entity.UserProject;
+import com.jesua.registration.entity.UserProjectId;
 import com.jesua.registration.exception.SuccessResponse;
-import com.jesua.registration.mapper.ProjectMapper;
+import com.jesua.registration.mapper.UserProjectMapper;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
 import com.jesua.registration.security.jwt.JwtProvider;
@@ -12,7 +14,6 @@ import com.jesua.registration.security.services.UserAuthPrincipal;
 import com.jesua.registration.service.UserProjectService;
 import com.jesua.registration.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -39,36 +41,34 @@ public class UserController {
     private final UserService userService;
     private final UserProjectService userProjectService;
     private final JwtProvider jwtProvider;
-    private final ProjectMapper projectMapper;
+    private final UserProjectMapper userProjectMapper;
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponseDto> users() {
+    public List<UserResponseBaseDto> users() {
         return userService.getAllUsers();
     }
 
     @PostMapping("update/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-    public SuccessResponse<UserResponseDto> update(@RequestBody UserDto userDto, @PathVariable UUID id) {
-        UserResponseDto userResponseDto = userService.updateUser(id, userDto);
+    public SuccessResponse<UserResponseBaseDto> update(@RequestBody UserDto userDto, @PathVariable UUID id) {
+        UserResponseBaseDto userResponseDto = userService.updateUser(id, userDto);
 
         return new SuccessResponse<>(userResponseDto, "User has been successfully changed!");
     }
 
     @GetMapping("makeActive")
     @PreAuthorize("hasRole('ADMIN')")
-    public SuccessResponse<UserResponseDto> switchActiveUserAccount(
+    public SuccessResponse<UserResponseBaseDto> switchActiveUserAccount(
             @RequestParam("userId") UUID userId) {
-        UserResponseDto user = userService.switchActiveUserAccount(userId);
+        UserResponseBaseDto user = userService.switchActiveUserAccount(userId);
 
         return new SuccessResponse<>(user, "User has been changed");
     }
 
     @PostMapping("signin")
-    public ResponseEntity<LoginResponseDto> signIn(@RequestBody LoginDto loginDto) {
+    public LoginResponseDto signIn(@RequestBody LoginDto loginDto) {
 
-        Authentication authentication;
-        authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
         );
 
@@ -77,27 +77,40 @@ public class UserController {
         String jwtToken = jwtProvider.generateJwtToken(authentication);
 
         UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
-        Set<ProjectResponseDto> projects = projectMapper.mapEntitySetToDtoSet(userDetails.getProjects());
 
-        return ResponseEntity.ok(new LoginResponseDto(userDetails.getId(), userDetails.getAvatar(), userDetails.getName(),
-                userDetails.getUsername(), userDetails.getRole(),
-                userDetails.isEnabled(), userDetails.getCreated(), projects, jwtToken));
+        Set<UserProject> userProjects = userDetails.getProjects().stream().map(
+                p -> {
+                    UserProjectId userProjectId = new UserProjectId();
+                    userProjectId.setUserId(userDetails.getId());
+                    userProjectId.setProjectId(p.getId());
+                    return userProjectId;
+                }
+        ).collect(Collectors.toSet())
+                .stream().map(userProjectService::findById
+                ).collect(Collectors.toSet());
+
+        Set<UserProjectResponseDto> userProjectResponseDtoSet = userProjectMapper.mapEntitySetToDtoSet(userProjects);
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setId(userDetails.getId());
+        loginResponseDto.setName(userDetails.getName());
+        loginResponseDto.setEmail(userDetails.getUsername());
+        loginResponseDto.setRole(userDetails.getRole());
+        loginResponseDto.setAvatar(userDetails.getAvatar());
+        loginResponseDto.setActive(userDetails.isEnabled());
+        loginResponseDto.setCreated(userDetails.getCreated());
+        loginResponseDto.setProjects(userProjectResponseDtoSet);
+        loginResponseDto.setToken(jwtToken);
+
+        return loginResponseDto;
 
     }
 
     @PostMapping("signup")
     @PreAuthorize("hasRole('ADMIN')")
-    public SuccessResponse<UserResponseDto> signUpUser(@RequestBody UserDto userDto) {
+    public SuccessResponse<UserResponseBaseDto> signUpUser(@RequestBody UserDto userDto) {
 
-        UserResponseDto userResponseDto = userService.createUser(userDto);
+        UserResponseBaseDto userResponseDto = userService.createUser(userDto);
         return new SuccessResponse<>(userResponseDto, "New user registered successfully!");
-    }
-
-    @PostMapping("map/user/{userId}/project/{projectId}")
-    public SuccessResponse<String> mapParentToChild(@PathVariable UUID userId, @PathVariable long projectId) {
-
-        String message = userProjectService.mapUserToProject(userId, projectId);
-
-        return new SuccessResponse<>(null, message);
     }
 }

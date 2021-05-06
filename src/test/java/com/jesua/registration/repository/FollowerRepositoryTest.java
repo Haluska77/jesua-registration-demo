@@ -97,7 +97,7 @@ class FollowerRepositoryTest {
     @Test
     void findFollowerByOpenCourseTest() {
 
-        List<Follower> byCourse = followerRepository.findByCourseOpen(true);
+        List<Follower> byCourse = followerRepository.findByCourseIdIn(List.of(course1.getId()));
 
         assertEquals(1, byCourse.size());
         assertEquals(byCourse.get(0).getId(), savedFollower1.getId());

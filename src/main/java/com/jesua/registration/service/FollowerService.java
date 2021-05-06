@@ -108,7 +108,7 @@ public class FollowerService {
 
         Course currentCourse = follower.getCourse();
         Message emailMessage;
-        String responseMessage = "Vaša registrácia na kurz Ješua (" + currentCourse.getDescription() + ", " + instantToString(currentCourse.getStartDate()) + ") prebehla úspešne! ";
+        String responseMessage = "Tvoja registrácia na akciu (" + currentCourse.getDescription() + ", " + instantToString(currentCourse.getStartDate()) + ") prebehla úspešne! ";
         //build emailMessage
         if (acceptedFollowers < currentCourse.getCapacity()) {
             follower.setAccepted(true);
@@ -118,7 +118,7 @@ public class FollowerService {
             follower.setAccepted(false);
             emailMessage = messageBuilder.buildUnsuccessMessage(follower);
             responseMessage +=
-                    "<br> Momentálne je kapacita kurzu už naplnená. Ste v poradí. " +
+                    "<br> Momentálne je kapacita akcie už naplnená. Ste v poradí. " +
                             "<br> Pred vami sa ešte prihlásilo <strong>" + waitingFollowers + "</strong> ľudí. " +
                             "<br> V prípade, že sa niektorý z účastníkov odhlási, dáme vám vedieť emailom na vašu adresu <strong>" + followerDto.getEmail() + "</strong";
         }
@@ -136,9 +136,12 @@ public class FollowerService {
         return followerResponseDto;
     }
 
-    public List<FollowerEntityResponseDto> getAllFollowers() {
-        return followerRepository.findAll().stream()
+    public List<FollowerEntityResponseDto> getAllFollowersByProjects(List<Long> projectList) {
+        List<FollowerEntityResponseDto> collect = followerRepository.findByCourseProjectIdIn(projectList).stream()
                 .map(followerMapper::mapEntityToDto).collect(toList());
+
+        return collect;
+
     }
 
     void sendNotificationEmail(Course course) {

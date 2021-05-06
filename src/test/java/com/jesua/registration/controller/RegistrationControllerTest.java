@@ -58,11 +58,14 @@ class RegistrationControllerTest extends BaseControllerTest {
     static void createUser(@Autowired UserRepository userRepository,
                            @Autowired CourseRepository courseRepository,
                            @Autowired FollowerRepository followerRepository,
-                           @Autowired ProjectRepository projectRepository){
+                           @Autowired ProjectRepository projectRepository) {
 
         ProjectDto projectDto = buildProjectDto();
         project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
+
+        Project project2 = buildProjectFromDto(projectDto);
+        projectRepository.save(project2);
 
         user = buildUserWithOutId();
         userRepository.save(user);
@@ -71,18 +74,23 @@ class RegistrationControllerTest extends BaseControllerTest {
         course = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course);
 
+        CourseDto courseDto2 = buildCourseDto(user.getId(), project2.getId());
+        Course course2 = buildCourseFromDto(courseDto2, user, project2);
+        courseRepository.save(course2);
+
         FollowerDto followerDto = buildFollowerDto(course.getId());
         Follower follower1 = buildFollowerFromDto(followerDto, course);
         followerRepository.save(follower1);
 
-        follower2 = buildFollowerFromDto(followerDto, course);
+        FollowerDto followerDto2 = buildFollowerDto(course2.getId());
+        follower2 = buildFollowerFromDto(followerDto2, course2);
         follower2.setToken("dd6fg513DFS5d12df3DFd52");
         followerRepository.save(follower2);
     }
 
     @AfterEach
     public void tearDown() {
-        if(createdFollowerId != null) {
+        if (createdFollowerId != null) {
             followerRepository.deleteById(createdFollowerId);
         }
 
@@ -92,7 +100,7 @@ class RegistrationControllerTest extends BaseControllerTest {
     static void cleanUp(@Autowired UserRepository userRepository,
                         @Autowired CourseRepository courseRepository,
                         @Autowired FollowerRepository followerRepository,
-                        @Autowired ProjectRepository projectRepository){
+                        @Autowired ProjectRepository projectRepository) {
 
         followerRepository.deleteAll();
         courseRepository.deleteAll();
@@ -103,7 +111,7 @@ class RegistrationControllerTest extends BaseControllerTest {
     @Test
     void addFollowerSuccessfulTest() throws Exception {
 
-        String responseMessage = "Vaša registrácia na kurz Ješua (" + course.getDescription() + ", " + instantToString(course.getStartDate()) + ") prebehla úspešne! ";
+        String responseMessage = "Tvoja registrácia na akciu (" + course.getDescription() + ", " + instantToString(course.getStartDate()) + ") prebehla úspešne! ";
 
         FollowerDto followerDto1 = buildFollowerDto(course.getId());
 
@@ -115,7 +123,8 @@ class RegistrationControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {});
+        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getId()).isNotNull();
@@ -131,15 +140,17 @@ class RegistrationControllerTest extends BaseControllerTest {
     void getSuccessfulFollowersTest() throws Exception {
 
         MockHttpServletResponse response = mockMvc
-                .perform(get("/registration/"))
+                .perform(get("/registration/?projects="+project.getId()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<List<FollowerEntityResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {});
+        SuccessResponse<List<FollowerEntityResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
-        assertThat(successResponse.getResponse().getBody().size()).isEqualTo(2);
-        assertThat(successResponse.getResponse().getLength()).isEqualTo(2);
+        assertThat(successResponse.getResponse().getBody().size()).isEqualTo(1);
+        assertThat(successResponse.getResponse().getBody().get(0).getCourse().getId()).isEqualTo(course.getId());
+        assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
 
     }
 
@@ -147,7 +158,7 @@ class RegistrationControllerTest extends BaseControllerTest {
     void getUnauthorizedFollowersTest() throws Exception {
 
         String contentAsString = mockMvc
-                .perform(get("/registration/"))
+                .perform(get("/registration/?projects="+project.getId()))
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
 
@@ -168,7 +179,8 @@ class RegistrationControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {});
+        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getId()).isEqualTo(follower2.getId());

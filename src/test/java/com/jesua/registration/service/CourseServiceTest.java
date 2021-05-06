@@ -5,14 +5,18 @@ import com.jesua.registration.dto.CourseResponseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
+import com.jesua.registration.entity.filter.CourseFilter;
 import com.jesua.registration.mapper.CourseMapper;
 import com.jesua.registration.repository.CourseRepository;
+import com.jesua.registration.repository.CourseSpecification;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +58,7 @@ public class CourseServiceTest {
         courseDto = buildCourseDto(USER_ID, project.getId());
     }
 
+    @Disabled("not able to test JPA specification. Functionality is tested in CourseControllerTest")
     @Test
     void getCoursesTest() {
 
@@ -61,10 +66,12 @@ public class CourseServiceTest {
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
+        CourseFilter courseFilter = new CourseFilter();
+
         when(courseRepository.findAll()).thenReturn(courses);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
-        List<CourseResponseDto> actualResponseDto = courseService.getCourses();
+        List<CourseResponseDto> actualResponseDto = courseService.getCourses(courseFilter);
 
         verify(courseRepository).findAll();
         verify(courseMapper).mapEntityToDto(course1);
@@ -73,6 +80,7 @@ public class CourseServiceTest {
         assertThat(actualResponseDto.get(0)).usingRecursiveComparison().isEqualTo(courseResponseDto);
     }
 
+    @Disabled("not able to test JPA specification. Functionality is tested in CourseControllerTest")
     @Test
     void getActiveCoursesTest() {
 
@@ -80,12 +88,16 @@ public class CourseServiceTest {
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
-        when(courseRepository.findByOpenTrue()).thenReturn(courses);
+        CourseFilter courseFilter = new CourseFilter();
+        courseFilter.setOpen(true);
+        Specification<Course> courseSpecification = new CourseSpecification(courseFilter);
+
+        doReturn(courses).when(courseRepository).findAll(courseSpecification);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
-        List<CourseResponseDto> actualResponseDto = courseService.getActiveCourses();
+        List<CourseResponseDto> actualResponseDto = courseService.getCourses(courseFilter);
 
-        verify(courseRepository).findByOpenTrue();
+        verify(courseRepository).findAll(courseSpecification);
         verify(courseMapper).mapEntityToDto(course1);
 
         assertThat(actualResponseDto.get(0)).isNotNull();
@@ -136,6 +148,25 @@ public class CourseServiceTest {
 
         assertThat(actualResponseDto).isNotNull();
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(courseResponseDto);
+
+    }
+
+    @Test
+    void getCoursesByUserProjectTest() {
+
+        Course savedCourse = buildSavedCourse(1, user, 50, project);
+        CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(savedCourse);
+
+        doReturn(List.of(savedCourse)).when(courseRepository).findByUserProject(USER_ID);
+        doReturn(courseResponseDto).when(courseMapper).mapEntityToDto(savedCourse);
+
+        List<CourseResponseDto> actualResponseDto = courseService.getCoursesByUserProject(USER_ID);
+
+        verify(courseRepository).findByUserProject(USER_ID);
+        verify(courseMapper).mapEntityToDto(savedCourse);
+
+        assertThat(actualResponseDto).isNotNull();
+        assertThat(actualResponseDto.get(0)).usingRecursiveComparison().isEqualTo(courseResponseDto);
 
     }
 }

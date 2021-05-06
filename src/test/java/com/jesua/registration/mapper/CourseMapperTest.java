@@ -2,7 +2,7 @@ package com.jesua.registration.mapper;
 
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.CourseResponseDto;
-import com.jesua.registration.dto.UserResponseDto;
+import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
@@ -22,7 +22,7 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDtoFromEntity;
 import static com.jesua.registration.builder.CourseBuilder.buildSavedCourse;
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
-import static com.jesua.registration.builder.UserBuilder.buildUserResponseDtoFromEntity;
+import static com.jesua.registration.builder.UserBuilder.buildUserResponseBaseDtoFromEntity;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -86,7 +86,7 @@ class CourseMapperTest {
     @Test
     void mapEntityToResponseDtoTest() {
 
-        UserResponseDto userResponseDto = buildUserResponseDtoFromEntity(user);
+        UserResponseBaseDto userResponseDto = buildUserResponseBaseDtoFromEntity(user);
         Course course = buildSavedCourse(3, user, 80, project);
         CourseResponseDto expectedCourseResponseDto = buildCourseResponseDtoFromEntity(course);
 
