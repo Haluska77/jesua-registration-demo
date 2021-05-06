@@ -132,7 +132,6 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  defaultValueBoolean: true
                   name: capacity
                   type: INT
               - column:
