@@ -15,7 +15,6 @@ import com.jesua.registration.repository.ProjectSpecification;
 import com.jesua.registration.repository.UserProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +34,8 @@ public class ProjectService {
     private final UserRepository userRepository;
 
     public List<ProjectResponseDto> getProjects(ProjectFilter projectFilter) {
-        Specification<Project> projectSpecification = new ProjectSpecification(projectFilter);
-        return projectRepository.findAll(projectSpecification)
+
+        return projectRepository.findAll(new ProjectSpecification(projectFilter))
                 .stream().map(projectMapper::mapEntityToDto).collect(Collectors.toList());
     }
 

@@ -35,9 +35,9 @@ public class CourseSpecification implements Specification<Course>{
             predicate.getExpressions().add(cb.equal(user, filter.getUserId()));
         }
 
-        if (!CollectionUtils.isEmpty(filter.getProjectList())) {
+        if (!CollectionUtils.isEmpty(filter.getProjects())) {
             Path<Object> project = root.join("project").get("id");
-            predicate.getExpressions().add(project.in(filter.getProjectList()));
+            predicate.getExpressions().add(project.in(filter.getProjects()));
         }
 
         return predicate;

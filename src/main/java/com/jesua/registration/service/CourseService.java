@@ -28,8 +28,8 @@ public class CourseService {
     }
 
     public List<CourseResponseDto> getCourses(CourseFilter courseFilter) {
-        CourseSpecification spec = new CourseSpecification(courseFilter);
-        return courseRepository.findAll(spec)
+
+        return courseRepository.findAll(new CourseSpecification(courseFilter))
                 .stream().map(courseMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
@@ -51,8 +51,6 @@ public class CourseService {
         return courseMapper.mapEntityToDto(save);
     }
 
-
-    //TODO ready to be applied
     public List<CourseResponseDto> getCoursesByUserProject(UUID userId) {
         return courseRepository.findByUserProject(userId)
                 .stream().map(courseMapper::mapEntityToDto).collect(Collectors.toList());

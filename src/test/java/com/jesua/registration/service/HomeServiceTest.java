@@ -18,7 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -73,14 +72,12 @@ class HomeServiceTest {
             return expStat;
         }).collect(Collectors.toList());
 
-        CourseFilter courseFilter = new CourseFilter();
-        courseFilter.setOpen(true);
-        Specification<Course> courseSpecification = new CourseSpecification(courseFilter);
+        Specification<Course> courseSpecification = new CourseSpecification(CourseFilter.builder().open(true).build());
 
         doReturn(List.of(course1, course2)).when(courseRepository).findAll(courseSpecification);
         doReturn(existingFollowerList).when(followerRepository).findByCourseIdIn(List.of(course1.getId(), course2.getId()));
 
-        List<Map<String, Object>> statistics = homeService.getStatistics();
+        List<HomeService.Statistic> statistics = homeService.getStatistics();
 
         verify(courseRepository).findAll(courseSpecification);
         verify(followerRepository).findByCourseIdIn(List.of(course1.getId(), course2.getId()));

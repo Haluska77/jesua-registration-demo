@@ -91,9 +91,7 @@ public class CourseRepositoryTest {
     @Test
     void findByOpenTrueTest() {
 
-        CourseFilter courseFilter = new CourseFilter();
-        courseFilter.setOpen(true);
-        Specification<Course> courseSpecification = new CourseSpecification(courseFilter);
+        Specification<Course> courseSpecification = new CourseSpecification(CourseFilter.builder().open(true).build());
 
         List<Course> actualCourseList = courseRepository.findAll(courseSpecification);
 

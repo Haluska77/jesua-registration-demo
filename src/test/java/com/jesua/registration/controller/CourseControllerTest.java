@@ -7,11 +7,13 @@ import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
+import com.jesua.registration.entity.UserProject;
 import com.jesua.registration.exception.ErrorDTO;
 import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.CourseRepository;
 import com.jesua.registration.repository.ProjectRepository;
+import com.jesua.registration.repository.UserProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +33,7 @@ import static com.jesua.registration.builder.CourseBuilder.buildCourseResponseDt
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static com.jesua.registration.builder.UserBuilder.buildUserWithOutId;
+import static com.jesua.registration.builder.UserProjectBuilder.buildUserProject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,7 +53,8 @@ class CourseControllerTest extends BaseControllerTest {
     @BeforeAll
     static void createUser(@Autowired UserRepository userRepository,
                            @Autowired CourseRepository courseRepository,
-                           @Autowired ProjectRepository projectRepository) {
+                           @Autowired ProjectRepository projectRepository,
+                           @Autowired UserProjectRepository userProjectRepository) {
 
         ProjectDto projectDto = buildProjectDto();
         project = buildProjectFromDto(projectDto);
@@ -65,6 +69,12 @@ class CourseControllerTest extends BaseControllerTest {
         courseDto = buildCourseDto(user.getId(), project.getId());
         Course course1 = buildCourseFromDto(courseDto, user, project);
         courseRepository.save(course1);
+
+        UserProject userProject1 = buildUserProject(project, user);
+        userProjectRepository.save(userProject1);
+        UserProject userProject2 = buildUserProject(project2, user);
+        userProjectRepository.save(userProject2);
+
         CourseDto courseDto2 = buildCourseDto(user.getId(), project2.getId());
         Course course2 = buildCourseFromDto(courseDto2, user, project2);
         course2.setOpen(false);
@@ -83,8 +93,10 @@ class CourseControllerTest extends BaseControllerTest {
     @AfterAll
     static void cleanUp(@Autowired UserRepository userRepository,
                         @Autowired CourseRepository courseRepository,
-                        @Autowired ProjectRepository projectRepository) {
+                        @Autowired ProjectRepository projectRepository,
+                        @Autowired UserProjectRepository userProjectRepository) {
 
+        userProjectRepository.deleteAll();
         courseRepository.deleteAll();
         userRepository.deleteAll();
         projectRepository.deleteAll();
@@ -128,7 +140,7 @@ class CourseControllerTest extends BaseControllerTest {
     void getSuccessfulEventsProjectFilterTest() throws Exception {
 
         MockHttpServletResponse response = mockMvc
-                .perform(get("/events/eventList?projectList="+project.getId()))
+                .perform(get("/events/eventList?projects="+project.getId()))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -248,6 +260,24 @@ class CourseControllerTest extends BaseControllerTest {
         ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
         assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
+
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getEventsByUserProjectTest() throws Exception {
+
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/events/eventListByUserProject/"+user.getId()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        SuccessResponse<List<CourseResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(successResponse.getResponse().getBody()).isNotNull();
+        assertThat(successResponse.getResponse().getBody().size()).isEqualTo(2);
+        assertThat(successResponse.getResponse().getLength()).isEqualTo(2);
 
     }
 }

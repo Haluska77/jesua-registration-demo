@@ -83,13 +83,8 @@ public class ProjectBuilder {
     }
 
     public static ProjectSpecification createProjectSpecification(String name){
-        ProjectFilter projectFilter = createProjectFilter(name);
+        ProjectFilter projectFilter = ProjectFilter.builder().name(name).build();
         return new ProjectSpecification(projectFilter);
     }
 
-    public static ProjectFilter createProjectFilter(String name) {
-        ProjectFilter projectFilter = new ProjectFilter();
-        projectFilter.setName(name);
-        return projectFilter;
-    }
 }

@@ -137,10 +137,9 @@ public class FollowerService {
     }
 
     public List<FollowerEntityResponseDto> getAllFollowersByProjects(List<Long> projectList) {
-        List<FollowerEntityResponseDto> collect = followerRepository.findByCourseProjectIdIn(projectList).stream()
-                .map(followerMapper::mapEntityToDto).collect(toList());
 
-        return collect;
+        return followerRepository.findByCourseProjectIdIn(projectList).stream()
+                .map(followerMapper::mapEntityToDto).collect(toList());
 
     }
 

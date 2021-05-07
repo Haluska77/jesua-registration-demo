@@ -1,5 +1,7 @@
 package com.jesua.registration.entity.filter;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,10 +11,12 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class CourseFilter {
 
     private UUID userId;
     private Boolean open;
     private Instant startDate;
-    private List<Long> projectList;
+    private List<Long> projects;
 }

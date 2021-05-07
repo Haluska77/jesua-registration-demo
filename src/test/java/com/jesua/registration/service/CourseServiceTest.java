@@ -66,12 +66,10 @@ public class CourseServiceTest {
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
-        CourseFilter courseFilter = new CourseFilter();
-
         when(courseRepository.findAll()).thenReturn(courses);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
-        List<CourseResponseDto> actualResponseDto = courseService.getCourses(courseFilter);
+        List<CourseResponseDto> actualResponseDto = courseService.getCourses(CourseFilter.builder().build());
 
         verify(courseRepository).findAll();
         verify(courseMapper).mapEntityToDto(course1);
@@ -88,14 +86,12 @@ public class CourseServiceTest {
         List<Course> courses = List.of(course1);
         CourseResponseDto courseResponseDto = buildCourseResponseDtoFromEntity(course1);
 
-        CourseFilter courseFilter = new CourseFilter();
-        courseFilter.setOpen(true);
-        Specification<Course> courseSpecification = new CourseSpecification(courseFilter);
+        Specification<Course> courseSpecification = new CourseSpecification(CourseFilter.builder().open(true).build());
 
         doReturn(courses).when(courseRepository).findAll(courseSpecification);
         when(courseMapper.mapEntityToDto(courses.get(0))).thenReturn(courseResponseDto);
 
-        List<CourseResponseDto> actualResponseDto = courseService.getCourses(courseFilter);
+        List<CourseResponseDto> actualResponseDto = courseService.getCourses(CourseFilter.builder().open(true).build());
 
         verify(courseRepository).findAll(courseSpecification);
         verify(courseMapper).mapEntityToDto(course1);
