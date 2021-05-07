@@ -1,12 +1,20 @@
 package com.jesua.registration.service;
 
 import com.jesua.registration.dto.UserDto;
+import com.jesua.registration.dto.UserProjectResponseDto;
 import com.jesua.registration.dto.UserResponseBaseDto;
 import com.jesua.registration.entity.User;
+import com.jesua.registration.entity.UserProject;
+import com.jesua.registration.entity.UserProjectId;
 import com.jesua.registration.mapper.UserMapper;
+import com.jesua.registration.mapper.UserProjectMapper;
 import com.jesua.registration.repository.UserRepository;
+import com.jesua.registration.security.dto.LoginResponseDto;
+import com.jesua.registration.security.jwt.JwtProvider;
 import com.jesua.registration.security.services.UserAuthPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,6 +33,9 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserProjectService userProjectService;
+    private final JwtProvider jwtProvider;
+    private final UserProjectMapper userProjectMapper;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -77,5 +89,52 @@ public class UserService implements UserDetailsService {
 
         return userMapper.mapEntityToDto(user);
 
+    }
+
+    public LoginResponseDto signIn(Authentication authentication) {
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwtToken = jwtProvider.generateJwtToken(authentication);
+
+        UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
+
+        Set<UserProjectResponseDto> userProjects = getUserProjects(userDetails);
+
+        return createLoginResponseDto(userDetails, userProjects, jwtToken);
+    }
+
+    private Set<UserProjectResponseDto> getUserProjects(UserAuthPrincipal userDetails) {
+
+        Set<UserProject> userProjects = userDetails.getProjects().stream().map(
+                p -> {
+                    UserProjectId userProjectId = new UserProjectId();
+                    userProjectId.setUserId(userDetails.getId());
+                    userProjectId.setProjectId(p.getId());
+                    return userProjectId;
+                }
+        ).collect(Collectors.toSet())
+                .stream().map(userProjectService::findById
+                ).collect(Collectors.toSet());
+
+        return userProjectMapper.mapEntitySetToDtoSet(userProjects);
+    }
+
+    private LoginResponseDto createLoginResponseDto(UserAuthPrincipal userDetails,
+                                                    Set<UserProjectResponseDto> userProjectResponseDtoSet,
+                                                    String jwtToken) {
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        loginResponseDto.setId(userDetails.getId());
+        loginResponseDto.setName(userDetails.getName());
+        loginResponseDto.setEmail(userDetails.getUsername());
+        loginResponseDto.setRole(userDetails.getRole());
+        loginResponseDto.setAvatar(userDetails.getAvatar());
+        loginResponseDto.setActive(userDetails.isEnabled());
+        loginResponseDto.setCreated(userDetails.getCreated());
+        loginResponseDto.setProjects(userProjectResponseDtoSet);
+        loginResponseDto.setToken(jwtToken);
+
+        return loginResponseDto;
     }
 }
