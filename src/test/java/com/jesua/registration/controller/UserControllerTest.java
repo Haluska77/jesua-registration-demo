@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.nio.charset.StandardCharsets;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
@@ -276,6 +277,32 @@ class UserControllerTest extends BaseControllerTest {
 
         assertThat(successResponse.getResponse().getMessage()).isNull();
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
+    }
+
+    @Test
+    void signInBadCredentialsTest() throws Exception {
+
+        UserDto userDto = buildUserDto();
+        User user = buildUserFromDtoWithoutId(userDto);
+        userRepository.save(user);
+
+        //invalid credentials for login
+        LoginDto loginDto = new LoginDto();
+        loginDto.setEmail(userDto.getEmail());
+        loginDto.setPassword("password");
+
+        String response = mockMvc
+                .perform(post("/users/signin")
+                        .content(objectMapper.writeValueAsString(loginDto))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                )
+                .andExpect(status().isForbidden())
+                .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(response, new TypeReference<>() {
+        });
+        assertThat(errorResponse.getError().getMessage()).isEqualTo("Meno alebo heslo sú neplatné!!!");
+
     }
 
     @Test

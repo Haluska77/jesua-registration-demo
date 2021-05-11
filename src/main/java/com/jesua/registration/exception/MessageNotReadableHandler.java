@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public interface MessageNotReadableHandler {
 
     @ExceptionHandler
-    default ResponseEntity<ErrorResponse<HttpMessageNotReadableException>> handleMethodArgumentNotValid(HttpMessageNotReadableException exception) {
+    default ResponseEntity<ErrorResponse<HttpMessageNotReadableException>> handleMessageNotReadable(HttpMessageNotReadableException exception) {
 
         Throwable cause = exception.getCause();
 
