@@ -9,7 +9,7 @@ import com.jesua.registration.entity.ProjectRole;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.entity.UserProject;
 import com.jesua.registration.entity.UserProjectId;
-import com.jesua.registration.exception.ErrorDTO;
+import com.jesua.registration.exception.ErrorDto;
 import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.ProjectRepository;
@@ -154,7 +154,7 @@ class ProjectControllerTest extends BaseControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
 
-        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
         assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
     }
@@ -206,7 +206,7 @@ class ProjectControllerTest extends BaseControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
 
-        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
         assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
     }
@@ -259,7 +259,7 @@ class ProjectControllerTest extends BaseControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
 
-        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
         assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
     }

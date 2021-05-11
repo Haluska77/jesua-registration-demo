@@ -101,6 +101,10 @@ public class FollowerService {
 
         Follower follower = followerMapper.mapDtoToEntity(followerDto);
 
+        if (follower.getCourse() == null) {
+            throw new NoSuchElementException("Event not found for follower '" + followerDto.getName() + "'");
+        }
+
         //Get number of active followers before new subscriber
         List<Follower> allFollowersByEventId = followerRepository.findByCourseId(followerDto.getEventId());
         long acceptedFollowers = allFollowersByEventId.stream().filter(Follower::isAccepted).count();

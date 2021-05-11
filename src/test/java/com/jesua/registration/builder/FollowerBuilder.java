@@ -52,7 +52,7 @@ public class FollowerBuilder {
         follower.setEmail(followerDto.getEmail());
         follower.setToken(TOKEN);
         follower.setCourse(course);
-        follower.setGdpr(followerDto.isGdpr());
+        follower.setGdpr(followerDto.getGdpr());
         follower.setDeviceDetail(followerDto.getDeviceDetail());
 
         return follower;

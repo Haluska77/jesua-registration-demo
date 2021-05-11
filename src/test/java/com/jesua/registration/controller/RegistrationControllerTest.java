@@ -10,7 +10,7 @@ import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.entity.User;
-import com.jesua.registration.exception.ErrorDTO;
+import com.jesua.registration.exception.ErrorDto;
 import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.CourseRepository;
@@ -21,14 +21,22 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.jesua.registration.builder.CourseBuilder.buildCourseDto;
 import static com.jesua.registration.builder.CourseBuilder.buildCourseFromDto;
@@ -136,6 +144,57 @@ class RegistrationControllerTest extends BaseControllerTest {
     }
 
     @Test
+    void addFollowerMandatoryFieldTest() throws Exception {
+
+        FollowerDto followerDto = new FollowerDto();
+        followerDto.setEventId(2L);
+        followerDto.setGdpr(true);
+
+        String response = mockMvc
+                .perform(post("/registration/add")
+                        .content(objectMapper.writeValueAsString(followerDto))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(response, new TypeReference<>() {
+        });
+        assertThat(errorResponse.getError().getMessage()).contains("name must not be null", "email must not be null");
+
+    }
+
+    private static Stream<Arguments> mandatoryFields() {
+        return Stream.of(
+                Arguments.of("FollowerMismatchedInput.json", "Not valid input type has been inserted"),
+                Arguments.of("FollowerInvalidParse.json", "Parsing JSON Error")
+                );
+    }
+
+    @ParameterizedTest
+    @MethodSource("mandatoryFields")
+    void addFollowerMismatchedInputExceptionTest(String inputFile, String errorMessage) throws Exception {
+
+        String resourceFile = "src/test/resources/"+inputFile;
+        String jsonBody = readJsonFile(resourceFile);
+
+        String response = mockMvc
+                .perform(post("/registration/add")
+                        .content(jsonBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(response, new TypeReference<>() {
+        });
+        assertThat(errorResponse.getError().getMessage()).isEqualTo(errorMessage);
+
+    }
+
+    @Test
     @WithMockUser(roles = "ADMIN")
     void getSuccessfulFollowersTest() throws Exception {
 
@@ -162,7 +221,7 @@ class RegistrationControllerTest extends BaseControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
 
-        ErrorResponse<ErrorDTO<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
         assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
 
@@ -188,5 +247,11 @@ class RegistrationControllerTest extends BaseControllerTest {
         assertThat(successResponse.getResponse().getMessage()).isEqualTo("You have been successfully unsubscribed");
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
 
+    }
+
+    public static String readJsonFile(String resourceFile) throws IOException {
+
+        Path path = Paths.get(resourceFile);
+        return String.join("", Files.readAllLines(path));
     }
 }

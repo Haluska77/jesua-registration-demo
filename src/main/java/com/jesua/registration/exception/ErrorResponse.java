@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 public class ErrorResponse<T> {
 
-    private ErrorDTO<T> error;
+    private ErrorDto<T> error;
 
     public ErrorResponse(T object, String message) {
-        error = new ErrorDTO<T>(object, message);
+        error = new ErrorDto<T>(object, message);
     }
 
 }

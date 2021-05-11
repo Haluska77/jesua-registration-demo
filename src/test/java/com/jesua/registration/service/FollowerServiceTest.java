@@ -196,20 +196,31 @@ class FollowerServiceTest {
         FollowerResponseDto.FollowerResponse followerResponse = buildFollowerResponse(MY_FOLLOWER_ID, ACCEPTED_TRUE);
         FollowerResponseDto followerResponseDto = buildFollowerResponseDto(responseMessage, followerResponse);
 
-        //mapper
         doReturn(rawFollower).when(followerMapper).mapDtoToEntity(followerDto);
-
         doReturn(newSavedFollower).when(followerRepository).save(any());
         doReturn(List.of(existingFollower)).when(followerRepository).findByCourseId(course.getId());
 
         FollowerResponseDto actualResponseDto = followerService.addFollower(followerDto);
 
         verify(followerMapper).mapDtoToEntity(followerDto);
-
         verify(followerRepository).save(any());
         verify(followerRepository).findByCourseId(course.getId());
 
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(followerResponseDto);
+    }
+
+    @Test
+    void addFollowerCourseNotFoundTest() {
+
+        FollowerDto followerDto = buildFollowerDto(course.getId());
+        Follower rawFollower = buildFollowerFromDto(followerDto, course);
+        rawFollower.setCourse(null);
+
+        doReturn(rawFollower).when(followerMapper).mapDtoToEntity(followerDto);
+
+        assertThatThrownBy(() -> followerService.addFollower(followerDto))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Event not found for follower '" + followerDto.getName() + "'");
     }
 
     @Test

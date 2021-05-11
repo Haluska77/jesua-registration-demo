@@ -30,11 +30,6 @@ public class CourseSpecification implements Specification<Course>{
             predicate.getExpressions().add(cb.greaterThan(root.get("startDate"), filter.getStartDate()));
         }
 
-        if (filter.getUserId() != null) {
-            Path<Object> user = root.join("user").get("id");
-            predicate.getExpressions().add(cb.equal(user, filter.getUserId()));
-        }
-
         if (!CollectionUtils.isEmpty(filter.getProjects())) {
             Path<Object> project = root.join("project").get("id");
             predicate.getExpressions().add(project.in(filter.getProjects()));

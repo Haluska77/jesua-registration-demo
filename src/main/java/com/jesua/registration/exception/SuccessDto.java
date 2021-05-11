@@ -11,12 +11,12 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
-public class SuccessDTO<T> implements Serializable {
+public class SuccessDto<T> implements Serializable {
     private T body;
     private int length = 1;
     private String message;
 
-    public SuccessDTO(T body) {
+    public SuccessDto(T body) {
         this.body = body;
         if (this.body instanceof List) {
             this.length = ((List) this.body).size();
@@ -26,7 +26,7 @@ public class SuccessDTO<T> implements Serializable {
         }
     }
 
-    public SuccessDTO(T body, String message) {
+    public SuccessDto(T body, String message) {
         this.body = body;
         this.message = message;
         if (this.body instanceof List) {

@@ -34,6 +34,5 @@ public abstract class UserMapper {
     }
 
     @Mapping(source = "userName", target = "name")
-//    @Mapping(target = "projects", ignore = true)
     public abstract UserResponseBaseDto mapEntityToDto(User user);
 }

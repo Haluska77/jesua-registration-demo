@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
@@ -26,13 +26,10 @@ public class RegistrationController {
     private final FollowerService followerService;
 
     @PostMapping("add")
-    public SuccessResponse<FollowerResponseDto.FollowerResponse> addFollower(@RequestBody FollowerDto followerDto) {
+    public SuccessResponse<FollowerResponseDto.FollowerResponse> addFollower(@Valid @RequestBody FollowerDto followerDto) {
 
         FollowerResponseDto followerResponseDto = followerService.addFollower(followerDto);
 
-        if (followerResponseDto.getFollower() == null) {
-            throw new NoSuchElementException(followerResponseDto.getMessage());
-        }
         return new SuccessResponse<>(followerResponseDto.getFollower(), followerResponseDto.getMessage());
     }
 

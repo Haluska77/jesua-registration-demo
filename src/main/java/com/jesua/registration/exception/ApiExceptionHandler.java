@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.NoSuchElementException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestControllerAdvice
-public class ApiExceptionHandler {
+public class ApiExceptionHandler implements
+        MethodArgumentNotValidHandler,
+        MessageNotReadableHandler {
 
     public static final String NAME_OR_PWD_NOT_VALID = "Meno alebo heslo sú neplatné!!!";
 
@@ -27,7 +31,11 @@ public class ApiExceptionHandler {
 
         if (exception instanceof BadCredentialsException) {
             status = FORBIDDEN;
-            errorResponse.setError(new ErrorDTO<>(null, NAME_OR_PWD_NOT_VALID));
+            errorResponse.setError(new ErrorDto<>(null, NAME_OR_PWD_NOT_VALID));
+        }
+
+        if (exception instanceof Exception) {
+            errorResponse.setError(new ErrorDto<>(null, exception.getMessage()));
         }
 
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), status);

@@ -36,7 +36,7 @@ public class Course extends BasePrivateEntity{
     @JoinColumn(name = "created_by", updatable = false)
     private User user;
 
-    @Column(columnDefinition = "varchar(100) default 'no-image.svg'")
+    @Column(columnDefinition = "varchar(100) default 'no-image.png'")
     private String image;
 
     @NotNull
