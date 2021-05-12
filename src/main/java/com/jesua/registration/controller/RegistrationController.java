@@ -3,6 +3,7 @@ package com.jesua.registration.controller;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
+import com.jesua.registration.entity.filter.FollowerFilter;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.FollowerService;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,9 @@ public class RegistrationController {
     }
 
     @GetMapping("")
-    public List<FollowerEntityResponseDto> getAllFollowersByProjects(@RequestParam("projects") List<Long> projectList) {
+    public List<FollowerEntityResponseDto> getAllFollowersBy(FollowerFilter followerFilter) {
 
-        return followerService.getAllFollowersByProjects(projectList);
-
+        return followerService.getAllFollowersBy(followerFilter);
     }
 
     // must be 'GET' to call it from web

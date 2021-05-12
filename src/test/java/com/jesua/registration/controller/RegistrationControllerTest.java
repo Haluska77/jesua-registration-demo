@@ -20,6 +20,7 @@ import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -27,7 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -195,8 +195,7 @@ class RegistrationControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void getSuccessfulFollowersTest() throws Exception {
+    void getSuccessfulFollowersByProjectsTest() throws Exception {
 
         MockHttpServletResponse response = mockMvc
                 .perform(get("/registration/?projects="+project.getId()))
@@ -213,6 +212,25 @@ class RegistrationControllerTest extends BaseControllerTest {
 
     }
 
+    @Test
+    void getSuccessfulFollowersByTokenTest() throws Exception {
+
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/registration/?token="+follower2.getToken()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        SuccessResponse<List<FollowerEntityResponseDto>> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(successResponse.getResponse().getBody()).isNotNull();
+        assertThat(successResponse.getResponse().getBody().size()).isEqualTo(1);
+        assertThat(successResponse.getResponse().getBody().get(0).getEmail()).isEqualTo(follower2.getEmail());
+        assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
+
+    }
+
+    @Disabled("Handle different roles for filtered search")
     @Test
     void getUnauthorizedFollowersTest() throws Exception {
 

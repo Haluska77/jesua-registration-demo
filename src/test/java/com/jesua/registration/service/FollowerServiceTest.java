@@ -187,7 +187,7 @@ class FollowerServiceTest {
 
         boolean ACCEPTED_TRUE = true;
 
-        String responseMessage = "Tvoja registrácia na akciu (" + course.getDescription() + ", " + instantToString(course.getStartDate()) + ") prebehla úspešne! Tešíme sa na vašu účasť. Vidíme sa na stretnutí.";
+        String responseMessage = "Tvoja registrácia na akciu (" + course.getDescription() + ", " + instantToString(course.getStartDate()) + ") prebehla úspešne! Tešíme sa na tvoju účasť. Vidíme sa na stretnutí.";
 
         FollowerDto followerDto = buildFollowerDto(course.getId());
         Follower rawFollower = buildFollowerFromDto(followerDto, course);

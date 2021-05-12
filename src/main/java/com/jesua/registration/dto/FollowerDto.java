@@ -18,7 +18,7 @@ public class FollowerDto {
     private Long eventId;
 
     @NotNull
-    private Boolean gdpr;
+    private boolean gdpr;
 
     private String deviceDetail;
 }

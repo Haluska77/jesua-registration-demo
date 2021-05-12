@@ -28,10 +28,10 @@ public class HomeService {
 
     public List<Statistic> getStatistics() {
 
-        Specification<Course> specification = new CourseSpecification(
+        Specification<Course> courseSpecification = new CourseSpecification(
                 CourseFilter.builder().open(true).startDate(Instant.now()).build());
 
-        List<Course> courses = courseRepository.findAll(specification);
+        List<Course> courses = courseRepository.findAll(courseSpecification);
         List<Long> courseIds = courses.stream().map(BasePrivateEntity::getId).collect(toList());
         List<Follower> followerByOpenEvent = followerRepository.findByCourseIdIn(courseIds);
 

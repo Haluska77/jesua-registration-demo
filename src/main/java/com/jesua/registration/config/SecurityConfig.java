@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/password/**", "/users/signin", "/events/eventList**", "/registration/add", "/registration/unsubscribe/**").permitAll()
+                .antMatchers("/", "/password/**", "/users/signin", "/events/eventList**", "/registration/**").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -5,12 +5,14 @@ import com.jesua.registration.dto.FollowerEntityResponseDto;
 import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
+import com.jesua.registration.entity.filter.FollowerFilter;
 import com.jesua.registration.event.FollowerCreatedEvent;
 import com.jesua.registration.mapper.FollowerMapper;
 import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.Message;
 import com.jesua.registration.message.MessageBuilder;
 import com.jesua.registration.repository.FollowerRepository;
+import com.jesua.registration.repository.FollowerSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -23,9 +25,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.jesua.registration.util.AppUtil.instantToString;
-import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Service
@@ -117,7 +119,7 @@ public class FollowerService {
         if (acceptedFollowers < currentCourse.getCapacity()) {
             follower.setAccepted(true);
             emailMessage = messageBuilder.buildSuccessMessage(follower);
-            responseMessage += "Tešíme sa na vašu účasť. Vidíme sa na stretnutí.";
+            responseMessage += "Tešíme sa na tvoju účasť. Vidíme sa na stretnutí.";
         } else {
             follower.setAccepted(false);
             emailMessage = messageBuilder.buildUnsuccessMessage(follower);
@@ -140,10 +142,10 @@ public class FollowerService {
         return followerResponseDto;
     }
 
-    public List<FollowerEntityResponseDto> getAllFollowersByProjects(List<Long> projectList) {
+    public List<FollowerEntityResponseDto> getAllFollowersBy(FollowerFilter followerFilter) {
 
-        return followerRepository.findByCourseProjectIdIn(projectList).stream()
-                .map(followerMapper::mapEntityToDto).collect(toList());
+        return followerRepository.findAll(new FollowerSpecification(followerFilter))
+                .stream().map(followerMapper::mapEntityToDto).collect(Collectors.toList());
 
     }
 
