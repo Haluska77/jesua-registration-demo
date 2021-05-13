@@ -130,7 +130,7 @@ class FollowerServiceTest {
     void unsubscribeSuccessTest() {
 
         boolean MY_ACCEPTED = false;
-        String responseMessage = "You have been successfully unsubscribed";
+        String responseMessage = "Bol si úspešne odhlásený";
 
         Follower existingFollower = buildFullFollower(UUID.randomUUID(), TOKEN, null, false, course);
         existingFollower.setCreated(Instant.now());
@@ -155,7 +155,7 @@ class FollowerServiceTest {
 
         Follower existingFollower = buildFullFollower(UUID.randomUUID(), TOKEN, null, false, course);
         Follower myFollower = buildFullFollower(MY_FOLLOWER_ID,"45ssd521d3ASDF54d32df156DF3", Instant.now().plusSeconds(60), false, course);
-        String responseMessage = "You have already been unsubscribed on " + instantToString(myFollower.getUnregistered());
+        String responseMessage = "Už si bol odhlásený " + instantToString(myFollower.getUnregistered());
         FollowerResponseDto.FollowerResponse followerResponse = buildFollowerResponse(MY_FOLLOWER_ID, MY_ACCEPTED);
         FollowerResponseDto followerResponseDto = buildFollowerResponseDto(responseMessage, followerResponse);
 
@@ -255,4 +255,18 @@ class FollowerServiceTest {
 
         assertThat(actualResponseDto).usingRecursiveComparison().isEqualTo(followerResponseDto);
     }
+
+    @Test
+    void getFollowerByTokenNotFoundTest() {
+
+        Follower acceptedFollower = buildFullFollower(UUID.randomUUID(), TOKEN, null, true, course);
+
+        doReturn(Optional.of(acceptedFollower)).when(followerRepository).findByToken(TOKEN);
+        doReturn(null).when(followerMapper).mapEntityToDto(acceptedFollower);
+
+        assertThatThrownBy(() -> followerService.getFollowerByToken(TOKEN))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Neplatný token !!!");
+    }
+
 }

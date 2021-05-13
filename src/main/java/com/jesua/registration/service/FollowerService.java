@@ -81,9 +81,9 @@ public class FollowerService {
                                 //unsubscribe current user
                                 unsubscribeFollower(currentFollower);
 
-                                return followerResponseDto(currentFollower, "You have been successfully unsubscribed");
+                                return followerResponseDto(currentFollower, "Bol si úspešne odhlásený");
                             } else {
-                                return followerResponseDto(currentFollower, "You have already been unsubscribed on " + instantToString(currentFollower.getUnregistered()));
+                                return followerResponseDto(currentFollower, "Už si bol odhlásený " + instantToString(currentFollower.getUnregistered()));
                             }
                         }
                 )
@@ -172,5 +172,11 @@ public class FollowerService {
             throw new MessagingException(e.getMessage());
         }
 
+    }
+
+    public FollowerEntityResponseDto getFollowerByToken(String id) {
+        return followerRepository.findByToken(id)
+                .map(followerMapper::mapEntityToDto)
+                .orElseThrow(() -> new NoSuchElementException("Neplatný token !!!"));
     }
 }

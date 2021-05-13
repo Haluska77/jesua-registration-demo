@@ -256,17 +256,33 @@ class RegistrationControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
         });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
         assertThat(successResponse.getResponse().getBody().getId()).isEqualTo(follower2.getId());
         assertThat(successResponse.getResponse().getBody().isAccepted()).isFalse();
-        assertThat(successResponse.getResponse().getMessage()).isEqualTo("You have been successfully unsubscribed");
+        assertThat(successResponse.getResponse().getMessage()).isEqualTo("Bol si úspešne odhlásený");
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
 
     }
 
+    @Test
+    void getSuccessfulOneFollowerByTokenTest() throws Exception {
+
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/registration/token/"+follower2.getToken()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        SuccessResponse<FollowerEntityResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(), new TypeReference<>() {
+        });
+
+        assertThat(successResponse.getResponse().getBody()).isNotNull();
+        assertThat(successResponse.getResponse().getBody().getEmail()).isEqualTo(follower2.getEmail());
+        assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
+
+    }
     public static String readJsonFile(String resourceFile) throws IOException {
 
         Path path = Paths.get(resourceFile);
