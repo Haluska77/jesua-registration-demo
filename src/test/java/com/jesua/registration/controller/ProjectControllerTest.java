@@ -118,7 +118,6 @@ class ProjectControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void getSuccessfulProjectsFilteredByNameTest() throws Exception {
 
         Stream<Integer> integers = Stream.iterate(0, i -> i + 1);
@@ -145,20 +144,6 @@ class ProjectControllerTest extends BaseControllerTest {
         });
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
     }
-
-    @Test
-    void getUnauthorizedProjectsTest() throws Exception {
-
-        String contentAsString = mockMvc
-                .perform(get("/projects/"))
-                .andExpect(status().isUnauthorized())
-                .andReturn().getResponse().getContentAsString();
-
-        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
-        });
-        assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
-    }
-
 
     @Test
     @WithMockUser(roles = "ADMIN")

@@ -37,7 +37,7 @@ public class ProjectController {
     }
 
     @PostMapping("update/{id}")
-    public ProjectResponseDto update(@RequestBody ProjectDto projectDto, @PathVariable("id") int id) {
+    public ProjectResponseDto update(@RequestBody ProjectDto projectDto, @PathVariable("id") long id) {
         return projectService.updateProject(projectDto, id);
     }
 
