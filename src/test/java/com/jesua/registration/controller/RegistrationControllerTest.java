@@ -150,18 +150,18 @@ class RegistrationControllerTest extends BaseControllerTest {
         followerDto.setEventId(2L);
         followerDto.setGdpr(true);
 
-        String response = mockMvc
+        MockHttpServletResponse response = mockMvc
                 .perform(post("/registration/add")
                         .content(objectMapper.writeValueAsString(followerDto))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                 )
                 .andExpect(status().isBadRequest())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn().getResponse();
 
 
-        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(response, new TypeReference<>() {
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
         });
-        assertThat(errorResponse.getError().getMessage()).contains("name must not be null", "email must not be null");
+        assertThat(errorResponse.getError().getMessage()).contains("name nesmie byť null", "email nesmie byť null");
 
     }
 

@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
@@ -19,16 +17,13 @@ import java.time.Instant;
 @Entity
 public class Follower extends BasePublicEntity {
 
-    @NotBlank(message = "Email nemôže byť prázdny")
-    @Email(message = "Zadajte platnú emailovú adresu")
-    @NotNull
-    @Size(max = 100)
-    private String email;
-
-    @NotBlank(message = "Meno nemôže byť prázdne")
     @NotNull
     @Size(max = 50)
     private String name;
+
+    @NotNull
+    @Size(max = 100)
+    private String email;
 
     @NotNull
     private String token;
