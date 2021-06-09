@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-poster
+      author: SH
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: poster
+      changes:
+        - createTable:
+            tableName: poster
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: poster_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: file_name
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: true
+                  name: content_id
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created
+                  type: DATETIME(6)
+  - changeSet:
+      id: fk_poster__project_id
+      author: SH
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: project_id
+            baseTableName: poster
+            constraintName: fk_poster__project_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: RESTRICT
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: project
+            validate: true
