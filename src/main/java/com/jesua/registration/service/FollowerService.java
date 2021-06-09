@@ -10,7 +10,10 @@ import com.jesua.registration.event.FollowerCreatedEvent;
 import com.jesua.registration.mapper.FollowerMapper;
 import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.Message;
-import com.jesua.registration.message.MessageBuilder;
+import com.jesua.registration.message.NotificationMessage;
+import com.jesua.registration.message.SubstituteMessage;
+import com.jesua.registration.message.SuccessMessage;
+import com.jesua.registration.message.UnsuccessMessage;
 import com.jesua.registration.repository.FollowerRepository;
 import com.jesua.registration.repository.FollowerSpecification;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +38,13 @@ import static com.jesua.registration.util.AppUtil.instantToString;
 public class FollowerService {
 
     private final FollowerRepository followerRepository;
-    private final MessageBuilder messageBuilder;
     private final ApplicationEventPublisher eventPublisher;
     private final FollowerMapper followerMapper;
     private final EmailServiceImpl emailService;
+    private final SuccessMessage successMessage;
+    private final UnsuccessMessage unsuccessMessage;
+    private final SubstituteMessage substituteMessage;
+    private final NotificationMessage notificationMessage;
 
     public Follower unsubscribeFollower(Follower follower) {
 
@@ -73,7 +79,7 @@ public class FollowerService {
                                             .ifPresent(waitingFollower -> {
                                                         acceptFollower(waitingFollower);
                                                         eventPublisher.publishEvent(new FollowerCreatedEvent(waitingFollower,
-                                                                messageBuilder.buildSubstituteMessage(waitingFollower)));
+                                                                substituteMessage.buildMessage(waitingFollower)));
                                                     }
                                             );
                                 }
@@ -118,15 +124,15 @@ public class FollowerService {
         //build emailMessage
         if (acceptedFollowers < currentCourse.getCapacity()) {
             follower.setAccepted(true);
-            emailMessage = messageBuilder.buildSuccessMessage(follower);
+            emailMessage = successMessage.buildMessage(follower);
             responseMessage += "Tešíme sa na tvoju účasť. Vidíme sa na stretnutí.";
         } else {
             follower.setAccepted(false);
-            emailMessage = messageBuilder.buildUnsuccessMessage(follower);
+            emailMessage = unsuccessMessage.buildMessage(follower);
             responseMessage +=
-                    "<br> Momentálne je kapacita akcie už naplnená. Ste v poradí. " +
-                            "<br> Pred vami sa ešte prihlásilo <strong>" + waitingFollowers + "</strong> ľudí. " +
-                            "<br> V prípade, že sa niektorý z účastníkov odhlási, dáme vám vedieť emailom na vašu adresu <strong>" + followerDto.getEmail() + "</strong";
+                    "<br> Momentálne je kapacita akcie už naplnená. Si v poradí. " +
+                            "<br> Pred tebou sa ešte prihlásilo <strong>" + waitingFollowers + "</strong> ľudí. " +
+                            "<br> V prípade, že sa niektorý z účastníkov odhlási, dáme ti vedieť emailom na tvoju adresu <strong>" + followerDto.getEmail() + "</strong";
         }
 
         Follower savedFollower = followerRepository.save(follower);
@@ -136,8 +142,9 @@ public class FollowerService {
     }
 
     private FollowerResponseDto followerResponseDto(Follower follower, String message) {
+        FollowerEntityResponseDto followerEntityResponseDto = followerMapper.mapEntityToDto(follower);
         FollowerResponseDto followerResponseDto = new FollowerResponseDto();
-        followerResponseDto.setFollower(new FollowerResponseDto.FollowerResponse(follower.getId(), follower.isAccepted()));
+        followerResponseDto.setFollower(followerEntityResponseDto);
         followerResponseDto.setMessage(message);
         return followerResponseDto;
     }
@@ -164,7 +171,7 @@ public class FollowerService {
 
     public void sendEmail(Follower follower) throws MessagingException {
 
-        Message emailMessage = messageBuilder.buildNotificationMessage(follower);
+        Message emailMessage = notificationMessage.buildMessage(follower);
 
         try {
             emailService.sendMessage(emailMessage);

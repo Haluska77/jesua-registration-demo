@@ -8,7 +8,7 @@ import com.jesua.registration.event.EmailSenderListener;
 import com.jesua.registration.event.FollowerCreatedEvent;
 import com.jesua.registration.event.PasswordTokenCreatedEvent;
 import com.jesua.registration.message.EmailServiceImpl;
-import com.jesua.registration.message.MessageBuilder;
+import com.jesua.registration.message.SubstituteMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +29,10 @@ public class EmailSenderListenerTest {
 
     public static final UUID USER_ID = UUID.randomUUID();
     @Mock
-    private MessageBuilder messageBuilder;
+    private PasswordTokenService passwordTokenService;
+
+    @Mock
+    private SubstituteMessage substituteMessage;
 
     @Mock
     private EmailServiceImpl emailService;
@@ -45,7 +48,7 @@ public class EmailSenderListenerTest {
         Course course = buildSavedCourse(1L, user, 50, null);
         Follower follower = buildFullFollower(USER_ID, "token", null, true, course);
 
-        FollowerCreatedEvent followerCreatedEvent = new FollowerCreatedEvent(follower, messageBuilder.buildSubstituteMessage(follower));
+        FollowerCreatedEvent followerCreatedEvent = new FollowerCreatedEvent(follower, substituteMessage.buildMessage(follower));
 
         // do work
         emailSenderListener.onUserCreated(followerCreatedEvent);
@@ -61,7 +64,7 @@ public class EmailSenderListenerTest {
         User user = buildUserWithId(USER_ID);
         PasswordToken passwordToken = buildPasswordToken(2L, 15L, user);
 
-        PasswordTokenCreatedEvent passwordTokenCreatedEvent = new PasswordTokenCreatedEvent(passwordToken, messageBuilder.buildResetPasswordMessage(user, "token"));
+        PasswordTokenCreatedEvent passwordTokenCreatedEvent = new PasswordTokenCreatedEvent(passwordToken, passwordTokenService.buildResetPasswordMessage(user, "token"));
 
         // do work
         emailSenderListener.onTokenCreated(passwordTokenCreatedEvent);

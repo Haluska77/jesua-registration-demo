@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.jesua.registration.dto.CourseDto;
 import com.jesua.registration.dto.FollowerDto;
 import com.jesua.registration.dto.FollowerEntityResponseDto;
-import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
@@ -131,7 +130,7 @@ class RegistrationControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
+        SuccessResponse<FollowerEntityResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
         });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();
@@ -256,7 +255,7 @@ class RegistrationControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
-        SuccessResponse<FollowerResponseDto.FollowerResponse> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
+        SuccessResponse<FollowerEntityResponseDto> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
         });
 
         assertThat(successResponse.getResponse().getBody()).isNotNull();

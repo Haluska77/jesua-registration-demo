@@ -9,7 +9,7 @@ import com.jesua.registration.entity.User;
 import com.jesua.registration.event.PasswordTokenCreatedEvent;
 import com.jesua.registration.exception.PasswordTokenException;
 import com.jesua.registration.mapper.UserMapper;
-import com.jesua.registration.message.MessageBuilder;
+import com.jesua.registration.message.Message;
 import com.jesua.registration.repository.PasswordTokenRepository;
 import com.jesua.registration.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,16 +34,19 @@ import static com.jesua.registration.util.AppUtil.generateToken;
 public class PasswordTokenService {
 
     public static final String USER_NOT_FOUND_OR_NOT_ACTIVE = "User not Found or not active";
+    private static final String CHANGE_PASSWORD_URL = "/password/register/";
+
+    @Value("${origin.url}")
+    private String originUrl;
+    @Value("${password.token.expiration}")
+    private int pwdTokenExp;
 
     private final PasswordTokenRepository passwordTokenRepository;
-    private final MessageBuilder messageBuilder;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Value("${password.token.expiration}")
-    private int pwdTokenExp;
 
     @Transactional
     public UserResponseBaseDto createAndSendTokenByUserEmail(String email) {
@@ -58,7 +61,7 @@ public class PasswordTokenService {
     private User savePasswordTokenToActiveUser(User user) {
         String token = generateToken();
         PasswordToken savedToken = savePasswordResetToken(user, token);
-        eventPublisher.publishEvent(new PasswordTokenCreatedEvent(savedToken, messageBuilder.buildResetPasswordMessage(user, token)));
+        eventPublisher.publishEvent(new PasswordTokenCreatedEvent(savedToken, buildResetPasswordMessage(user, token)));
         return user;
     }
 
@@ -112,4 +115,11 @@ public class PasswordTokenService {
 
     }
 
+    public Message buildResetPasswordMessage(User user, String token) {
+
+        String body = String.format("Ahoj %s, na obnovenie hesla klikni na nasledujuci link<br><br>" +
+                "<b><a href=\"" + originUrl + CHANGE_PASSWORD_URL + "%s\">" + originUrl + CHANGE_PASSWORD_URL + "%s</a></b>.<br><br>" +
+                "Link je platny " + pwdTokenExp + " minut.", user.getUserName(), token, token);
+        return new Message(user.getEmail(), "PASSWORD RESET", body);
+    }
 }

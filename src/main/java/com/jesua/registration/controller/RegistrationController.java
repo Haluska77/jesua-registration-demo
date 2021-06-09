@@ -28,7 +28,7 @@ public class RegistrationController {
     private final FollowerService followerService;
 
     @PostMapping("add")
-    public SuccessResponse<FollowerResponseDto.FollowerResponse> addFollower(@Valid @RequestBody FollowerDto followerDto) {
+    public SuccessResponse<FollowerEntityResponseDto> addFollower(@Valid @RequestBody FollowerDto followerDto) {
 
         FollowerResponseDto followerResponseDto = followerService.addFollower(followerDto);
 
@@ -49,7 +49,7 @@ public class RegistrationController {
 
     // must be 'GET' to call it from web
     @GetMapping("unsubscribe")
-    public SuccessResponse<FollowerResponseDto.FollowerResponse> unsubscribeFollower(
+    public SuccessResponse<FollowerEntityResponseDto> unsubscribeFollower(
             @RequestParam("token") String token,
             @RequestParam("event") long eventId) {
 

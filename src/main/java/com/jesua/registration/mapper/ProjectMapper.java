@@ -6,12 +6,11 @@ import com.jesua.registration.entity.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.Set;
-
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ProjectMapper {
-
 
     @Mapping(target = "id", ignore = true)
     public abstract Project mapDtoToEntity(ProjectDto projectDto);
@@ -19,6 +18,4 @@ public abstract class ProjectMapper {
     public abstract Project mapDtoToEntity(ProjectDto projectDto, @MappingTarget Project project);
 
     public abstract ProjectResponseDto mapEntityToDto(Project project);
-
-    public abstract Set<ProjectResponseDto> mapEntitySetToDtoSet(Set<Project> project);
 }

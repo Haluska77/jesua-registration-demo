@@ -62,7 +62,7 @@ public class ProjectService {
 
     public ProjectResponseDto updateProject(ProjectDto projectDto, long id) {
 
-        Project savedProject = projectRepository.getOne(id);
+        Project savedProject = projectRepository.findById(id).orElseThrow(EntityNotFoundException:: new);
         Project project = projectMapper.mapDtoToEntity(projectDto, savedProject);
         projectRepository.save(project);
 

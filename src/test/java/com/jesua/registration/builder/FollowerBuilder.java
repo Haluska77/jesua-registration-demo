@@ -28,18 +28,18 @@ public class FollowerBuilder {
 
         return followerDto;
     }
+//
+//    public static FollowerResponseDto.FollowerResponse buildFollowerResponse(UUID id, boolean accepted ) {
+//
+//        return new FollowerResponseDto.FollowerResponse(id, accepted);
+//
+//    }
 
-    public static FollowerResponseDto.FollowerResponse buildFollowerResponse(UUID id, boolean accepted ) {
-
-        return new FollowerResponseDto.FollowerResponse(id, accepted);
-
-    }
-
-    public static FollowerResponseDto buildFollowerResponseDto(String message, FollowerResponseDto.FollowerResponse response){
+    public static FollowerResponseDto buildFollowerResponseDto(String message, FollowerEntityResponseDto followerEntityResponseDto){
 
         FollowerResponseDto followerResponseDto = new FollowerResponseDto();
         followerResponseDto.setMessage(message);
-        followerResponseDto.setFollower(response);
+        followerResponseDto.setFollower(followerEntityResponseDto);
 
         return followerResponseDto;
     }
@@ -77,6 +77,7 @@ public class FollowerBuilder {
     public static FollowerEntityResponseDto buildFollowerEntityResponseDto(Follower follower, CourseResponseDto courseResponseDto){
 
         FollowerEntityResponseDto followerEntityResponseDto = new FollowerEntityResponseDto();
+        followerEntityResponseDto.setId(follower.getId());
         followerEntityResponseDto.setName(follower.getName());
         followerEntityResponseDto.setEmail(follower.getEmail());
         followerEntityResponseDto.setToken(follower.getToken());

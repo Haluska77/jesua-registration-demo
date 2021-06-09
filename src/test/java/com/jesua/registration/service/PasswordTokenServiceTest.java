@@ -8,7 +8,6 @@ import com.jesua.registration.entity.PasswordToken;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.exception.PasswordTokenException;
 import com.jesua.registration.mapper.UserMapper;
-import com.jesua.registration.message.MessageBuilder;
 import com.jesua.registration.repository.PasswordTokenRepository;
 import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -45,9 +44,9 @@ class PasswordTokenServiceTest {
 
     @Mock
     private PasswordTokenRepository passwordTokenRepository;
-
-    @Mock
-    private MessageBuilder messageBuilder;
+//
+//    @Mock
+//    private MessageBuilder messageBuilder;
 
     @Mock
     private PasswordEncoder bCryptPasswordEncoder;
