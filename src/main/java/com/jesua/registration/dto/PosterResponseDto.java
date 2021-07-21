@@ -12,6 +12,7 @@ public class PosterResponseDto {
     private long id;
     private String fileName;
     private String contentId;
+    private String fileType;
     private ProjectResponseDto project;
     private Instant created;
 }

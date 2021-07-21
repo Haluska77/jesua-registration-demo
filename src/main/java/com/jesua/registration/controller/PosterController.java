@@ -1,10 +1,13 @@
 package com.jesua.registration.controller;
 
-import com.jesua.registration.aws.AwsService;
 import com.jesua.registration.dto.PosterResponseDto;
+import com.jesua.registration.dto.PosterResponseWithDataDto;
 import com.jesua.registration.entity.filter.PosterFilter;
+import com.jesua.registration.exception.SuccessResponse;
+import com.jesua.registration.service.PosterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,20 +19,31 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("file/")
-public class FileController {
+@RequestMapping("poster/")
+public class PosterController {
 
-    private final AwsService awsService;
+    private final PosterService posterService;
 
-    @GetMapping("")
+    @GetMapping("metaData")
     public List<PosterResponseDto> getFiles(PosterFilter posterFilter) {
-        return awsService.getPostersBy(posterFilter);
+        return posterService.getPostersBy(posterFilter);
+    }
+
+    @GetMapping("all")
+    public List<PosterResponseWithDataDto> getFilesWithData(PosterFilter posterFilter) {
+        return posterService.getPostersWithDataBy(posterFilter);
+    }
+
+    @GetMapping("{posterId}")
+    public SuccessResponse<byte[]> getFile(@PathVariable("posterId") String posterId) {
+        byte[] download = posterService.download(posterId);
+        return new SuccessResponse<>(download, null);
     }
 
     @PostMapping(path = "upload")
     public PosterResponseDto uploadFile(@RequestParam("projectId") long projectId, @RequestParam("file") MultipartFile file) throws IOException {
 
-            return awsService.upload(projectId, file);
+            return posterService.upload(projectId, file);
     }
 
 }

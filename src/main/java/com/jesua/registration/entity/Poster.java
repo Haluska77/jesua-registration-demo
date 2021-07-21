@@ -21,8 +21,13 @@ public class Poster extends BasePrivateEntity {
     @Column(name = "file_name")
     private String fileName;
 
-    @Column(name = "content_id", length = 50)
+    @Size(max = 50)
+    @Column(name = "content_id")
     private String contentId;
+
+    @Size(max = 50)
+    @Column(name = "file_type")
+    private String fileType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")

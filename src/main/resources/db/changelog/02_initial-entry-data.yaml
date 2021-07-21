@@ -8,9 +8,6 @@ databaseChangeLog:
             tableName: project
             columns:
               - column:
-                  name: id
-                  value: 1
-              - column:
                   name: short_name
                   value: "jesua"
               - column:
@@ -27,9 +24,6 @@ databaseChangeLog:
         - insert:
             tableName: project
             columns:
-              - column:
-                  name: id
-                  value: 2
               - column:
                   name: short_name
                   value: "Kalvarka"
@@ -48,14 +42,31 @@ databaseChangeLog:
             tableName: project
             columns:
               - column:
-                  name: id
-                  value: 3
-              - column:
                   name: short_name
                   value: "trihorky"
               - column:
                   name: description
                   value: "Omse - Tri Horky Kosice"
+              - column:
+                  name: created
+                  value: now()
+              - column:
+                  name: active
+                  valueBoolean: false
+  - changeSet:
+      id: project04
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: project
+            columns:
+              - column:
+                  name: short_name
+                  value: "Sokol"
+              - column:
+                  name: description
+                  value: "Omse - Sokol"
               - column:
                   name: created
                   value: now()
@@ -197,6 +208,46 @@ databaseChangeLog:
                   name: created
                   value: now()
   - changeSet:
+      id: user-project05
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: user_project
+            columns:
+              - column:
+                  name: user_id
+                  value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
+              - column:
+                  name: project_id
+                  value: 3
+              - column:
+                  name: role
+                  value: "USER"
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
+      id: user-project06
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: user_project
+            columns:
+              - column:
+                  name: user_id
+                  value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
+              - column:
+                  name: project_id
+                  value: 4
+              - column:
+                  name: role
+                  value: "OWNER"
+              - column:
+                  name: created
+                  value: now()
+  - changeSet:
       id: default-course-item
       author: SH
       context: dev
@@ -204,9 +255,6 @@ databaseChangeLog:
         - insert:
             tableName: course
             columns:
-              - column:
-                  name: id
-                  value: 1
               - column:
                   name: description
                   value: "Kastiel Krasna"
@@ -225,9 +273,6 @@ databaseChangeLog:
               - column:
                   name: created_by
                   value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
-              - column:
-                  name: image
-                  value: "logo_jesua.png"
               - column:
                   name: project_id
                   value: 1

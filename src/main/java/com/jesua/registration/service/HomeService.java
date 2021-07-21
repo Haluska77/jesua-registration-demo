@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -32,10 +33,13 @@ public class HomeService {
                 CourseFilter.builder().open(true).startDate(Instant.now()).build());
 
         List<Course> courses = courseRepository.findAll(courseSpecification);
-        List<Long> courseIds = courses.stream().map(BasePrivateEntity::getId).collect(toList());
+        List<Course> sortedCourseList = courses.stream()
+                .sorted(Comparator.comparing(Course::getStartDate))
+                .collect(toList());
+        List<Long> courseIds = sortedCourseList.stream().map(BasePrivateEntity::getId).collect(toList());
         List<Follower> followerByOpenEvent = followerRepository.findByCourseIdIn(courseIds);
 
-        return courses.stream().map(course -> generateStatistic(followerByOpenEvent, course)).collect(toList());
+        return sortedCourseList.stream().map(course -> generateStatistic(followerByOpenEvent, course)).collect(toList());
 
     }
 

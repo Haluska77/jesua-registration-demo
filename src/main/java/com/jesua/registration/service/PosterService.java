@@ -1,4 +1,4 @@
-package com.jesua.registration.aws;
+package com.jesua.registration.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -7,12 +7,12 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.jesua.registration.config.AwsProperties;
 import com.jesua.registration.dto.PosterResponseDto;
+import com.jesua.registration.dto.PosterResponseWithDataDto;
 import com.jesua.registration.entity.Poster;
 import com.jesua.registration.entity.filter.PosterFilter;
 import com.jesua.registration.mapper.PosterMapper;
 import com.jesua.registration.repository.PosterRepository;
 import com.jesua.registration.repository.PosterSpecification;
-import com.jesua.registration.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class AwsService {
+public class PosterService {
 
     private final AmazonS3 awsClient;
     private final AwsProperties awsProperties;
@@ -35,9 +35,9 @@ public class AwsService {
     private final ProjectService projectService;
     private final PosterMapper posterMapper;
 
-    public byte[] download(long posterId) {
+    public byte[] download(String contentId) {
 
-        Poster poster = posterRepository.findById(posterId).orElseThrow(() -> new NoSuchElementException("Poster not found !!!"));
+        Poster poster = posterRepository.findByContentId(contentId).orElseThrow(() -> new NoSuchElementException("Poster not found !!!"));
         String keyName = poster.getProject().getId() + "/" + poster.getContentId();
 
         try {
@@ -51,21 +51,23 @@ public class AwsService {
     public PosterResponseDto upload(long projectId, MultipartFile multipartFile) throws IOException {
 
         String origFileName = FilenameUtils.getName(multipartFile.getOriginalFilename());
+        String fileType = multipartFile.getContentType();
 
         String contentId = UUID.randomUUID() + "." + FilenameUtils.getExtension(origFileName);
         uploadToS3(multipartFile, projectId + "/" + contentId);
 
-        Poster poster = createPoster(projectId, origFileName, contentId);
+        Poster poster = createPoster(projectId, origFileName, contentId, fileType);
         posterRepository.save(poster);
 
         return posterMapper.mapEntityToDto(poster);
     }
 
-    private Poster createPoster(long projectId, String origFileName, String contentId) {
+    private Poster createPoster(long projectId, String origFileName, String contentId, String fileType) {
         Poster poster = new Poster();
         poster.setFileName(origFileName);
         poster.setProject(projectService.getProject(projectId));
         poster.setContentId(contentId);
+        poster.setFileType(fileType);
         return poster;
     }
 
@@ -85,6 +87,17 @@ public class AwsService {
     public List<PosterResponseDto> getPostersBy(PosterFilter posterFilter) {
         return posterRepository.findAll(new PosterSpecification(posterFilter))
                 .stream().map(posterMapper::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<PosterResponseWithDataDto> getPostersWithDataBy(PosterFilter posterFilter) {
+
+        return posterRepository.findAll(new PosterSpecification(posterFilter))
+                .stream()
+                .map(poster -> {
+                    byte[] fileData = download(poster.getContentId());
+                    return posterMapper.mapEntityToDto(poster, fileData);
+                })
                 .collect(Collectors.toList());
     }
 }
