@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-unique-constraint-project-short_name
+      author: SH
+      changes:
+        - addUniqueConstraint:
+            columnNames: short_name
+            constraintName: uk_project__short_name
+            deferrable: true
+            disabled: false
+            initiallyDeferred: true
+            tableName: project
+            validate: true

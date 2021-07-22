@@ -140,7 +140,7 @@ databaseChangeLog:
                   value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
               - column:
                   name: project_id
-                  value: 1
+                  valueComputed: "(select id from project where short_name = 'jesua')"
               - column:
                   name: role
                   value: "OWNER"
@@ -160,7 +160,7 @@ databaseChangeLog:
                   value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
               - column:
                   name: project_id
-                  value: 2
+                  valueComputed: "(select id from project where short_name = 'Kalvarka')"
               - column:
                   name: role
                   value: "OWNER"
@@ -180,7 +180,7 @@ databaseChangeLog:
                   value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
               - column:
                   name: project_id
-                  value: 3
+                  valueComputed: "(select id from project where short_name = 'trihorky')"
               - column:
                   name: role
                   value: "OWNER"
@@ -200,7 +200,7 @@ databaseChangeLog:
                   value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
               - column:
                   name: project_id
-                  value: 2
+                  valueComputed: "(select id from project where short_name = 'Kalvarka')"
               - column:
                   name: role
                   value: "USER"
@@ -220,7 +220,7 @@ databaseChangeLog:
                   value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
               - column:
                   name: project_id
-                  value: 3
+                  valueComputed: "(select id from project where short_name = 'trihorky')"
               - column:
                   name: role
                   value: "USER"
@@ -240,7 +240,7 @@ databaseChangeLog:
                   value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
               - column:
                   name: project_id
-                  value: 4
+                  valueComputed: "(select id from project where short_name = 'Sokol')"
               - column:
                   name: role
                   value: "OWNER"
@@ -263,7 +263,7 @@ databaseChangeLog:
                   valueBoolean: true
               - column:
                   name: start_date
-                  value: now()
+                  valueComputed: "now() + INTERVAL '1 YEAR'"
               - column:
                   name: capacity
                   value: 3
@@ -275,4 +275,33 @@ databaseChangeLog:
                   value: "c4b555b3-8580-11eb-985a-00059a3c7a00"
               - column:
                   name: project_id
-                  value: 1
+                  valueComputed: "(select id from project where short_name = 'jesua')"
+  - changeSet:
+      id: default-course-item2
+      author: SH
+      context: dev
+      changes:
+        - insert:
+            tableName: course
+            columns:
+              - column:
+                  name: description
+                  value: "Kostol Sokol"
+              - column:
+                  name: open
+                  valueBoolean: true
+              - column:
+                  name: start_date
+                  valueComputed: "now() + INTERVAL '1 YEAR'"
+              - column:
+                  name: capacity
+                  value: 3
+              - column:
+                  name: created
+                  value: now()
+              - column:
+                  name: created_by
+                  value: "39da00bb-7d18-4e18-9b53-9f6e73a99853"
+              - column:
+                  name: project_id
+                  valueComputed: "(select id from project where short_name = 'Sokol')"
