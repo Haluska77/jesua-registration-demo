@@ -19,7 +19,6 @@ import com.jesua.registration.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -71,7 +70,8 @@ class RegistrationControllerTest extends BaseControllerTest {
         project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        Project project2 = buildProjectFromDto(projectDto);
+        ProjectDto projectDto2 = buildProjectDto("jesua2", "other description", true);
+        Project project2 = buildProjectFromDto(projectDto2);
         projectRepository.save(project2);
 
         user = buildUserWithOutId();
@@ -226,21 +226,6 @@ class RegistrationControllerTest extends BaseControllerTest {
         assertThat(successResponse.getResponse().getBody().size()).isEqualTo(1);
         assertThat(successResponse.getResponse().getBody().get(0).getEmail()).isEqualTo(follower2.getEmail());
         assertThat(successResponse.getResponse().getLength()).isEqualTo(1);
-
-    }
-
-    @Disabled("Handle different roles for filtered search")
-    @Test
-    void getUnauthorizedFollowersTest() throws Exception {
-
-        String contentAsString = mockMvc
-                .perform(get("/registration/?projects="+project.getId()))
-                .andExpect(status().isUnauthorized())
-                .andReturn().getResponse().getContentAsString();
-
-        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(contentAsString, new TypeReference<>() {
-        });
-        assertThat(errorResponse.getError().getMessage()).isEqualTo(AUTHENTICATION_IS_REQUIRED);
 
     }
 

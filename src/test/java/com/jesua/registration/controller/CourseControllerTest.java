@@ -60,7 +60,8 @@ class CourseControllerTest extends BaseControllerTest {
         project = buildProjectFromDto(projectDto);
         projectRepository.save(project);
 
-        Project project2 = buildProjectFromDto(projectDto);
+        ProjectDto projectDto2 = buildProjectDto("jesua2", "other description", true);
+        Project project2 = buildProjectFromDto(projectDto2);
         projectRepository.save(project2);
 
         user = buildUserWithOutId();

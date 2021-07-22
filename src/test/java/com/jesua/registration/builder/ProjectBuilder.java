@@ -44,6 +44,16 @@ public class ProjectBuilder {
         return projectDto;
     }
 
+    public static ProjectDto buildProjectDto(String shortName, String description, boolean active){
+
+        ProjectDto projectDto = new ProjectDto();
+        projectDto.setShortName(shortName);
+        projectDto.setDescription(description);
+        projectDto.setActive(active);
+
+        return projectDto;
+    }
+
     public static Project buildProjectFromDto(ProjectDto projectDto){
 
         Project project = new Project();

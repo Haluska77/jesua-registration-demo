@@ -95,10 +95,10 @@ class ProjectControllerTest extends BaseControllerTest {
     @WithMockUser(roles = "ADMIN")
     void getSuccessfulAllProjectsTest() throws Exception {
 
-        projectList = Stream.generate(UUID::randomUUID)
+        projectList = Stream.iterate(0, i -> i + 1)
                 .limit(5)
                 .map(f -> {
-                    ProjectDto projectDto = buildProjectDto();
+                    ProjectDto projectDto = buildProjectDto("jesua"+f, "description", true);
                     Project project = buildProjectFromDto(projectDto);
                     projectRepository.save(project);
                     return buildProjectResponseDtoFromEntity(project);
@@ -205,7 +205,6 @@ class ProjectControllerTest extends BaseControllerTest {
         projectRepository.save(project);
 
         ProjectDto updatedProjectDto = buildProjectDto();
-        updatedProjectDto.setShortName("updated name");
         updatedProjectDto.setDescription("updated Description");
         updatedProjectDto.setActive(false);
 
