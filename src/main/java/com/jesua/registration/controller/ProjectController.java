@@ -4,9 +4,7 @@ import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.dto.ProjectResponseDto;
 import com.jesua.registration.dto.UserProjectResponseDto;
 import com.jesua.registration.entity.filter.ProjectFilter;
-import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.ProjectService;
-import com.jesua.registration.service.UserProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +22,6 @@ import java.util.UUID;
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final UserProjectService userProjectService;
 
     @GetMapping("")
     public List<ProjectResponseDto> all(ProjectFilter projectFilter) {
@@ -41,11 +38,4 @@ public class ProjectController {
         return projectService.updateProject(projectDto, id);
     }
 
-    @PostMapping("map/user/{userId}/project/{projectId}")
-    public SuccessResponse<String> mapParentToChild(@PathVariable UUID userId, @PathVariable long projectId) {
-
-        String message = userProjectService.mapUserToProject(userId, projectId);
-
-        return new SuccessResponse<>(null, message);
-    }
 }

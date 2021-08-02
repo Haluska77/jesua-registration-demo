@@ -18,4 +18,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
 
     @Query("SELECT c FROM Course c where c.project IN (SELECT up.project FROM UserProject up WHERE up.user.id = :userid)")
     List<Course> findByUserProject(UUID userid);
+
+    List<Course> findByImage(String contentId);
 }

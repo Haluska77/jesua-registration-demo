@@ -8,6 +8,7 @@ import com.jesua.registration.entity.ProjectRole;
 import com.jesua.registration.entity.User;
 import com.jesua.registration.entity.UserProject;
 import com.jesua.registration.entity.filter.ProjectFilter;
+import com.jesua.registration.exception.UniqueConstraintException;
 import com.jesua.registration.mapper.ProjectMapper;
 import com.jesua.registration.mapper.UserProjectMapper;
 import com.jesua.registration.repository.ProjectRepository;
@@ -15,6 +16,7 @@ import com.jesua.registration.repository.ProjectSpecification;
 import com.jesua.registration.repository.UserProjectRepository;
 import com.jesua.registration.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,13 +66,17 @@ public class ProjectService {
 
         Project savedProject = projectRepository.findById(id).orElseThrow(EntityNotFoundException:: new);
         Project project = projectMapper.mapDtoToEntity(projectDto, savedProject);
-        projectRepository.save(project);
+        try {
+            projectRepository.save(project);
+        } catch (JpaSystemException e){
+            throw new UniqueConstraintException("ShortName must be unique");
+        }
 
         return projectMapper.mapEntityToDto(project);
     }
 
 
-    public Project getProject(Long id) {
+    public Project getProject(long id) {
 
         return projectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }

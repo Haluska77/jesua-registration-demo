@@ -6,6 +6,7 @@ import com.jesua.registration.entity.filter.PosterFilter;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.service.PosterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,4 +47,10 @@ public class PosterController {
             return posterService.upload(projectId, file);
     }
 
+    @DeleteMapping(path = "delete/{keyName}")
+    public SuccessResponse<String> removeFile(@PathVariable("keyName") String keyName){
+
+        posterService.delete(keyName);
+        return new SuccessResponse<>(null, String.format("Súbor %s bol úspešne zmazaný!!!", keyName));
+    }
 }

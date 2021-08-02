@@ -14,6 +14,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 public class ApiExceptionHandler implements
         MethodArgumentNotValidHandler,
+        MethodArgumentTypeMismatchHandler,
         MessageNotReadableHandler,
         BadCredentialsHandler {
 
@@ -26,9 +27,7 @@ public class ApiExceptionHandler implements
             status = NOT_FOUND;
         }
 
-        if (exception instanceof Exception) {
-            errorResponse.setError(new ErrorDto<>(null, exception.getMessage()));
-        }
+        errorResponse.setError(new ErrorDto<>(null, exception.getMessage()));
 
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), status);
     }

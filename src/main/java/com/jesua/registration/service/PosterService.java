@@ -2,6 +2,7 @@ package com.jesua.registration.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
@@ -11,11 +12,13 @@ import com.jesua.registration.dto.PosterResponseWithDataDto;
 import com.jesua.registration.entity.Poster;
 import com.jesua.registration.entity.filter.PosterFilter;
 import com.jesua.registration.mapper.PosterMapper;
+import com.jesua.registration.repository.CourseRepository;
 import com.jesua.registration.repository.PosterRepository;
 import com.jesua.registration.repository.PosterSpecification;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,11 +37,11 @@ public class PosterService {
     private final PosterRepository posterRepository;
     private final ProjectService projectService;
     private final PosterMapper posterMapper;
+    private final CourseRepository courseRepository;
 
     public byte[] download(String contentId) {
 
-        Poster poster = posterRepository.findByContentId(contentId).orElseThrow(() -> new NoSuchElementException("Poster not found !!!"));
-        String keyName = poster.getProject().getId() + "/" + poster.getContentId();
+        String keyName = getKeyNameFromContentId(contentId);
 
         try {
             S3ObjectInputStream objectContent = awsClient.getObject(awsProperties.getBucket(), keyName).getObjectContent();
@@ -46,6 +49,11 @@ public class PosterService {
         } catch (AmazonServiceException | IOException e) {
             throw new IllegalStateException("Failed to download image", e);
         }
+    }
+
+    private String getKeyNameFromContentId(String contentId) {
+        Poster poster = posterRepository.findByContentId(contentId).orElseThrow(() -> new NoSuchElementException("Poster not found !!!"));
+        return poster.getProject().getId() + "/" + poster.getContentId();
     }
 
     public PosterResponseDto upload(long projectId, MultipartFile multipartFile) throws IOException {
@@ -99,5 +107,25 @@ public class PosterService {
                     return posterMapper.mapEntityToDto(poster, fileData);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void delete(String contentId) {
+        String keyName = getKeyNameFromContentId(contentId);
+        removeFromS3(keyName);
+        updateCourseImageHavingContentIdByNull(contentId);
+        posterRepository.deleteByContentId(contentId);
+
+    }
+
+    private void removeFromS3(String keyName) {
+        awsClient.deleteObject(new DeleteObjectRequest(awsProperties.getBucket(), keyName));
+    }
+
+    private void updateCourseImageHavingContentIdByNull(String contentId) {
+        courseRepository.findByImage(contentId).forEach(course -> {
+            course.setImage(null);
+            courseRepository.save(course);
+        });
     }
 }

@@ -9,4 +9,7 @@ import java.util.Optional;
 public interface PosterRepository extends JpaRepository<Poster, Long>, JpaSpecificationExecutor<Poster> {
 
     Optional<Poster> findByContentId(String contentId);
+
+    void deleteByContentId(String contentId);
+
 }
