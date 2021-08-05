@@ -9,6 +9,7 @@ import com.jesua.registration.entity.Poster;
 import com.jesua.registration.entity.Project;
 import com.jesua.registration.repository.PosterRepository;
 import org.apache.commons.io.FilenameUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,6 +55,7 @@ class PosterServiceTest {
         return objectMetadata;
     }
 
+    @Disabled
     @Test
     void download() throws IOException {
 
@@ -86,6 +88,7 @@ class PosterServiceTest {
 //        assertThat(projectResponseDto).usingRecursiveComparison().isEqualTo(userProjectResponseDto);
     }
 
+    @Disabled
     @Test
     void upload() {
     }

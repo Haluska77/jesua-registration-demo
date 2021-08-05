@@ -35,9 +35,9 @@ public class PosterController {
         return posterService.getPostersWithDataBy(posterFilter);
     }
 
-    @GetMapping("{posterId}")
-    public SuccessResponse<byte[]> getFile(@PathVariable("posterId") String posterId) {
-        byte[] download = posterService.download(posterId);
+    @GetMapping("{contentId}")
+    public SuccessResponse<byte[]> getFile(@PathVariable("contentId") String contentId) {
+        byte[] download = posterService.download(contentId);
         return new SuccessResponse<>(download, null);
     }
 
@@ -47,10 +47,10 @@ public class PosterController {
             return posterService.upload(projectId, file);
     }
 
-    @DeleteMapping(path = "delete/{keyName}")
-    public SuccessResponse<String> removeFile(@PathVariable("keyName") String keyName){
+    @DeleteMapping(path = "delete/{contentId}")
+    public SuccessResponse<String> removeFile(@PathVariable("contentId") String contentId){
 
-        posterService.delete(keyName);
-        return new SuccessResponse<>(null, String.format("Súbor %s bol úspešne zmazaný!!!", keyName));
+        posterService.delete(contentId);
+        return new SuccessResponse<>(null, String.format("Súbor %s bol úspešne zmazaný!!!", contentId));
     }
 }

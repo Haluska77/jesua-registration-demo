@@ -10,6 +10,8 @@ import com.jesua.registration.dto.PosterResponseWithDataDto;
 import com.jesua.registration.dto.ProjectDto;
 import com.jesua.registration.entity.Poster;
 import com.jesua.registration.entity.Project;
+import com.jesua.registration.exception.ErrorDto;
+import com.jesua.registration.exception.ErrorResponse;
 import com.jesua.registration.exception.SuccessResponse;
 import com.jesua.registration.repository.PosterRepository;
 import com.jesua.registration.repository.ProjectRepository;
@@ -36,6 +38,7 @@ import static com.jesua.registration.builder.PosterBuilder.buildPosterResponseWi
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectDto;
 import static com.jesua.registration.builder.ProjectBuilder.buildProjectFromDto;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -166,6 +169,27 @@ class PosterControllerTest extends BaseControllerTest {
         assertThat(successResponse.getResponse().getBody()).isEqualTo(bytes);
     }
 
+    @Test
+    void getNotFoundFileTest() throws Exception {
+
+        String fileName = "jesua_pixel.png";
+
+        String contentId = UUID.randomUUID() + "." + FilenameUtils.getExtension(fileName);
+        Poster poster = buildPoster(project, fileName, contentId, MediaType.IMAGE_PNG_VALUE);
+        posterRepository.save(poster);
+
+        String response = mockMvc
+                .perform(get("/poster/" + contentId)
+                )
+                .andExpect(status().isInternalServerError())
+                .andReturn().getResponse().getContentAsString();
+
+        ErrorResponse<ErrorDto<String>> errorResponse = objectMapper.readValue(response, new TypeReference<>() {
+        });
+        assertThat(errorResponse.getError().getMessage()).isEqualTo("Failed to download image");
+
+    }
+
     private ObjectMetadata getObjectMetadata(byte[] bytes, String type) {
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -203,5 +227,34 @@ class PosterControllerTest extends BaseControllerTest {
 
         keyName = project.getId() + "/" + successResponse.getResponse().getBody().getContentId();
 
+    }
+
+    @Test
+    void deleteFileTest() throws Exception {
+
+        String fileName = "jesua_pixel.png";
+        byte[] bytes = fileBuilder.getBytesFromFile(fileName);
+
+        String contentId = UUID.randomUUID() + "." + FilenameUtils.getExtension(fileName);
+        Poster poster = buildPoster(project, fileName, contentId, MediaType.IMAGE_PNG_VALUE);
+        posterRepository.save(poster);
+
+        ObjectMetadata objectMetadata = getObjectMetadata(bytes, MediaType.IMAGE_PNG_VALUE);
+
+        keyName = project.getId() + "/" + contentId;
+        awsClient.putObject("jesua", keyName, new ByteArrayInputStream(bytes), objectMetadata);
+
+        MockHttpServletResponse response = mockMvc
+                .perform(delete("/poster/delete/" + contentId)
+                )
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+
+        SuccessResponse<String> successResponse = objectMapper.readValue(response.getContentAsString(StandardCharsets.UTF_8), new TypeReference<>() {
+        });
+
+        assertThat(successResponse.getResponse().getBody()).isNull();
+        assertThat(successResponse.getResponse().getMessage()).isEqualTo(String.format("Súbor %s bol úspešne zmazaný!!!", contentId));
     }
 }

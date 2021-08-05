@@ -13,7 +13,6 @@ public class UserBuilder {
     public static final String AVATAR = "avatar.svg";
     public static final String EMAIL = "admin@admin.com";
     public static final String NAME = "admin";
-    public static final String PASSWORD_ENCRYPTED = "$2a$10$j7ArNKwi0BP14F1MMGhiFOIHHvFh3z/Sp/ghWaRWPSrKjAsJ.nnxm";
     public static final String PASSWORD = "admin";
 
     public static User buildUserWithId(UUID id) {
@@ -80,5 +79,18 @@ public class UserBuilder {
         userResponseDto.setCreated(user.getCreated());
 
         return userResponseDto;
+    }
+
+    public static UserDto buildUserDto(String name, String email, String password, String role, boolean active, String avatar) {
+
+        UserDto userDto = new UserDto();
+        userDto.setName(name);
+        userDto.setEmail(email);
+        userDto.setPassword(password);
+        userDto.setRole(role);
+        userDto.setActive(active);
+        userDto.setAvatar(avatar);
+
+        return userDto;
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -68,14 +67,7 @@ public class UserProjectService {
         return buildProjectsDetailList(userProject).get(0);
     }
 
-    public List<UserProjectResponseDto> getUserProjectDetailByUser(UUID userId) {
-        return userProjectRepository.findByUserId(userId)
-                .stream()
-                .map(userProjectMapper::mapEntityToDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<ProjectDetailDto> buildProjectsDetailList(List<UserProjectResponseDto> userProjectList) {
+    private List<ProjectDetailDto> buildProjectsDetailList(List<UserProjectResponseDto> userProjectList) {
         return userProjectList.stream()
                 .collect(groupingBy(p -> p.getProject().getId()))
                 .values().stream()
