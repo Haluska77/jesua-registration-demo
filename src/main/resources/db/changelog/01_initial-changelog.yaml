@@ -71,8 +71,6 @@ databaseChangeLog:
                   name: email
                   type: VARCHAR(100)
               - column:
-                  constraints:
-                    nullable: false
                   name: password
                   type: VARCHAR(100)
               - column:
