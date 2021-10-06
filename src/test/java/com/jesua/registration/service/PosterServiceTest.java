@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.jesua.registration.builder.FileBuilder;
+import com.jesua.registration.config.AwsConfig;
 import com.jesua.registration.config.AwsProperties;
 import com.jesua.registration.entity.Poster;
 import com.jesua.registration.entity.Project;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
+@Import({AwsProperties.class, AwsConfig.class})
 class PosterServiceTest {
 
     @InjectMocks
@@ -55,7 +58,6 @@ class PosterServiceTest {
         return objectMetadata;
     }
 
-    @Disabled
     @Test
     void download() throws IOException {
 

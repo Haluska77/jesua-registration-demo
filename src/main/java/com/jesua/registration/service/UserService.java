@@ -14,15 +14,16 @@ import com.jesua.registration.security.jwt.JwtProvider;
 import com.jesua.registration.security.services.UserAuthPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,14 +35,14 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserProjectService userProjectService;
-    private final JwtProvider jwtProvider;
     private final UserProjectMapper userProjectMapper;
+    private final JwtProvider jwtProvider;
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmailAndActiveTrue(userName)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + userName + " not found"));
+        User user = userRepository.findByEmailAndActiveTrue(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + email + " not found"));
 
         return new UserAuthPrincipal(user);
     }
@@ -50,17 +51,19 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public List<UserResponseBaseDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::mapEntityToDto).collect(Collectors.toList());
     }
 
     public UserResponseBaseDto switchActiveUserAccount(UUID userId) {
-
         return userRepository.findById(userId)
                 .map(this::getUserResponseDto)
                 .orElseThrow(() -> new NoSuchElementException("User not Found!"));
-
     }
 
     private UserResponseBaseDto getUserResponseDto(User user) {
@@ -82,7 +85,7 @@ public class UserService implements UserDetailsService {
 
     public UserResponseBaseDto updateUser(UUID id, UserDto userDto) {
 
-        User origUser = userRepository.getOne(id);
+        User origUser = getUser(id);
         User user = userMapper.mapDtoToEntity(userDto, origUser);
 
         userRepository.save(user);
@@ -92,13 +95,8 @@ public class UserService implements UserDetailsService {
     }
 
     public LoginResponseDto signIn(Authentication authentication) {
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwtToken = jwtProvider.generateJwtToken(authentication);
-
         UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
-
+        String jwtToken = jwtProvider.generateToken(authentication, userDetails.getUsername());
         Set<UserProjectResponseDto> userProjects = getUserProjects(userDetails);
 
         return createLoginResponseDto(userDetails, userProjects, jwtToken);
@@ -107,13 +105,13 @@ public class UserService implements UserDetailsService {
     private Set<UserProjectResponseDto> getUserProjects(UserAuthPrincipal userDetails) {
 
         Set<UserProject> userProjects = userDetails.getProjects().stream().map(
-                p -> {
-                    UserProjectId userProjectId = new UserProjectId();
-                    userProjectId.setUserId(userDetails.getId());
-                    userProjectId.setProjectId(p.getId());
-                    return userProjectId;
-                }
-        ).collect(Collectors.toSet())
+                        p -> {
+                            UserProjectId userProjectId = new UserProjectId();
+                            userProjectId.setUserId(userDetails.getId());
+                            userProjectId.setProjectId(p.getId());
+                            return userProjectId;
+                        }
+                ).collect(Collectors.toSet())
                 .stream().map(userProjectService::findById
                 ).collect(Collectors.toSet());
 
@@ -132,6 +130,7 @@ public class UserService implements UserDetailsService {
         loginResponseDto.setAvatar(userDetails.getAvatar());
         loginResponseDto.setActive(userDetails.isEnabled());
         loginResponseDto.setCreated(userDetails.getCreated());
+        loginResponseDto.setAuthProvider(userDetails.getAuthProvider());
         loginResponseDto.setProjects(userProjectResponseDtoSet);
         loginResponseDto.setToken(jwtToken);
 

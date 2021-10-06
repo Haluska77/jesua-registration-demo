@@ -1,7 +1,11 @@
 package com.jesua.registration.config;
 
+import com.jesua.registration.oauth.GoogleOauth2UserService;
+import com.jesua.registration.oauth.InMemoryRequestRepository;
 import com.jesua.registration.security.exception.CustomUnauthorizedHandler;
+import com.jesua.registration.security.exception.OauthFailureHandler;
 import com.jesua.registration.security.exception.RestAccessDeniedHandler;
+import com.jesua.registration.security.exception.OauthSuccessHandler;
 import com.jesua.registration.security.filters.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +17,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -39,6 +42,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtRequestFilter jwtRequestFilter;
     private final CustomUnauthorizedHandler unauthorizedHandler;
     private final RestAccessDeniedHandler accessDeniedHandler;
+    private final OauthSuccessHandler oauthSuccessHandler;
+    private final OauthFailureHandler oauthFailureHandler;
+    private final GoogleOauth2UserService googleOauth2UserService;
+    private final InMemoryRequestRepository inMemoryRequestRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -53,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList(originUrl));
         configuration.setAllowedMethods(Arrays.asList("GET","POST","DELETE"));
@@ -84,10 +91,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/", "/password/**", "/users/signin", "/events/eventList**", "/registration/**", "/projects/",
-                        "/poster/**", "/userProjects/**").permitAll()
+                        "/poster/**", "/userProjects/**", "/login**", "/oauth2/**").permitAll()
                 .anyRequest().authenticated()
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .and()
+                .oauth2Login()
+                .authorizationEndpoint()
+                .authorizationRequestRepository(inMemoryRequestRepository)
+                .and().userInfoEndpoint().userService(googleOauth2UserService)
+                .and()
+                .successHandler(oauthSuccessHandler)
+                .failureHandler(oauthFailureHandler);
+//                .and().sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }

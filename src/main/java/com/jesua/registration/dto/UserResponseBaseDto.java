@@ -1,5 +1,6 @@
 package com.jesua.registration.dto;
 
+import com.jesua.registration.oauth.AuthProvider;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,5 +20,6 @@ public class UserResponseBaseDto {
     private String role;
     private Boolean active;
     private Instant created;
+    private AuthProvider authProvider;
 
 }

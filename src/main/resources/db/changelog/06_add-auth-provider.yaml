@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-auth-provider
+      author: SH
+      changes:
+        - addColumn:
+            tableName: jesua_user
+            columns:
+              - column:
+                  name: auth_provider
+                  type: VARCHAR(50)
+  - changeSet:
+      id: update-auth-provider
+      author: SH
+      changes:
+        - update:
+            tableName: jesua_user
+            columns:
+              - column:
+                  name: auth_provider
+                  value: "LOCAL"
+

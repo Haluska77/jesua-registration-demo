@@ -14,9 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -31,17 +35,26 @@ public class JwtProvider {
     private int jwtExpiration;
 
     private final JsonExceptionHandler jsonExceptionHandler;
+    private final Map< String, Authentication> cache = new HashMap<>();
 
-    public String generateJwtToken(Authentication authentication) {
-
-        UserAuthPrincipal userPrincipal = (UserAuthPrincipal) authentication.getPrincipal();
+    public String generateJwtToken(String userName) {
 
         return Jwts.builder()
-                .setSubject(userPrincipal.getUsername())
+                .setSubject(userName)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpiration * 1000))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+    }
+
+    public String generateToken( Authentication authentication, String email ) {
+        String token = generateJwtToken(email);
+        cache.put( token, authentication );
+        return token;
+    }
+
+    public Authentication getAuth( String token ) {
+        return cache.getOrDefault( token, null );
     }
 
     public boolean validateJwtToken(String authToken) {

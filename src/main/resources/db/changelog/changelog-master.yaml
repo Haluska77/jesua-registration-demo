@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/04_poster-changelog.yaml
   - include:
       file: db/changelog/05_add-unique-constraint-project.yaml
+  - include:
+      file: db/changelog/06_add-auth-provider.yaml

@@ -1,6 +1,7 @@
 package com.jesua.registration.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.jesua.registration.oauth.AuthProvider;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
@@ -8,6 +9,9 @@ import org.hibernate.annotations.NaturalIdCache;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -38,7 +42,6 @@ public class User extends BasePublicEntity {
     @Size(max = 100)
     private String email;
 
-    @NotNull
     @Size(max = 100)
     private String password;
 
@@ -53,11 +56,14 @@ public class User extends BasePublicEntity {
     private Set<PasswordToken> passwordTokens;
 
     @JsonManagedReference
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_project",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id"))
     private Set<Project> projects = new HashSet<>();
 
+    @Column(name = "auth_provider")
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider;
 }
