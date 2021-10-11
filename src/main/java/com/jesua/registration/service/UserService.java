@@ -8,17 +8,19 @@ import com.jesua.registration.entity.UserProject;
 import com.jesua.registration.entity.UserProjectId;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.mapper.UserProjectMapper;
+import com.jesua.registration.oauth.AuthProvider;
 import com.jesua.registration.repository.UserRepository;
+import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
 import com.jesua.registration.security.jwt.JwtProvider;
 import com.jesua.registration.security.services.UserAuthPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -30,29 +32,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserProjectService userProjectService;
     private final UserProjectMapper userProjectMapper;
     private final JwtProvider jwtProvider;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        User user = userRepository.findByEmailAndActiveTrue(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + email + " not found"));
-
-        return new UserAuthPrincipal(user);
-    }
+    private final AuthenticationManager authenticationManager;
 
     public User getUser(UUID id) {
         return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 
     public List<UserResponseBaseDto> getAllUsers() {
@@ -92,6 +82,14 @@ public class UserService implements UserDetailsService {
 
         return userMapper.mapEntityToDto(user);
 
+    }
+
+    public LoginResponseDto localSignIn(LoginDto loginDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return signIn(authentication);
     }
 
     public LoginResponseDto signIn(Authentication authentication) {

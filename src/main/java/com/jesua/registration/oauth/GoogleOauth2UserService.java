@@ -18,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GoogleOauth2UserService extends DefaultOAuth2UserService {
 
-    private final UserService userService;
     private final UserRepository userRepository;
 
     @Override
@@ -37,21 +36,21 @@ public class GoogleOauth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User processOAuth2User(OAuth2User oAuth2User) throws Exception {
 
-        Optional<User> userOptional = userService.getUserByEmail(oAuth2User.getAttribute("email"));
+        Optional<User> userOptional = userRepository.findByEmail(oAuth2User.getAttribute("email"));
 
         if(userOptional.isPresent()) {
             if (!userOptional.get().getActive()) {
                 throw new Exception("Account is not active");
             }
-            updateExistingUser(userOptional.get());
+            updateOauthUser(userOptional.get());
         } else {
-            registerNewUser(oAuth2User);
+            registerOauthUser(oAuth2User);
         }
 
         return oAuth2User;
     }
 
-    private User registerNewUser(OAuth2User oAuth2User) {
+    private User registerOauthUser(OAuth2User oAuth2User) {
         User user = new User();
         user.setUserName(oAuth2User.getAttribute("name"));
         user.setEmail(oAuth2User.getAttribute("email"));
@@ -62,7 +61,7 @@ public class GoogleOauth2UserService extends DefaultOAuth2UserService {
         return userRepository.save(user);
     }
 
-    private User updateExistingUser(User existingUser) {
+    private User updateOauthUser(User existingUser) {
         existingUser.setAuthProvider(AuthProvider.GOOGLE);
         return userRepository.save(existingUser);
     }

@@ -38,18 +38,15 @@ public class PosterService {
     private final ProjectService projectService;
     private final PosterMapper posterMapper;
     private final CourseRepository courseRepository;
+    private final AwsService awsService;
 
     public byte[] download(String contentId) {
 
         String keyName = getKeyNameFromContentId(contentId);
 
-        try {
-            S3ObjectInputStream objectContent = awsClient.getObject(awsProperties.getBucket(), keyName).getObjectContent();
-            return IOUtils.toByteArray(objectContent);
-        } catch (AmazonServiceException | IOException e) {
-            throw new IllegalStateException("Failed to download image", e);
-        }
+        return awsService.getBytes(keyName);
     }
+
 
     private String getKeyNameFromContentId(String contentId) {
         Poster poster = posterRepository.findByContentId(contentId).orElseThrow(() -> new NoSuchElementException("Poster not found !!!"));

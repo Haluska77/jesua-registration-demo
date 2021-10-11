@@ -7,6 +7,7 @@ import com.jesua.registration.entity.User;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.services.UserAuthPrincipal;
+import com.jesua.registration.security.services.UserAuthPrincipalService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +46,9 @@ class UserServiceTest {
     @InjectMocks
     UserService userService;
 
+    @InjectMocks
+    UserAuthPrincipalService userAuthPrincipalService;
+
     private static User user;
     private static Project project;
     private static Set<Project> projects;
@@ -63,7 +67,7 @@ class UserServiceTest {
 
         doReturn(Optional.of(user)).when(userRepository).findByEmailAndActiveTrue(user.getEmail());
 
-        UserDetails userDetails = userService.loadUserByUsername(user.getEmail());
+        UserDetails userDetails = userAuthPrincipalService.loadUserByUsername(user.getEmail());
 
         verify(userRepository).findByEmailAndActiveTrue(user.getEmail());
 
@@ -75,7 +79,7 @@ class UserServiceTest {
 
         String userName = "admin";
 
-        assertThatThrownBy(() -> userService.loadUserByUsername(userName))
+        assertThatThrownBy(() -> userAuthPrincipalService.loadUserByUsername(userName))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessage("User " + userName + " not found");
     }

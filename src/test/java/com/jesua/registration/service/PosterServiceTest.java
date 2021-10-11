@@ -2,6 +2,7 @@ package com.jesua.registration.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.jesua.registration.builder.FileBuilder;
 import com.jesua.registration.config.AwsConfig;
@@ -45,6 +46,9 @@ class PosterServiceTest {
 
     @Mock
     private AwsProperties awsProperties;
+
+    @Mock
+    private AwsService awsService;
 
     @Spy
     private FileBuilder fileBuilder;

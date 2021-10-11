@@ -29,7 +29,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
@@ -56,12 +55,7 @@ public class UserController {
     @PostMapping("signin")
     public LoginResponseDto signIn(@RequestBody LoginDto loginDto) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return userService.signIn(authentication);
+        return userService.localSignIn(loginDto);
     }
 
     @PostMapping("signup")
