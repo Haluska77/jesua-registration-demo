@@ -44,7 +44,14 @@ public class PosterService {
 
         String keyName = getKeyNameFromContentId(contentId);
 
-        return awsService.getBytes(keyName);
+        try {
+            S3ObjectInputStream objectContent = awsClient.getObject(awsProperties.getBucket(), keyName).getObjectContent();
+            return IOUtils.toByteArray(objectContent);
+        } catch (AmazonServiceException | IOException e) {
+            throw new IllegalStateException("Failed to download image", e);
+        }
+
+//        return awsService.getBytes(keyName);
     }
 
 

@@ -1,7 +1,6 @@
 package com.jesua.registration.security.jwt;
 
 import com.jesua.registration.security.exception.JsonExceptionHandler;
-import com.jesua.registration.security.services.UserAuthPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -28,26 +25,26 @@ import java.util.function.Function;
 @Slf4j
 public class JwtProvider {
 
-    @Value("${jesua.app.jwtSecret}")
+    @Value("${app.oauth2.jwt-secret}")
     private String jwtSecret;
 
-    @Value("${jesua.app.expiration}")
+    @Value("${app.oauth2.jwt-expiration}")
     private int jwtExpiration;
 
     private final JsonExceptionHandler jsonExceptionHandler;
     private final Map< String, Authentication> cache = new HashMap<>();
 
-    public String generateJwtToken(String userName) {
+    public String generateJwtToken(String email) {
 
         return Jwts.builder()
-                .setSubject(userName)
+                .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpiration * 1000))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public String generateToken( Authentication authentication, String email ) {
+    public String registerTokenForEmail(Authentication authentication, String email) {
         String token = generateJwtToken(email);
         cache.put( token, authentication );
         return token;

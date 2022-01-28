@@ -40,10 +40,10 @@ class JwtRequestFilterTest {
     @Autowired
     private ProjectRepository projectRepository;
 
-    @Value("${jesua.app.jwtSecret}")
+    @Value("${app.oauth2.jwt-secret}")
     private String jwtSecret;
 
-    @Value("${jesua.app.expiration}")
+    @Value("${app.oauth2.jwt-expiration}")
     private int jwtExpiration;
 
     @AfterEach

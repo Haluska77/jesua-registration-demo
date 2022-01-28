@@ -8,24 +8,22 @@ import com.jesua.registration.entity.UserProject;
 import com.jesua.registration.entity.UserProjectId;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.mapper.UserProjectMapper;
-import com.jesua.registration.oauth.AuthProvider;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
 import com.jesua.registration.security.jwt.JwtProvider;
 import com.jesua.registration.security.services.UserAuthPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -93,8 +91,11 @@ public class UserService {
     }
 
     public LoginResponseDto signIn(Authentication authentication) {
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("Not Authenticated");
+        }
         UserAuthPrincipal userDetails = (UserAuthPrincipal) authentication.getPrincipal();
-        String jwtToken = jwtProvider.generateToken(authentication, userDetails.getUsername());
+        String jwtToken = jwtProvider.registerTokenForEmail(authentication, userDetails.getUsername());
         Set<UserProjectResponseDto> userProjects = getUserProjects(userDetails);
 
         return createLoginResponseDto(userDetails, userProjects, jwtToken);

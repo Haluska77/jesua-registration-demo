@@ -1,7 +1,9 @@
 package com.jesua.registration.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.jesua.registration.builder.FileBuilder;
@@ -15,9 +17,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 
@@ -28,11 +34,14 @@ import java.util.UUID;
 
 import static com.jesua.registration.builder.PosterBuilder.buildPoster;
 import static com.jesua.registration.builder.ProjectBuilder.buildProject;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@Import({AwsProperties.class, AwsConfig.class})
+@EnableConfigurationProperties(value = AwsProperties.class)
 class PosterServiceTest {
 
     @InjectMocks
@@ -64,8 +73,9 @@ class PosterServiceTest {
 
     @Test
     void download() throws IOException {
-
+        AmazonS3 client = Mockito.mock(AmazonS3.class);
         String fileName = "jesua_pixel.png";
+        String bucketName = "jesua";
         String contentId = UUID.randomUUID() + "." + FilenameUtils.getExtension(fileName);
 
         Project project = buildProject(1);
@@ -75,23 +85,26 @@ class PosterServiceTest {
         ObjectMetadata objectMetadata = getObjectMetadata(bytes, MediaType.IMAGE_PNG_VALUE);
 
         keyName = project.getId() + "/" + contentId;
-        awsClient.putObject("jesua", keyName, new ByteArrayInputStream(bytes), objectMetadata);
+//        awsClient.putObject("jesua", keyName, new ByteArrayInputStream(bytes), objectMetadata);
+        when(awsClient.getObjectMetadata(eq(bucketName), eq(keyName))).thenReturn(objectMetadata);
 
-        S3Object s3Object = awsClient.getObject("jesua", keyName);
+        when(awsClient.putObject(eq(new PutObjectRequest(bucketName, keyName,
+                new ByteArrayInputStream(bytes), objectMetadata).withMetadata(objectMetadata)))).thenThrow(new AmazonServiceException("Amazon exception"));
 
+        S3Object s3Object = awsClient.getObject(bucketName, keyName);
         doReturn(Optional.of(poster)).when(posterRepository).findByContentId(poster.getContentId());
-        doReturn("jesua").when(awsProperties).getBucket();
-//        when(awsProperties.getBucket()).thenReturn("jesua");
-        doReturn(s3Object).when(awsClient).getObject("jesua", keyName);
+        doReturn(bucketName).when(awsProperties).getBucket();
+//        doReturn(s3Object).when(awsClient).getObject(bucketName, keyName);
 
         //run code
         byte[] download = posterService.download(contentId);
 
         //test
         verify(posterRepository).findByContentId(poster.getContentId());
-//
-//        assertThat(projectResponseDto).isNotNull();
-//        assertThat(projectResponseDto).usingRecursiveComparison().isEqualTo(userProjectResponseDto);
+
+        assertThat(download).isNotNull();
+        assertThat(download.length).isGreaterThan(0);
+        assertThat(download).isEqualTo(bytes);
     }
 
     @Disabled
