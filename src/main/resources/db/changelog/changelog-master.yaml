@@ -11,3 +11,5 @@ databaseChangeLog:
       file: db/changelog/05_add-unique-constraint-project.yaml
   - include:
       file: db/changelog/06_add-auth-provider.yaml
+  - include:
+      file: db/changelog/07_processing-error.yaml

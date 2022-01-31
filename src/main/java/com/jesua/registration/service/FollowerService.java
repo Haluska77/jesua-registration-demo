@@ -6,6 +6,7 @@ import com.jesua.registration.dto.FollowerResponseDto;
 import com.jesua.registration.entity.Course;
 import com.jesua.registration.entity.Follower;
 import com.jesua.registration.entity.filter.FollowerFilter;
+import com.jesua.registration.event.EmailSenderListener;
 import com.jesua.registration.event.FollowerCreatedEvent;
 import com.jesua.registration.mapper.FollowerMapper;
 import com.jesua.registration.message.EmailServiceImpl;
@@ -40,7 +41,7 @@ public class FollowerService {
     private final FollowerRepository followerRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final FollowerMapper followerMapper;
-    private final EmailServiceImpl emailService;
+    private final EmailSenderListener emailSenderListener;
     private final SuccessMessage successMessage;
     private final UnsuccessMessage unsuccessMessage;
     private final SubstituteMessage substituteMessage;
@@ -69,7 +70,7 @@ public class FollowerService {
         List<Follower> allFollowersByEventId = followerRepository.findByCourseId(courseId);
 
         return allFollowersByEventId.stream().filter(
-                m -> m.getToken().equals(token))
+                        m -> m.getToken().equals(token))
                 .findFirst()
                 .map(currentFollower -> {
                             if (currentFollower.getUnregistered() == null) {
@@ -161,24 +162,9 @@ public class FollowerService {
         followerRepository.findByCourseId(course.getId()).stream()
                 .filter(Follower::isAccepted)
                 .forEach(follower -> {
-                    try {
-                        sendEmail(follower);
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
-                    }
+                    Message emailMessage = notificationMessage.buildMessage(follower);
+                    emailSenderListener.sendNotificationEmail(course.getDescription(), emailMessage);
                 });
-    }
-
-    public void sendEmail(Follower follower) throws MessagingException {
-
-        Message emailMessage = notificationMessage.buildMessage(follower);
-
-        try {
-            emailService.sendMessage(emailMessage);
-        } catch (MessagingException e) {
-            throw new MessagingException(e.getMessage());
-        }
-
     }
 
     public FollowerEntityResponseDto getFollowerByToken(String id) {

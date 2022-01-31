@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-processing-error
+      author: SH
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: processing_error
+      changes:
+        - createTable:
+            tableName: processing_error
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: processing_error_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: error_type
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: text
+                  type: VARCHAR(250)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: created
+                  type: DATETIME(6)

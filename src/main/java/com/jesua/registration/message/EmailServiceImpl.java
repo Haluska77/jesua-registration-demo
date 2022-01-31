@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class EmailServiceImpl {
+public class EmailServiceImpl implements EmailService{
 
     private final JavaMailSender mailSender;
 
@@ -21,14 +21,9 @@ public class EmailServiceImpl {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper email = new MimeMessageHelper(mimeMessage);
 
-        try {
-            email.setTo(message.getTo());
-            email.setSubject(message.getSubject());
-            email.setText(message.getText(), true);
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            throw new MessagingException(e.getMessage());
-        }
+        email.setTo(message.getTo());
+        email.setSubject(message.getSubject());
+        email.setText(message.getText(), true);
+        mailSender.send(mimeMessage);
     }
-
 }
