@@ -4,12 +4,14 @@ import com.jesua.registration.message.EmailServiceImpl;
 import com.jesua.registration.message.Message;
 import com.jesua.registration.service.ProcessingErrorService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import javax.mail.MessagingException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class EmailSenderListener {
@@ -27,6 +29,7 @@ public class EmailSenderListener {
             String errorMessage = "Registration for followerId: " + followerCreated.getSavedFollower().getId() + " was not sent to "
                     + followerCreated.getSavedFollower().getEmail() + ". " +
                     "Error: " + e.getMessage();
+            log.error(errorMessage);
             processingErrorService.createAndSaveProcessingError(errorMessage);
         }
     }
@@ -41,10 +44,10 @@ public class EmailSenderListener {
             String errorMessage = "TokenId: " + tokenCreated.getToken().getId() + " was not sent to "
                     + tokenCreated.getEmailMessage().getTo() + ". " +
                     "Error: " + e.getMessage();
+            log.error(errorMessage);
             processingErrorService.createAndSaveProcessingError(errorMessage);
         }
     }
-
 
     public void sendNotificationEmail(String courseDescription, Message notificationMessage) {
 
@@ -54,6 +57,7 @@ public class EmailSenderListener {
             String errorMessage = "Course: " + courseDescription + " was not sent to "
                     + notificationMessage.getTo() + ". " +
                     "Error: " + e.getMessage();
+            log.error(errorMessage);
             processingErrorService.createAndSaveProcessingError(errorMessage);
         }
     }
