@@ -1,5 +1,6 @@
 package com.jesua.registration.security.jwt;
 
+import com.jesua.registration.config.Oauth2Properties;
 import com.jesua.registration.security.exception.JsonExceptionHandler;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -25,12 +26,7 @@ import java.util.function.Function;
 @Slf4j
 public class JwtProvider {
 
-    @Value("${app.oauth2.jwt-secret}")
-    private String jwtSecret;
-
-    @Value("${app.oauth2.jwt-expiration}")
-    private int jwtExpiration;
-
+    private final Oauth2Properties oauth2Properties;
     private final JsonExceptionHandler jsonExceptionHandler;
     private final Map< String, Authentication> cache = new HashMap<>();
 
@@ -39,8 +35,8 @@ public class JwtProvider {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + jwtExpiration * 1000))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .setExpiration(new Date(new Date().getTime() + oauth2Properties.getJwtExpiration() * 1000))
+                .signWith(SignatureAlgorithm.HS512, oauth2Properties.getJwtSecret())
                 .compact();
     }
 
@@ -56,7 +52,7 @@ public class JwtProvider {
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(oauth2Properties.getJwtSecret()).parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException e) {
             jsonExceptionHandler.handleSignatureToken(new MalformedJwtException("Invalid JWT token"));
@@ -96,6 +92,6 @@ public class JwtProvider {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(oauth2Properties.getJwtSecret()).parseClaimsJws(token).getBody();
     }
 }

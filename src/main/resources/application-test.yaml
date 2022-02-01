@@ -1,0 +1,55 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: '${JDBC_DATABASE_URL}'
+    username: '${JDBC_DATABASE_USERNAME}'
+    password: '${JDBC_DATABASE_PASSWORD}'
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: '${GOOGLE_CLIENT_ID}'
+            client-secret: '${GOOGLE_CLIENT_SECRET}'
+            scope: 'profile, email'
+  liquibase:
+    contexts: dev
+  mail:
+    username: '${MAIL_USERNAME}'
+    password: '${MAIL_PASSWORD}'
+    host: smtp.gmail.com
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          port: 587
+          timeout: 5000
+app:
+  oauth2:
+    authorizedRedirectUris: ${origin.url}/oauth2/redirect,myandroidapp://oauth2/redirect,myiosapp://oauth2/redirect
+    redirect-uri: '${origin.url}/callback'
+    jwt-secret: '${JWT_SECRET}'
+    jwt-expiration: 9000
+origin:
+  url: https://jesua-test.herokuapp.com
+jesua:
+  storage:
+    s3:
+      access-key: '${S3_KEY}'
+      secret-key: '${S3_SECRET}'
+      region: eu-west-3
+      path-style-access-enabled: true
+      bucket: jesua-test

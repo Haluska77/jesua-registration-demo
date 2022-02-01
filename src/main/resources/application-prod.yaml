@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: '${JDBC_DATABASE_URL}'
+    username: '${JDBC_DATABASE_USERNAME}'
+    password: '${JDBC_DATABASE_PASSWORD}'
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    contexts: prod
+  mail:
+    username: '${MAIL_USERNAME}'
+    password: '${MAIL_PASSWORD}'
+    host: smtp.gmail.com
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          port: 587
+          timeout: 5000
+app:
+  oauth2:
+    jwt-secret: '${JWT_SECRET}'
+    jwt-expiration: 9000
+origin:
+  url: https://jesua-registration.herokuapp.com
+jesua:
+  storage:
+    s3:
+      access-key: '${S3_KEY}'
+      secret-key: '${S3_SECRET}'
+      region: eu-west-3
+      path-style-access-enabled: true
+      bucket: jesua

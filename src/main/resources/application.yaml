@@ -1,0 +1,30 @@
+server:
+  port: 8083
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.yaml
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
+
+jesua:
+  course:
+    cron:
+      expression: 0 0 8 * * *
+    days:
+      notification: 1
+
+app:
+  bcryptstrenght: 10
+password:
+  token:
+    expiration: 15
+
+user:
+  default-avatar: 001-default.svg

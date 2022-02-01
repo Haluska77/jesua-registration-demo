@@ -8,6 +8,7 @@ import com.jesua.registration.entity.UserProject;
 import com.jesua.registration.entity.UserProjectId;
 import com.jesua.registration.mapper.UserMapper;
 import com.jesua.registration.mapper.UserProjectMapper;
+import com.jesua.registration.oauth.AuthProvider;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.security.dto.LoginDto;
 import com.jesua.registration.security.dto.LoginResponseDto;
@@ -66,6 +67,7 @@ public class UserService {
         }
 
         User user = userMapper.mapDtoToEntity(userDto);
+        user.setAuthProvider(AuthProvider.LOCAL);
         userRepository.save(user);
 
         return userMapper.mapEntityToDto(user);

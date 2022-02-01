@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### local properties ###
-application-dev.properties
+application-dev.yaml

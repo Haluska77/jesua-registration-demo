@@ -4,6 +4,7 @@ import com.jesua.registration.entity.User;
 import com.jesua.registration.repository.UserRepository;
 import com.jesua.registration.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,6 +18,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GoogleOauth2UserService extends DefaultOAuth2UserService {
+
+    @Value("${user.default-avatar}")
+    private String defaultAvatar;
 
     private final UserRepository userRepository;
 
@@ -57,6 +61,7 @@ public class GoogleOauth2UserService extends DefaultOAuth2UserService {
         user.setRole("ROLE_MODERATOR");
         user.setActive(true);
         user.setAuthProvider(AuthProvider.GOOGLE);
+        user.setAvatar(defaultAvatar);
 
         return userRepository.save(user);
     }
